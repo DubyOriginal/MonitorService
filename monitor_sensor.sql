@@ -23,6 +23,24 @@ LEFT JOIN monitor_db.device_data ON monitor_db.monitor_sensor.device_id = monito
 LEFT JOIN monitor_db.sensor_data ON monitor_db.monitor_sensor.sensor_id = monitor_db.sensor_data.id
 ORDER BY monitor_sensor.timestamp DESC;
 
+
+# log specific sensor
+SELECT 
+	monitor_sensor.id, 
+	FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, 
+    device_name,
+    sensor_id,
+    sensor_type,
+    sensor_mid,
+    sensor_name,
+    sensor_value
+FROM monitor_db.monitor_sensor
+LEFT JOIN monitor_db.user_data ON monitor_db.monitor_sensor.user_id = monitor_db.user_data.id
+LEFT JOIN monitor_db.device_data ON monitor_db.monitor_sensor.device_id = monitor_db.device_data.id
+LEFT JOIN monitor_db.sensor_data ON monitor_db.monitor_sensor.sensor_id = monitor_db.sensor_data.id
+WHERE sensor_id like '%00 00 00 00 00 11 12 13%' AND sensor_type like '%humi%'
+ORDER BY monitor_sensor.timestamp DESC;
+
 #******************************************************************************
 
 INSERT INTO monitor_sensor (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) 
