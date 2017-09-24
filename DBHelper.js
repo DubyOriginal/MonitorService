@@ -63,15 +63,16 @@ class DBHelper {
   }
 
   writeValues(user_id, device_id, sensor_id, sensor_type, sensor_value, callback) {
-    var con = mysql.createConnection({
+    var mySqlConnection = mysql.createConnection({
       host: "localhost",
       user: "root",
       password: "root",
       database: "monitor_db"
     });
 
-    con.connect(function (err) {
+    mySqlConnection.connect(function (err) {
       if (err) {
+        console.error('error connecting: ' + err.stack);
         if (callback) callback();
         throw err;
       }
@@ -86,7 +87,7 @@ class DBHelper {
       //INSERT INTO monitor_sensor (id, timestamp, user_id, device_id, sensor_id, sensor_value) VALUES (null,'1505756983', 'DY001', '123456', '3563547', '4433');
       var sql = "INSERT INTO monitor_sensor (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null,'" + timestamp + "', '" + user_id + "', '" + device_id + "', '" + sensor_id + "', '" + sensor_type + "', '" + sensor_value + "');";
       //console.log("   sql: " + sql);
-      con.query(sql, function (err, result) {
+      mySqlConnection.query(sql, function (err, result) {
         if (err) throw err;
         //console.log("1 record inserted");
         if (callback) callback();

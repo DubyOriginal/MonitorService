@@ -20,7 +20,8 @@ SELECT
 FROM monitor_db.monitor_sensor
 LEFT JOIN monitor_db.user_data ON monitor_db.monitor_sensor.user_id = monitor_db.user_data.id
 LEFT JOIN monitor_db.device_data ON monitor_db.monitor_sensor.device_id = monitor_db.device_data.id
-LEFT JOIN monitor_db.sensor_data ON monitor_db.monitor_sensor.sensor_id = monitor_db.sensor_data.id;
+LEFT JOIN monitor_db.sensor_data ON monitor_db.monitor_sensor.sensor_id = monitor_db.sensor_data.id
+ORDER BY monitor_sensor.timestamp DESC;
 
 #******************************************************************************
 
