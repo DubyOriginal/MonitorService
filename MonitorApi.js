@@ -7,44 +7,132 @@
 
 //var db = require('mysql');
 
+const DBHelper = require('./DBHelper');
+const BasicUtils = require('./BasicUtils');
 
+const moment = require('moment');
 const APP_SESSION_TIMEOUT_CHECK = 1000 * 60 * 60 // One hour time
 
 
 
 class MonitorApi {
 
-  constructor(app) {
-    console.log("MonitorApi initialized");
+  getAllSensorsData(){
+    console.log("MonitorApi: readAllSensorsData LIMIT 20");
 
-    this.app = app;
+    let dbHelper = new DBHelper();
+    let basicUtils = new BasicUtils();
 
-    //this.moment = require('moment')
-    //this.request = require('request')
-    //this.fs = require('fs');
+    const sql = "SELECT \
+      monitor_sensor.id, \
+      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+        device_name, \
+        sensor_id, \
+        sensor_type, \
+        sensor_mid, \
+        sensor_name, \
+        sensor_value \
+      FROM monitor_db.monitor_sensor \
+      LEFT JOIN user_data ON monitor_sensor.user_id = user_data.id \
+      LEFT JOIN device_data ON monitor_sensor.device_id = device_data.id \
+      LEFT JOIN sensor_data ON monitor_sensor.sensor_id = sensor_data.id \
+      ORDER BY monitor_sensor.timestamp DESC \
+      LIMIT 20;";
+    dbHelper.query(sql, [], function(result, error) {
+      if (!error && result) {
+        console.log("MonitorApi: readAllSensorsData DATA:");
+        basicUtils.printJOSNRows(result);
 
-    //this.schedule(function () {
-    //  console.log("test scheduler");
-    //}, APP_SESSION_TIMEOUT_CHECK);
+      }else{
+        console.log("MonitorApi: readAllSensorsData - SOME ERROR!");
+      }
+    });
   };
 
-  readValues(){
-    console.log("MonitorApi: readValues");
-    const DBHelper = require('./DBHelper');
-    var dbHelper = new DBHelper();
-    dbHelper.readValues();
+  getSensorData(sensor_id){
+    console.log("MonitorApi: getSensorData LIMIT 20");
+
+    let dbHelper = new DBHelper();
+    let basicUtils = new BasicUtils();
+
+    const sql = "SELECT \
+      monitor_sensor.id, \
+      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+        timestamp, \
+        user_id, \
+        user_name, \
+        device_id, \
+        device_name, \
+        sensor_id, \
+        sensor_type, \
+        sensor_mid, \
+        sensor_name, \
+        sensor_value \
+      FROM monitor_db.monitor_sensor \
+      LEFT JOIN user_data ON monitor_sensor.user_id = user_data.id \
+      LEFT JOIN device_data ON monitor_sensor.device_id = device_data.id \
+      LEFT JOIN sensor_data ON monitor_sensor.sensor_id = sensor_data.id \
+      WHERE sensor_id like ? \
+      ORDER BY monitor_sensor.timestamp DESC \
+      LIMIT 20;";
+    dbHelper.query(sql, [sensor_id], function(result, error) {
+      if (!error && result) {
+        console.log("MonitorApi: getSensorData DATA:");
+        basicUtils.printJOSNRows(result);
+
+      }else{
+        console.log("MonitorApi: getSensorData - SOME ERROR!");
+      }
+    });
+  };
+
+  getUserData(user_id){
+    console.log("MonitorApi: getUserData LIMIT 20");
+
+    let dbHelper = new DBHelper();
+    let basicUtils = new BasicUtils();
+
+    const sql = "SELECT \
+      monitor_sensor.id, \
+      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+        user_id, \
+        user_name, \
+        device_id, \
+        device_name, \
+        sensor_id, \
+        sensor_type, \
+        sensor_mid, \
+        sensor_name, \
+        sensor_value \
+      FROM monitor_db.monitor_sensor \
+      LEFT JOIN user_data ON monitor_sensor.user_id = user_data.id \
+      LEFT JOIN device_data ON monitor_sensor.device_id = device_data.id \
+      LEFT JOIN sensor_data ON monitor_sensor.sensor_id = sensor_data.id \
+      WHERE user_id like ? \
+      ORDER BY monitor_sensor.timestamp DESC \
+      LIMIT 20;";
+    dbHelper.query(sql, [user_id], function(result, error) {
+      if (!error && result) {
+        console.log("MonitorApi: getUserData DATA:");
+        basicUtils.printJOSNRows(result);
+
+      }else{
+        console.log("MonitorApi: getUserData - SOME ERROR!");
+      }
+    });
   };
 
 
   /*{
-   "sensors":[{"sensor_id":"3563547","sensor_value":"1234"},{"sensor_id":"3563547","sensor_value":"5678"}],
    "user_id":"DY001",
-   "device_id":"123456"}
+   "device_id":"123456",
+   "sensors":[{"sensor_id":"11 33 55 77","sensor_type":"temp","sensor_value":"22.22"},{"sensor_id":"11 33 55 77","sensor_type":"hum","sensor_value":"60"}]
+   }
    */
-  writeValues(user_id, device_id, sensors){
-    console.log("MonitorApi: writeValues");
-    const DBHelper = require('./DBHelper');
-    var dbHelper = new DBHelper();
+  storeDeviceData(user_id, device_id, sensors){
+    console.log("MonitorApi: storeDeviceData");
+
+    let dbHelper = new DBHelper();
 
     if (sensors){
       var writeSensorValue = (i) => {
@@ -55,25 +143,22 @@ class MonitorApi {
         var sensor_id = sensors[i].sensor_id;
         var sensor_value = sensors[i].sensor_value;
         var sensor_type = sensors[i].sensor_type;
-        console.log("MonitorApi: writeValues[" + i + "] -> sensor_id: " + sensor_id + ", sensor_type: " + sensor_type + ", sensor_value: " + sensor_value);
+        var timestamp = moment().unix();
+        console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_type: " + sensor_type + ", sensor_value: " + sensor_value);
 
-        dbHelper.writeValues(user_id, device_id, sensor_id, sensor_type, sensor_value, () => {
+        //var sql = "INSERT INTO monitor_sensor (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null,'" + timestamp + "', '" + user_id + "', '" + device_id + "', '" + sensor_id + "', '" + sensor_type + "', '" + sensor_value + "');";
+        var sql = "INSERT INTO monitor_sensor (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null, ?, ?, ?, ?, ?, ?);";
+        dbHelper.query(sql, [timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value], function(result, error) {
           writeSensorValue(i + 1);
         });
       }
 
       writeSensorValue(0)
     }else{
-      console.log("no sensors")
+      console.log("no sensors");
     }
   };
-
-
-
-  //new this.testDB();
 }
 
-//var monitor_api = new MonitorApi();
-//module.exports = monitor_api.testDB();
 
 module.exports = MonitorApi;

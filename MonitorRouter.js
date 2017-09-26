@@ -71,27 +71,36 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 
 // get values from DB
-app.post('/read', function (req, res) {
-  const body = req.body
-  //{"temp1Val" : 4059, "sensorType" : "temp - DS1820"}
-  const temp1Val = req.body.temp1Val;
-  const sensorType = req.body.sensorType;
+app.get('/getallsensorsdata', function (req, res) {
+  console.log("server: GET /getallsensorsdata");
+  res.set('Content-Type', 'application/json')
+  res.send("RECEIVED /getallsensorsdata");
+  monitorApi.getAllSensorsData();
+});
+
+//http://localhost:2200/getsensordata/00%2000%2000%2000%2000%2011%2012%2013
+app.get('/getsensordata/:sensor_id', function (req, res) {
+  let sensor_id = req.params.sensor_id;
+  console.log("server: GET /getallsensorsdata/" + sensor_id);
 
   res.set('Content-Type', 'application/json')
-  res.send("RECEIVED POST temp1Val: " + JSON.stringify(temp1Val) + ", sensorType: " + sensorType);
+  res.send("RECEIVED /getsensordata/" + sensor_id);
+  monitorApi.getSensorData(sensor_id);
+});
 
-  console.log("server: POST /read");
-  console.log("RECEIVED POST temp1Val: " + JSON.stringify(temp1Val) + ", sensorType: " + sensorType);
+//http://localhost:2200/getuseridsensordata/DY001
+app.get('/getuseridsensordata/:user_id', function (req, res) {
+  let user_id = req.params.user_id;
+  console.log("server: GET /getuseridsensordata/" + user_id);
 
-  //this.monitor_api.testDB();
-
-  monitorApi.readValues();
-
-})
+  res.set('Content-Type', 'application/json')
+  res.send("RECEIVED /getuseridsensordata/" + user_id);
+  monitorApi.getUserData(user_id);
+});
 
 // Store values to DB
 //addValues(uid, sensor_type, sensor_value){
-app.post('/write', function (req, res) {
+app.post('/storedevicedata', function (req, res) {
   /*{
   "sensors":[{"sensor_id":"3563547","sensor_type":"temp","sensor_value":"1234"},{"sensor_id":"3563547","sensor_type":"hum","sensor_value":"5678"}],
   "user_id":"DY001",
@@ -107,11 +116,11 @@ app.post('/write', function (req, res) {
   res.set('Content-Type', 'application/json');
   res.send("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
 
-  console.log("server: POST /write");
+  console.log("server: POST /storedevicedata");
   console.log("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
 
   if (user_id != null && device_id != null && sensors != null){
-    monitorApi.writeValues(user_id, device_id, sensors);
+    monitorApi.storeDeviceData(user_id, device_id, sensors);
   }else{
     console.warn("Received invalid values!")
   }
