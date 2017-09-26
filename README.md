@@ -19,6 +19,6 @@
 -  GET  /getallsensorsdata
     - http://localhost:2200/getallsensorsdata
 - GET  /getsensordata/:sensor_id
-    - http://localhost:2200/getsensordata/28 29 a0 5b 05 00 00 74
+    - http://localhost:2200/getsensordata/28%2006%20fe%205b%2005%2000%2000%20d1
 - GET /getuseridsensordata/:user_id
     -  http://localhost:2200/getuseridsensordata/DY001
