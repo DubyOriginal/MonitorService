@@ -16,6 +16,9 @@
 ```
 
 ## Route From WEB:
--  GET  [http://localhost:2200/getallsensorsdata]
--  GET  [http://localhost:2200/getsensordata/:sensor_id]
--  GET  [http://localhost:2200/getuseridsensordata/:user_id]
+-  GET  /getallsensorsdata
+    - http://localhost:2200/getallsensorsdata
+- GET  /getsensordata/:sensor_id
+    - http://localhost:2200/getsensordata/28 29 a0 5b 05 00 00 74
+- GET /getuseridsensordata/:user_id
+    -  http://localhost:2200/getuseridsensordata/DY001
