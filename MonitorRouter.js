@@ -29,7 +29,9 @@ var app = express();
 //app.set('views', './views');
 //app.set('view engine', 'pug');
 app.use(express.static('resources'));
-app.use('/static', express.static(__dirname + '/resources'));
+app.use('/resources', express.static(__dirname + '/resources'));
+
+//app.set('resources', path.join(__dirname, 'resources/img'));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
