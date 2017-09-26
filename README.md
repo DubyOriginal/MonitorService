@@ -22,3 +22,5 @@
     - http://localhost:2200/getsensordata/28%2006%20fe%205b%2005%2000%2000%20d1
 - GET /getuseridsensordata/:user_id
     -  http://localhost:2200/getuseridsensordata/DY001
+    
+## Route From MOBILE:    

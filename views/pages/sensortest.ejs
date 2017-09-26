@@ -1,0 +1,53 @@
+<!-- views/pamonitoring.ejs.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../partials/head %>
+</head>
+<body class="container">
+
+<header>
+    <% include ../partials/header %>
+</header>
+
+<main>
+    <div class="row">
+        <div class="container" class="col-sm-12">
+            <div class="jumbotron">
+                <h3>latest sensor data</h3>
+
+                <table class="col-sm-12">
+                    <tr>
+                        <th>rtimestamp</th>
+                        <th>sensor_id</th>
+                        <th>sensor_type</th>
+                        <th>sensor_mid</th>
+                        <th>sensor_name</th>
+                        <th>sensor_value</th>
+                    </tr>
+
+                    <% for (var i = 0; i < latestSensor.length; /* I save the data in a variable 'quotation', I don't know how you named your variable  */  i++) { %>
+                    <tr>
+                        <td><%= latestSensor[i].rtimestamp %></td>
+                        <td><%= latestSensor[i].sensor_id %></td>
+                        <td><%= latestSensor[i].sensor_type %></td>
+                        <td><%= latestSensor[i].sensor_mid %></td>
+                        <td><%= latestSensor[i].sensor_name %></td>
+                        <td><%= latestSensor[i].sensor_value %></td>
+                    </tr>
+                    <% } %>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer class="container-fluid bg-4 text-center">
+    <% include ../partials/footer %>
+</footer>
+
+</body>
+</html>

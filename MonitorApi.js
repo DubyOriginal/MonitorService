@@ -17,8 +17,8 @@ const APP_SESSION_TIMEOUT_CHECK = 1000 * 60 * 60 // One hour time
 
 class MonitorApi {
 
-  getAllSensorsData(){
-    console.log("MonitorApi: readAllSensorsData LIMIT 20");
+  getAllSensorsData(callback){
+    console.log("MonitorApi: getAllSensorsData LIMIT 20");
 
     let dbHelper = new DBHelper();
     let basicUtils = new BasicUtils();
@@ -40,11 +40,15 @@ class MonitorApi {
       LIMIT 20;";
     dbHelper.query(sql, [], function(result, error) {
       if (!error && result) {
-        console.log("MonitorApi: readAllSensorsData DATA:");
-        basicUtils.printJOSNRows(result);
+        if (callback){
+          callback(result);
+          console.log("MonitorApi: getAllSensorsData DATA:");
+          basicUtils.printJOSNRows(result);
+        }
+
 
       }else{
-        console.log("MonitorApi: readAllSensorsData - SOME ERROR!");
+        console.log("MonitorApi: getAllSensorsData - SOME ERROR!");
       }
     });
   };
@@ -82,6 +86,44 @@ class MonitorApi {
 
       }else{
         console.log("MonitorApi: getSensorData - SOME ERROR!");
+      }
+    });
+  };
+
+  getLatestSensorValue(sensor_id, sensor_type, callback){
+    console.log("MonitorApi: getLatestSensorValue");
+
+    let dbHelper = new DBHelper();
+
+    const sql = "SELECT \
+      monitor_sensor.id, \
+      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+        timestamp, \
+        user_id, \
+        user_name, \
+        device_id, \
+        device_name, \
+        sensor_id, \
+        sensor_type, \
+        sensor_mid, \
+        sensor_name, \
+        sensor_value \
+      FROM monitor_db.monitor_sensor \
+      LEFT JOIN user_data ON monitor_sensor.user_id = user_data.id \
+      LEFT JOIN device_data ON monitor_sensor.device_id = device_data.id \
+      LEFT JOIN sensor_data ON monitor_sensor.sensor_id = sensor_data.id \
+      WHERE \
+        monitor_sensor.timestamp = (SELECT MAX(timestamp) FROM monitor_sensor WHERE sensor_id like ? AND sensor_type like ?) \
+        AND sensor_id like ? AND sensor_type like ?;";
+    dbHelper.query(sql, [sensor_id, sensor_type, sensor_id, sensor_type], function(result, error) {
+      if (!error && result) {
+        console.log("MonitorApi: getLatestSensorValue:");
+        console.log("\t " + JSON.stringify(result));
+        if (callback) {
+          callback(result);
+        }
+      }else{
+        console.log("MonitorApi: getLatestSensorValue - SOME ERROR!");
       }
     });
   };

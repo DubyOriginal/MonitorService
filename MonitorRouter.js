@@ -1,6 +1,12 @@
 /**
  * Created by dvrbancic on 16/09/2017.
  */
+const MonitorApi = require('./MonitorApi.js');
+const path = require('path');
+var express = require('express');
+var request = require('request');
+
+const bodyParser = require('body-parser');
 
 var monitorApi;
 
@@ -8,55 +14,86 @@ class MonitorRouter {
 
   constructor() {
     console.log("MonitorRouter initialized");
-
-    const MonitorApi = require('./MonitorApi.js');
     monitorApi = new MonitorApi();
   }
-
-  /*
-  'POST /api/test'(req, res) {gitt
-    console.log("MonitorAppRouter /api/test");
-    this.monitor_api.test(req, r
-  }*/
 
 }
 
 var monitor_router = new MonitorRouter();
 
-var express = require('express');
-var request = require('request');
 
-const bodyParser = require('body-parser');
 const APP_PORT = 2200;
 
-// Fichiers publics (css, img) - Public files
 var app = express();
-var baseUrl = "http://192.168.1.57";    //measurement device IP
 
-// Pages HTML créées directement à partir des temmplates Pug - Create HTML page directly form Pug templates
-app.set('views', './views');
-app.set('view engine', 'pug');
+//app.set('views', './views');
+//app.set('view engine', 'pug');
+app.use(express.static('resources'));
+app.use('/static', express.static(__dirname + '/resources'));
 
-app.use(express.static('public'));
-app.use('/static', express.static(__dirname + '/public'));
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+//app.engine('html', require('ejs').renderFile);
+//app.set('view engine', 'html');
+app.set('view engine', 'ejs');
 
 //**********************************************************************************************************************
 // PRIVATE ROUTES
-app.get('/', function(req, res) {
+app.get('/', function (req, res) {
   console.log("server: /ROOT");
-  res.render('index')
+  res.render('pages/index')
 });
 
-app.use('/mesures.json', function (req, res, next) {
-  request({url: baseUrl + '/mesures.json',timeout:2000}, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      console.log("Data from: ESP8266" + body)
-      res.send(body);
-    } else {
-      console.log("ESP8266 not available, demo values will be send");
-      res.send({"t":"21.70","h":"29.50","pa":"984.43"});
-    }
-  })
+// monitoring sensors data
+app.get('/datatable', function (req, res) {
+
+  monitorApi.getAllSensorsData(function (allSensorData) {
+    res.render('pages/datatable', {
+      allSensorData: allSensorData
+    });
+  });
+});
+
+// monitoring sensors data
+app.get('/monitoring', function (req, res) {
+
+  monitorApi.getAllSensorsData(function (allSensorData) {
+    res.render('pages/monitoring', {
+      allSensorData: allSensorData
+    });
+  });
+});
+
+// monitoring sensors data
+app.get('/basement', function (req, res) {
+
+  monitorApi.getAllSensorsData(function (allSensorData) {
+    res.render('pages/basement', {
+      allSensorData: allSensorData
+    });
+  });
+});
+
+// monitoring sensors data
+app.get('/house', function (req, res) {
+
+  monitorApi.getAllSensorsData(function (allSensorData) {
+    res.render('pages/house', {
+      allSensorData: allSensorData
+    });
+  });
+});
+
+//monitoring single sensor
+app.get('/sensortest', function (req, res) {
+
+  let sensor_id = "11 33 55 77";
+  let sensor_type = "humi";
+  monitorApi.getLatestSensorValue(sensor_id, sensor_type, function (latestSensor) {
+    res.render('pages/sensortest', {
+      latestSensor: latestSensor
+    });
+  });
 });
 
 //**********************************************************************************************************************
@@ -67,7 +104,7 @@ app.use('/test', function (req, res, next) {
 
 //**********************************************************************************************************************
 // Tell express to use the body-parser middleware and to not parse extended bodies
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json());
 
 // get values from DB
@@ -102,9 +139,9 @@ app.get('/getuseridsensordata/:user_id', function (req, res) {
 //addValues(uid, sensor_type, sensor_value){
 app.post('/storedevicedata', function (req, res) {
   /*{
-  "sensors":[{"sensor_id":"3563547","sensor_type":"temp","sensor_value":"1234"},{"sensor_id":"3563547","sensor_type":"hum","sensor_value":"5678"}],
-  "user_id":"DY001",
-  "device_id":"123456"}
+   "sensors":[{"sensor_id":"3563547","sensor_type":"temp","sensor_value":"1234"},{"sensor_id":"3563547","sensor_type":"hum","sensor_value":"5678"}],
+   "user_id":"DY001",
+   "device_id":"123456"}
    */
   const data = req.body;
   const user_id = data.user_id;
@@ -119,9 +156,9 @@ app.post('/storedevicedata', function (req, res) {
   console.log("server: POST /storedevicedata");
   console.log("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
 
-  if (user_id != null && device_id != null && sensors != null){
+  if (user_id != null && device_id != null && sensors != null) {
     monitorApi.storeDeviceData(user_id, device_id, sensors);
-  }else{
+  } else {
     console.warn("Received invalid values!")
   }
 
@@ -135,7 +172,7 @@ app.listen(APP_PORT, function (err) {
     throw err;
   }
   console.log('Server started on PORT: ' + APP_PORT.toString())
-}).on('error', function(err) {
+}).on('error', function (err) {
   if (err) {
     console.warn("app.on.error -> " + err)
   }
