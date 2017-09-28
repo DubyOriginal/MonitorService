@@ -1,7 +1,7 @@
 /**
  * Created by dvrbancic on 16/09/2017.
  */
-const MonitorApi = require('./MonitorApi.js');
+const MonitorApi = require('./src/MonitorApi');
 const path = require('path');
 var express = require('express');
 var request = require('request');
@@ -19,7 +19,7 @@ class MonitorRouter {
 
 }
 
-var monitor_router = new MonitorRouter();
+new MonitorRouter();
 
 
 const APP_PORT = 2200;
@@ -27,31 +27,32 @@ const APP_PORT = 2200;
 var app = express();
 
 //app.set('views', '../views');
-
 //app.use(express.static('resources'));
-//app.use('/resources', express.static(__dirname + '../../resources/img'));
-
-//app.set('resources', path.join(__dirname, 'resources/img'));
-
-app.set('views', path.join(__dirname, '../views'));
-
-// view engine setup
+//app.use(express.static(__dirname + '/resources'));
 //app.engine('html', require('ejs').renderFile);
 //app.set('view engine', 'html');
+
+//app.set('views', path.join(__dirname, '/views'));
+//app.set('resources', path.join(__dirname, 'resources'));
+
+app.use(express.static(__dirname + '/views'));
+app.use(express.static(__dirname + '/resources'));
+
+// view engine setup
 app.set('view engine', 'ejs');
 
 //**********************************************************************************************************************
 // PRIVATE ROUTES
 app.get('/', function (req, res) {
   console.log("server: /ROOT");
-  res.render('../views/pages/index.ejs')
+  res.render('./pages/index')
 });
 
 // monitoring sensors data
 app.get('/datatable', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
-    res.render('pages/datatable', {
+    res.render('./pages/datatable', {
       allSensorData: allSensorData
     });
   });
@@ -61,7 +62,7 @@ app.get('/datatable', function (req, res) {
 app.get('/monitoring', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
-    res.render('../views/pages/monitoring', {
+    res.render('./pages/monitoring', {
       allSensorData: allSensorData
     });
   });
@@ -71,7 +72,7 @@ app.get('/monitoring', function (req, res) {
 app.get('/basement', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
-    res.render('../views/pages/basement', {
+    res.render('./pages/basement', {
       allSensorData: allSensorData
     });
   });
@@ -81,7 +82,7 @@ app.get('/basement', function (req, res) {
 app.get('/house', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
-    res.render('pages/house', {
+    res.render('./pages/house', {
       allSensorData: allSensorData
     });
   });
@@ -93,7 +94,7 @@ app.get('/sensortest', function (req, res) {
   let sensor_id = "11 33 55 77";
   let sensor_type = "humi";
   monitorApi.getLatestSensorValue(sensor_id, sensor_type, function (latestSensor) {
-    res.render('../views/pages/sensortest', {
+    res.render('./pages/sensortest', {
       latestSensor: latestSensor
     });
   });
