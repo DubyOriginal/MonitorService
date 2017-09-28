@@ -5,12 +5,27 @@
 <head>
     <% include ../partials/head %>
 </head>
-<body class="container">
+
 
 <header>
     <% include ../partials/header %>
+
+    <script>
+      $('#navUl > li').click(function () {
+        console.log("navUl - click");
+        //Check for active class
+        if (!$(this).hasClass("active")) {
+          // Remove the active class
+          $("li.active").removeClass("active");
+          // active current/clicked li
+          $(this).addClass("active");
+        }
+      });
+    </script>
+
 </header>
 
+<body class="container">
 <main>
     <div class="row">
         <div class="col-sm-12">

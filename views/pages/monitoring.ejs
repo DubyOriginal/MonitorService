@@ -11,9 +11,9 @@
     <% include ../partials/header %>
 </header>
 
-<div class="container">
-    <div class="tag">Featured</div>
-    <img src="http://www.placehold.it/200x200">
+<div ng-app="myApp" ng-controller="Controller as ctrl">
+    <button ng-click="ctrl.func">execute func</button>
+    <angularchart dataset="ctrl.dataset" schema="ctrl.schema" options="ctrl.options"></angularchart>
 </div>
 
 <footer class="container-fluid bg-4 text-center">

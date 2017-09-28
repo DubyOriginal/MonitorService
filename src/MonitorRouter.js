@@ -26,15 +26,16 @@ const APP_PORT = 2200;
 
 var app = express();
 
-//app.set('views', './views');
-//app.set('view engine', 'pug');
-app.use(express.static('resources'));
-app.use('/resources', express.static(__dirname + '/resources'));
+//app.set('views', '../views');
+
+//app.use(express.static('resources'));
+//app.use('/resources', express.static(__dirname + '../../resources/img'));
 
 //app.set('resources', path.join(__dirname, 'resources/img'));
 
+app.set('views', path.join(__dirname, '../views'));
+
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
 //app.engine('html', require('ejs').renderFile);
 //app.set('view engine', 'html');
 app.set('view engine', 'ejs');
@@ -43,7 +44,7 @@ app.set('view engine', 'ejs');
 // PRIVATE ROUTES
 app.get('/', function (req, res) {
   console.log("server: /ROOT");
-  res.render('pages/index')
+  res.render('../views/pages/index.ejs')
 });
 
 // monitoring sensors data
@@ -60,7 +61,7 @@ app.get('/datatable', function (req, res) {
 app.get('/monitoring', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
-    res.render('pages/monitoring', {
+    res.render('../views/pages/monitoring', {
       allSensorData: allSensorData
     });
   });
@@ -70,7 +71,7 @@ app.get('/monitoring', function (req, res) {
 app.get('/basement', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
-    res.render('pages/basement', {
+    res.render('../views/pages/basement', {
       allSensorData: allSensorData
     });
   });
@@ -92,7 +93,7 @@ app.get('/sensortest', function (req, res) {
   let sensor_id = "11 33 55 77";
   let sensor_type = "humi";
   monitorApi.getLatestSensorValue(sensor_id, sensor_type, function (latestSensor) {
-    res.render('pages/sensortest', {
+    res.render('../views/pages/sensortest', {
       latestSensor: latestSensor
     });
   });

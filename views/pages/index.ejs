@@ -11,10 +11,19 @@
     <% include ../partials/header %>
 </header>
 
+<script>
+  $(".nav a").on("click", function(){
+    console.log(".nav a - click");
+    $(".nav").find(".active").removeClass("active");
+    $(this).parent().addClass("active");
+  });
+</script>
+
+
 <main>
     <div class="jumbotron">
-        <h1>This is great</h1>
-        <p>Welcome to templating using EJS</p>
+        <h1>Smart Home</h1>
+        <p>Welcome to Home Monitoring System</p>
     </div>
 </main>
 
