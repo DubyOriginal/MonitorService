@@ -15,7 +15,7 @@
 
  */
 
-require('./MonitorRouter');
+require('./src/MonitorRouter');
 
 class MonitorApp {
 

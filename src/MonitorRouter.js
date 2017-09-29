@@ -1,7 +1,7 @@
 /**
  * Created by dvrbancic on 16/09/2017.
  */
-const MonitorApi = require('./src/MonitorApi');
+const MonitorApi = require('./MonitorApi');
 const path = require('path');
 var express = require('express');
 var request = require('request');
@@ -35,8 +35,14 @@ var app = express();
 //app.set('views', path.join(__dirname, '/views'));
 //app.set('resources', path.join(__dirname, 'resources'));
 
-app.use(express.static(__dirname + '/views'));
-app.use(express.static(__dirname + '/resources'));
+
+let viewPath = __dirname + '/../views';
+let resPath = __dirname + '/../resources';
+app.use(express.static(viewPath));
+app.use(express.static(resPath));
+
+console.log("viewPath ----> " + viewPath);
+console.log("resPath ----> " + resPath);
 
 // view engine setup
 app.set('view engine', 'ejs');

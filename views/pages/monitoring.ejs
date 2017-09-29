@@ -11,9 +11,11 @@
     <% include ../partials/header %>
 </header>
 
-<div ng-app="myApp" ng-controller="Controller as ctrl">
-    <button ng-click="ctrl.func">execute func</button>
-    <angularchart dataset="ctrl.dataset" schema="ctrl.schema" options="ctrl.options"></angularchart>
+<div class="container">
+    <div ng-app="myApp" ng-controller="Controller as ctrl">
+        <button ng-click="ctrl.func">execute func</button>
+        <angularchart dataset="ctrl.dataset" schema="ctrl.schema" options="ctrl.options"></angularchart>
+    </div>
 </div>
 
 <footer class="container-fluid bg-4 text-center">

@@ -18,7 +18,7 @@ const APP_SESSION_TIMEOUT_CHECK = 1000 * 60 * 60 // One hour time
 class MonitorApi {
 
   getAllSensorsData(callback){
-    console.log("MonitorApi: getAllSensorsData LIMIT 20");
+    console.log("MonitorApi: getAllSensorsData");
 
     let dbHelper = new DBHelper();
     let basicUtils = new BasicUtils();
@@ -42,8 +42,8 @@ class MonitorApi {
       if (!error && result) {
         if (callback){
           callback(result);
-          console.log("MonitorApi: getAllSensorsData DATA:");
-          basicUtils.printJOSNRows(result);
+          console.log("MonitorApi: getAllSensorsData DATA LOADED - cnt: " + result.length);
+          //basicUtils.printJOSNRows(result);
         }
 
 
@@ -81,8 +81,8 @@ class MonitorApi {
       LIMIT 20;";
     dbHelper.query(sql, [sensor_id], function(result, error) {
       if (!error && result) {
-        console.log("MonitorApi: getSensorData DATA:");
-        basicUtils.printJOSNRows(result);
+        console.log("MonitorApi: getSensorData DATA LOADED - cnt: " + result.length);
+        //basicUtils.printJOSNRows(result);
 
       }else{
         console.log("MonitorApi: getSensorData - SOME ERROR!");
@@ -155,8 +155,8 @@ class MonitorApi {
       LIMIT 20;";
     dbHelper.query(sql, [user_id], function(result, error) {
       if (!error && result) {
-        console.log("MonitorApi: getUserData DATA:");
-        basicUtils.printJOSNRows(result);
+        console.log("MonitorApi: getUserData DATA LOADED - cnt: " + result.length);
+        //basicUtils.printJOSNRows(result);
 
       }else{
         console.log("MonitorApi: getUserData - SOME ERROR!");
