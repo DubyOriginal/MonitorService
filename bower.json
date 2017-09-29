@@ -1,0 +1,22 @@
+{
+  "name": "monitor_service",
+  "description": "sensor logging",
+  "main": "MonitorApp.js",
+  "authors": [
+    "Dubravko Vrbancic"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.4.2",
+    "ng-table-bundle": "~3"
+  }
+}

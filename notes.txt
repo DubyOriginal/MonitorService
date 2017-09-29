@@ -1,0 +1,23 @@
+
+
+    <table class="col-sm-12">
+        <tr>
+            <th>rtimestamp</th>
+            <th>sensor_id</th>
+            <th>sensor_type</th>
+            <th>sensor_mid</th>
+            <th>sensor_name</th>
+            <th>sensor_value</th>
+        </tr>
+
+        <% for (var i = 0; i < latestSensor.length; /* I save the data in a variable 'quotation', I don't know how you named your variable  */  i++) { %>
+        <tr>
+            <td><%= latestSensor[i].rtimestamp %></td>
+            <td><%= latestSensor[i].sensor_id %></td>
+            <td><%= latestSensor[i].sensor_type %></td>
+            <td><%= latestSensor[i].sensor_mid %></td>
+            <td><%= latestSensor[i].sensor_name %></td>
+            <td><%= latestSensor[i].sensor_value %></td>
+        </tr>
+        <% } %>
+    </table>

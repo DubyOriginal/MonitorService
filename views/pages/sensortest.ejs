@@ -4,8 +4,43 @@
 <html lang="en">
 <head>
     <% include ../partials/head %>
+
+    <script src="angular/angular.js"></script>
+    <script src="ng-table-bundle/ng-table.min.js"></script>
+
 </head>
-<body class="container">
+
+<script type="text/javascript">
+
+  var angularApp = angular.module('myApp', ["ngTable"]);
+  angularApp.controller('getSensorCtrl', function ($scope, NgTableParams, $http) {
+    $scope.mDefaultSensor = {sensor_id: "11 33 55 77", sensor_type: "humi"};
+    $scope.mSensorList = [];
+    $scope.defaultSensor = function () {
+      $scope.tempSensor = angular.copy($scope.mDefaultSensor);
+    };
+    $scope.defaultSensor();
+
+    $scope.getData = function () {
+      console.log("getData CLICKED!");
+
+      $http({
+        method: 'GET',
+        url: 'getlatestsensormeasurement/' + $scope.tempSensor.sensor_id + "/" + $scope.tempSensor.sensor_type
+      }).then(function (response){
+        $scope.mSensorList = response.data;
+      },function (error){
+        console.log("getlatestsensormeasurement ERROR: " + error);
+      });
+
+    };
+    $scope.getData();  //initial data load
+
+    $scope.usersTable = new NgTableParams({}, {dataset: $scope.mSensorList});
+  });
+</script>
+
+<body class="container" ng-app="myApp">
 
 <header>
     <% include ../partials/header %>
@@ -17,30 +52,29 @@
             <div class="jumbotron">
                 <h3>latest sensor data</h3>
 
-                <table class="col-sm-12">
-                    <tr>
-                        <th>rtimestamp</th>
-                        <th>sensor_id</th>
-                        <th>sensor_type</th>
-                        <th>sensor_mid</th>
-                        <th>sensor_name</th>
-                        <th>sensor_value</th>
-                    </tr>
+                <div ng-controller="getSensorCtrl">
+                    <form novalidate>
+                        Sensor ID:<br>
+                        <input type="text" ng-model="tempSensor.sensor_id"><br>
+                        Sensor type:<br>
+                        <input type="text" ng-model="tempSensor.sensor_type">
+                        <br><br>
 
-                    <% for (var i = 0; i < latestSensor.length; /* I save the data in a variable 'quotation', I don't know how you named your variable  */  i++) { %>
-                    <tr>
-                        <td><%= latestSensor[i].rtimestamp %></td>
-                        <td><%= latestSensor[i].sensor_id %></td>
-                        <td><%= latestSensor[i].sensor_type %></td>
-                        <td><%= latestSensor[i].sensor_mid %></td>
-                        <td><%= latestSensor[i].sensor_name %></td>
-                        <td><%= latestSensor[i].sensor_value %></td>
-                    </tr>
-                    <% } %>
-                </table>
+                        <button ng-click="defaultSensor()">RESET</button>
+                        <button ng-click="getData()">Get sensor data</button>
+                    </form>
 
+                    <table ng-table ="usersTable" class="table table-striped">
+                        <tr ng-repeat="sensor in mSensorList">
+                            <td data-title="'Date'">{{ sensor.rtimestamp }}</td>
+                            <td data-title="'Sensor ID'">{{ sensor.sensor_id }}</td>
+                            <td data-title="'Type'">{{ sensor.sensor_type }}</td>
+                            <td data-title="'Name'">{{ sensor.sensor_name }}</td>
+                            <td data-title="'Value'">{{ sensor.sensor_value }}</td>
+                        </tr>
+                    </table>
+                </div>
             </div>
-
         </div>
     </div>
 </main>

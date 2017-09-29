@@ -43,7 +43,7 @@ class MonitorApi {
         if (callback){
           callback(result);
           console.log("MonitorApi: getAllSensorsData DATA LOADED - cnt: " + result.length);
-          //basicUtils.printJOSNRows(result);
+          basicUtils.printJOSNRows(result);
         }
 
 

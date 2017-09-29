@@ -3,52 +3,46 @@
  */
 const MonitorApi = require('./MonitorApi');
 const path = require('path');
-var express = require('express');
-var request = require('request');
+const express = require('express');
+const request = require('request');
 
 const bodyParser = require('body-parser');
-
 var monitorApi;
 
-class MonitorRouter {
 
+var app = express();
+
+class MonitorRouter {
   constructor() {
     console.log("MonitorRouter initialized");
     monitorApi = new MonitorApi();
   }
-
 }
 
 new MonitorRouter();
 
-
 const APP_PORT = 2200;
 
-var app = express();
-
-//app.set('views', '../views');
-//app.use(express.static('resources'));
-//app.use(express.static(__dirname + '/resources'));
-//app.engine('html', require('ejs').renderFile);
-//app.set('view engine', 'html');
-
-//app.set('views', path.join(__dirname, '/views'));
-//app.set('resources', path.join(__dirname, 'resources'));
-
-
+//**********************************************************************************************************************
+// EXPRESS CONFIGURATION
+//**********************************************************************************************************************
 let viewPath = __dirname + '/../views';
 let resPath = __dirname + '/../resources';
+let bowerPath = __dirname + '/../bower_components';
 app.use(express.static(viewPath));
 app.use(express.static(resPath));
+app.use(express.static(bowerPath));
 
-console.log("viewPath ----> " + viewPath);
-console.log("resPath ----> " + resPath);
+// Tell express to use the body-parser middleware and to not parse extended bodies
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.json());
 
 // view engine setup
 app.set('view engine', 'ejs');
 
 //**********************************************************************************************************************
-// PRIVATE ROUTES
+// FRONT ROUTES - PAGE
+//**********************************************************************************************************************
 app.get('/', function (req, res) {
   console.log("server: /ROOT");
   res.render('./pages/index')
@@ -96,14 +90,7 @@ app.get('/house', function (req, res) {
 
 //monitoring single sensor
 app.get('/sensortest', function (req, res) {
-
-  let sensor_id = "11 33 55 77";
-  let sensor_type = "humi";
-  monitorApi.getLatestSensorValue(sensor_id, sensor_type, function (latestSensor) {
-    res.render('./pages/sensortest', {
-      latestSensor: latestSensor
-    });
-  });
+  res.render('./pages/sensortest');
 });
 
 //**********************************************************************************************************************
@@ -111,11 +98,6 @@ app.get('/sensortest', function (req, res) {
 app.use('/test', function (req, res, next) {
   console.log("server: /test");
 });
-
-//**********************************************************************************************************************
-// Tell express to use the body-parser middleware and to not parse extended bodies
-app.use(bodyParser.urlencoded({extended: false}))
-app.use(bodyParser.json());
 
 // get values from DB
 app.get('/getallsensorsdata', function (req, res) {
@@ -135,6 +117,26 @@ app.get('/getsensordata/:sensor_id', function (req, res) {
   monitorApi.getSensorData(sensor_id);
 });
 
+//http://localhost:2200/getlatestsensormeasurement/00%2000%2000%2000%2000%2011%2012%2013/temp
+app.get('/getlatestsensormeasurement/:sensor_id/:sensor_type', function (req, res) {
+  let sensor_id = req.params.sensor_id;
+  let sensor_type = req.params.sensor_type;
+  console.log("server: GET /getlatestsensormeasurement/" + sensor_id + "/" + sensor_type);
+
+  monitorApi.getLatestSensorValue(sensor_id, sensor_type, (result) => {
+    if (res != null){
+      if (result != null){
+        res.set('Content-Type', 'application/json')
+        res.send(result);
+      }else{
+        res.send(null);
+      }
+    }else{
+      console.log("/getlatestsensormeasurement/ res in NULL");
+    }
+  });
+});
+
 //http://localhost:2200/getuseridsensordata/DY001
 app.get('/getuseridsensordata/:user_id', function (req, res) {
   let user_id = req.params.user_id;
@@ -145,8 +147,10 @@ app.get('/getuseridsensordata/:user_id', function (req, res) {
   monitorApi.getUserData(user_id);
 });
 
-// Store values to DB
-//addValues(uid, sensor_type, sensor_value){
+//**********************************************************************************************************************
+// CLIENT ROUTES - (from DEVICE)
+//**********************************************************************************************************************
+// Store values to DB -> addValues(user_id, device_id, sensor_type, sensor_value){
 app.post('/storedevicedata', function (req, res) {
   /*{
    "sensors":[{"sensor_id":"3563547","sensor_type":"temp","sensor_value":"1234"},{"sensor_id":"3563547","sensor_type":"hum","sensor_value":"5678"}],
@@ -157,8 +161,6 @@ app.post('/storedevicedata', function (req, res) {
   const user_id = data.user_id;
   const device_id = data.device_id;
   const sensors = data.sensors;
-  //const sensor_id = data.sensor_id;
-  //const sensor_value = data.sensor_value;
 
   res.set('Content-Type', 'application/json');
   res.send("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
@@ -171,8 +173,6 @@ app.post('/storedevicedata', function (req, res) {
   } else {
     console.warn("Received invalid values!")
   }
-
-
 })
 
 //**********************************************************************************************************************

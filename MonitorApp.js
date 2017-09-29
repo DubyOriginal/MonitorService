@@ -11,6 +11,7 @@
  6. npm install moment --save
  7. npm install ejs --save
  8. npm install path --save
+ 8. npm install bower --save
 
 
  */
