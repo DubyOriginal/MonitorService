@@ -24,3 +24,15 @@
     -  http://localhost:2200/getuseridsensordata/DY001
     
 ## Route From MOBILE:    
+
+
+
+## BOWER COMPONENTS:
+    - sudo npm install -g bower               //bower needs to be installed globaly
+	- bower install angular#1.4.2 --save
+	- bower install ng-table
+	- bower install ng-table-bundle#~3 --save
+    - bower install angular-chart --save
+    
+## NPM COMPONENTS:
+- 

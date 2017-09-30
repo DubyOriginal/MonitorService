@@ -17,6 +17,8 @@
   ],
   "dependencies": {
     "angular": "1.4.2",
-    "ng-table-bundle": "~3"
+    "ng-table-bundle": "~3",
+    "angular-chart": "^0.5.0",
+    "angular-google-chart": "1.0.0-beta.1"
   }
 }

@@ -1,0 +1,33 @@
+<!-- views/pamonitoring.ejs.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../partials/head %>
+</head>
+
+<script type="text/javascript">
+
+</script>
+
+<body class="container">
+
+<header>
+    <% include ../partials/header %>
+</header>
+
+<div class="container">
+    <div ng-app="myApp" ng-controller="Controller as ctrl">
+        <button ng-click="ctrl.func">execute func</button>
+        <div class="tag">Device Manager</div>
+        <img class="img-responsive center-block" src="images/img_devicemanager.png" alt="img1" />
+
+    </div>
+</div>
+
+<footer class="container-fluid bg-4 text-center">
+    <% include ../partials/footer %>
+</footer>
+
+</body>
+</html>

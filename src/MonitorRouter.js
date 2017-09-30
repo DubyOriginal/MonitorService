@@ -93,6 +93,11 @@ app.get('/sensortest', function (req, res) {
   res.render('./pages/sensortest');
 });
 
+//device manager
+app.get('/devicemanager', function (req, res) {
+  res.render('./pages/devicemanager');
+});
+
 //**********************************************************************************************************************
 // PUBLIC ROUTES
 app.use('/test', function (req, res, next) {
@@ -173,7 +178,18 @@ app.post('/storedevicedata', function (req, res) {
   } else {
     console.warn("Received invalid values!")
   }
-})
+});
+
+//device is ready to receive some control commands or adjustment
+app.get('/requestcommand', function (req, res) {
+  console.log("server: GET /requestcommand");
+  var response = {
+    status: "ok",
+    command : "CMD_LED_ON"
+  }
+  res.set('Content-Type', 'application/json')
+  res.send(JSON.stringify(response));
+});
 
 //**********************************************************************************************************************
 app.listen(APP_PORT, function (err) {
