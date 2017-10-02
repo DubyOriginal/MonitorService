@@ -27,6 +27,17 @@
 
     <angularchart dataset="ctrl.dataset" schema="ctrl.schema" options="ctrl.options"></angularchart>
 
+    <form novalidate>
+        Sensor ID:<br>
+        <input type="text" ng-model="tempSensor.sensor_id"><br>
+        Sensor type:<br>
+        <input type="text" ng-model="tempSensor.sensor_type">
+        <br><br>
+
+        <button ng-click="defaultSensor()">RESET</button>
+        <button ng-click="getData()">Get sensor data</button>
+    </form>
+
 
 
 //----------------------------------------------------------------------------------------------------------------------

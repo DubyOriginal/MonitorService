@@ -7,22 +7,60 @@
 </head>
 
 <script type="text/javascript">
+  var angularApp = angular.module('myApp', ['ngTable']);
+  angularApp.controller('getSensorCtrl', function ($scope, NgTableParams, $http) {
+    $scope.tempSensor = {sensor_id: "11 33 55 77", sensor_type: "temp"};
+
+    $scope.mSensorList = [];
+
+    $scope.getData = function () {
+      console.log("getData CLICKED!");
+
+      $http({
+        method: 'GET',
+        url: 'getlatestsensormeasurement/' + $scope.tempSensor.sensor_id + "/" + $scope.tempSensor.sensor_type
+      }).then(function (response) {
+        $scope.mSensorList = response.data;
+      }, function (error) {
+        console.log("getlatestsensormeasurement ERROR: " + error);
+      });
+
+    };
+    $scope.getData();  //initial data load
+
+    $scope.usersTable = new NgTableParams({}, {dataset: $scope.mSensorList});
+
+  });
 
 </script>
 
-<body class="container">
+<body class="container" ng-app="myApp">
 
 <header>
     <% include ../partials/header %>
 </header>
 
 <div class="container">
-    <div ng-app="myApp" ng-controller="Controller as ctrl">
-        <button ng-click="ctrl.func">execute func</button>
-        <div class="tag">Device Manager</div>
-        <img class="img-responsive center-block" src="images/img_devicemanager.png" alt="img1" />
+    <h3>Sensor manager</h3>
+    <div ng-controller="getSensorCtrl">
+        <div class="row">
+            <div class="col-sm-12">
+                <button ng-click="getData()">Get sensor data</button>
+            </div>
+        </div>
 
+        <table ng-table="usersTable" class="table table-striped">
+            <tr ng-repeat="sensor in mSensorList">
+                <td data-title="'Date'">{{ sensor.rtimestamp }}</td>
+                <td data-title="'Sensor ID'">{{ sensor.sensor_id }}</td>
+                <td data-title="'Type'">{{ sensor.sensor_type }}</td>
+                <td data-title="'Name'">{{ sensor.sensor_name }}</td>
+                <td data-title="'Value'">{{ sensor.sensor_value }}</td>
+            </tr>
+        </table>
     </div>
+
+
 </div>
 
 <footer class="container-fluid bg-4 text-center">

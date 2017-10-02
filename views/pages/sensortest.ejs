@@ -7,21 +7,38 @@
 
     <script src="angular/angular.js"></script>
     <script src="ng-table-bundle/ng-table.min.js"></script>
-    <script src="/angular-google-chart/ng-google-chart.js"></script>
+    <script src="angular-google-chart/ng-google-chart.js"></script>
+    <script src="angularjs-dropdown-multiselect/src/angularjs-dropdown-multiselect.js"></script>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 </head>
 
 <script type="text/javascript">
-  var angularApp = angular.module('myApp', ["ngTable"]);
+  var angularApp = angular.module('myApp', ['ngTable', 'angularjs-dropdown-multiselect']);
   angularApp.controller('getSensorCtrl', function ($scope, NgTableParams, $http) {
-    $scope.mDefaultSensor = {sensor_id: "11 33 55 77", sensor_type: "temp"};
-    $scope.mSensorList = [];
-    $scope.defaultSensor = function () {
-      $scope.tempSensor = angular.copy($scope.mDefaultSensor);
+    $scope.tempSensor = {sensor_id: "11 33 55 77", sensor_type: "temp"};
+
+    $scope.example13model = [];
+    $scope.example13data = [
+      {id: 1, label: "David"},
+      {id: 2, label: "Jhon"},
+      {id: 3, label: "Lisa"},
+      {id: 4, label: "Nicole"},
+      {id: 5, label: "Danny"}];
+
+    $scope.example13settings = {
+      smartButtonMaxItems: 3,
+      smartButtonTextConverter: function(itemText, originalItem) {
+        if (itemText === 'Jhon') {
+          return 'Jhonny!';
+        }
+        return itemText;
+      }
     };
-    $scope.defaultSensor();
+
+    $scope.mSensorList = [];
+
 
     $scope.getData = function () {
       console.log("getData CLICKED!");
@@ -83,20 +100,19 @@
         <div class="container" class="col-sm-12">
             <div class="jumbotron">
                 <h3>latest sensor data</h3>
-
                 <div ng-controller="getSensorCtrl">
                     <div class="row">
                         <div class="col-sm-4">
-                            <form novalidate>
-                                Sensor ID:<br>
-                                <input type="text" ng-model="tempSensor.sensor_id"><br>
-                                Sensor type:<br>
-                                <input type="text" ng-model="tempSensor.sensor_type">
-                                <br><br>
 
-                                <button ng-click="defaultSensor()">RESET</button>
-                                <button ng-click="getData()">Get sensor data</button>
-                            </form>
+                            <div ng-dropdown-multiselect=""
+                                 options="example13data"
+                                 selected-model="example13model"
+                                 extra-settings="example13settings">
+                            </div>
+                            <pre>Selected Model: {{example13model}} | json</pre>
+
+                            <button ng-click="getData()">Get sensor data</button>
+
                         </div>
 
 
@@ -115,8 +131,6 @@
                             <td data-title="'Value'">{{ sensor.sensor_value }}</td>
                         </tr>
                     </table>
-
-
                 </div>
             </div>
         </div>

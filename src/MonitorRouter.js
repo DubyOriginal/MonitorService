@@ -123,12 +123,11 @@ app.get('/getsensordata/:sensor_id', function (req, res) {
 });
 
 //http://localhost:2200/getlatestsensormeasurement/00%2000%2000%2000%2000%2011%2012%2013/temp
-app.get('/getlatestsensormeasurement/:sensor_id/:sensor_type', function (req, res) {
+app.get('/getlatestsensormeasurement/:sensor_id', function (req, res) {
   let sensor_id = req.params.sensor_id;
-  let sensor_type = req.params.sensor_type;
-  console.log("server: GET /getlatestsensormeasurement/" + sensor_id + "/" + sensor_type);
+  console.log("server: GET /getlatestsensormeasurement/" + sensor_id);
 
-  monitorApi.getLatestSensorValue(sensor_id, sensor_type, (result) => {
+  monitorApi.getLatestSensorValue(sensor_id, (result) => {
     if (res != null){
       if (result != null){
         res.set('Content-Type', 'application/json')

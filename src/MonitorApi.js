@@ -24,7 +24,7 @@ class MonitorApi {
     let basicUtils = new BasicUtils();
 
     const sql = "SELECT \
-      monitor_sensor.id, \
+      monitor_data.id, \
       FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
         device_name, \
         sensor_id, \
@@ -32,11 +32,11 @@ class MonitorApi {
         sensor_mid, \
         sensor_name, \
         sensor_value \
-      FROM monitor_db.monitor_sensor \
-      LEFT JOIN user_data ON monitor_sensor.user_id = user_data.id \
-      LEFT JOIN device_data ON monitor_sensor.device_id = device_data.id \
-      LEFT JOIN sensor_data ON monitor_sensor.sensor_id = sensor_data.id \
-      ORDER BY monitor_sensor.timestamp DESC \
+      FROM monitor_db.monitor_data \
+      LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
+      LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
+      LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
+      ORDER BY monitor_data.timestamp DESC \
       LIMIT 20;";
     dbHelper.query(sql, [], function(result, error) {
       if (!error && result) {
@@ -60,7 +60,7 @@ class MonitorApi {
     let basicUtils = new BasicUtils();
 
     const sql = "SELECT \
-      monitor_sensor.id, \
+      monitor_data.id, \
       FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
         timestamp, \
         user_id, \
@@ -72,12 +72,12 @@ class MonitorApi {
         sensor_mid, \
         sensor_name, \
         sensor_value \
-      FROM monitor_db.monitor_sensor \
-      LEFT JOIN user_data ON monitor_sensor.user_id = user_data.id \
-      LEFT JOIN device_data ON monitor_sensor.device_id = device_data.id \
-      LEFT JOIN sensor_data ON monitor_sensor.sensor_id = sensor_data.id \
+      FROM monitor_db.monitor_data \
+      LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
+      LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
+      LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
       WHERE sensor_id like ? \
-      ORDER BY monitor_sensor.timestamp DESC \
+      ORDER BY monitor_data.timestamp DESC \
       LIMIT 20;";
     dbHelper.query(sql, [sensor_id], function(result, error) {
       if (!error && result) {
@@ -90,13 +90,13 @@ class MonitorApi {
     });
   };
 
-  getLatestSensorValue(sensor_id, sensor_type, callback){
+  getLatestSensorValue(sensor_id, callback){
     console.log("MonitorApi: getLatestSensorValue");
 
     let dbHelper = new DBHelper();
 
     const sql = "SELECT \
-      monitor_sensor.id, \
+      monitor_data.id, \
       FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
         timestamp, \
         user_id, \
@@ -108,14 +108,14 @@ class MonitorApi {
         sensor_mid, \
         sensor_name, \
         sensor_value \
-      FROM monitor_db.monitor_sensor \
-      LEFT JOIN user_data ON monitor_sensor.user_id = user_data.id \
-      LEFT JOIN device_data ON monitor_sensor.device_id = device_data.id \
-      LEFT JOIN sensor_data ON monitor_sensor.sensor_id = sensor_data.id \
+      FROM monitor_db.monitor_data \
+      LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
+      LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
+      LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
       WHERE \
-        monitor_sensor.timestamp = (SELECT MAX(timestamp) FROM monitor_sensor WHERE sensor_id like ? AND sensor_type like ?) \
-        AND sensor_id like ? AND sensor_type like ?;";
-    dbHelper.query(sql, [sensor_id, sensor_type, sensor_id, sensor_type], function(result, error) {
+        monitor_data.timestamp = (SELECT MAX(timestamp) FROM monitor_data WHERE sensor_id like ?) \
+        AND sensor_id like ?;";
+    dbHelper.query(sql, [sensor_id, sensor_id], function(result, error) {
       if (!error && result) {
         console.log("MonitorApi: getLatestSensorValue:");
         console.log("\t " + JSON.stringify(result));
@@ -135,7 +135,7 @@ class MonitorApi {
     let basicUtils = new BasicUtils();
 
     const sql = "SELECT \
-      monitor_sensor.id, \
+      monitor_data.id, \
       FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
         user_id, \
         user_name, \
@@ -146,12 +146,12 @@ class MonitorApi {
         sensor_mid, \
         sensor_name, \
         sensor_value \
-      FROM monitor_db.monitor_sensor \
-      LEFT JOIN user_data ON monitor_sensor.user_id = user_data.id \
-      LEFT JOIN device_data ON monitor_sensor.device_id = device_data.id \
-      LEFT JOIN sensor_data ON monitor_sensor.sensor_id = sensor_data.id \
+      FROM monitor_db.monitor_data \
+      LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
+      LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
+      LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
       WHERE user_id like ? \
-      ORDER BY monitor_sensor.timestamp DESC \
+      ORDER BY monitor_data.timestamp DESC \
       LIMIT 20;";
     dbHelper.query(sql, [user_id], function(result, error) {
       if (!error && result) {
@@ -184,13 +184,12 @@ class MonitorApi {
 
         var sensor_id = sensors[i].sensor_id;
         var sensor_value = sensors[i].sensor_value;
-        var sensor_type = sensors[i].sensor_type;
         var timestamp = moment().unix();
-        console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_type: " + sensor_type + ", sensor_value: " + sensor_value);
+        console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
 
-        //var sql = "INSERT INTO monitor_sensor (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null,'" + timestamp + "', '" + user_id + "', '" + device_id + "', '" + sensor_id + "', '" + sensor_type + "', '" + sensor_value + "');";
-        var sql = "INSERT INTO monitor_sensor (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null, ?, ?, ?, ?, ?, ?);";
-        dbHelper.query(sql, [timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value], function(result, error) {
+        //var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null,'" + timestamp + "', '" + user_id + "', '" + device_id + "', '" + sensor_id + "', '" + sensor_type + "', '" + sensor_value + "');";
+        var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_value) VALUES (null, ?, ?, ?, ?, ?);";
+        dbHelper.query(sql, [timestamp, user_id, device_id, sensor_id, sensor_value], function(result, error) {
           writeSensorValue(i + 1);
         });
       }
