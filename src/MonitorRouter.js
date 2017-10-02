@@ -141,6 +141,24 @@ app.get('/getlatestsensormeasurement/:sensor_id', function (req, res) {
   });
 });
 
+//http://localhost:2200/getallsensorparams
+app.get('/getallsensorparams', function (req, res) {
+  console.log("server: GET /getallsensorparams");
+
+  monitorApi.getAllSensorParams((result) => {
+    if (res != null){
+      if (result != null){
+        res.set('Content-Type', 'application/json')
+        res.send(result);
+      }else{
+        res.send(null);
+      }
+    }else{
+      console.log("/getallsensorparams res in NULL");
+    }
+  });
+});
+
 //http://localhost:2200/getuseridsensordata/DY001
 app.get('/getuseridsensordata/:user_id', function (req, res) {
   let user_id = req.params.user_id;

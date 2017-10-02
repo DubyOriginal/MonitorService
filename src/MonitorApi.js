@@ -90,6 +90,25 @@ class MonitorApi {
     });
   };
 
+  getAllSensorParams(callback){
+    console.log("MonitorApi: getAllSensorParams");
+
+    let dbHelper = new DBHelper();
+
+    const sql = "SELECT * FROM monitor_db.sensor_params;";
+    dbHelper.query(sql, [], function(result, error) {
+      if (!error && result) {
+        console.log("MonitorApi: getAllSensorParams:");
+        console.log("\t " + JSON.stringify(result));
+        if (callback) {
+          callback(result);
+        }
+      }else{
+        console.log("MonitorApi: getAllSensorParams - SOME ERROR!");
+      }
+    });
+  };
+
   getLatestSensorValue(sensor_id, callback){
     console.log("MonitorApi: getLatestSensorValue");
 

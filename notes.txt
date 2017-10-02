@@ -114,7 +114,56 @@
     </div>
 
 //----------------------------------------------------------------------------------------------------------------------
+   var angularApp = angular.module('myApp', ['ngTable']);
+   angularApp.controller('getSensorCtrl', function ($scope, NgTableParams, $http) {
 
+     $scope.mSensorList = [];
+     $scope.enabledEdit = [];
+
+     $scope.getData = function () {
+       console.log("getData CLICKED!");
+
+       $http({
+         method: 'GET',
+         url: 'getallsensorparams'
+       }).then(function (response) {
+         $scope.mSensorsData = response.data;
+       }, function (error) {
+         console.log("getallsensorparams ERROR: " + error);
+       });
+
+     };
+     $scope.getData();  //initial data load
+
+     $scope.editSensor = function(id){
+       console.log("edit sensor ID: "+ id);
+       $scope.enabledEdit[id] = true;
+     }
+
+     $scope.deleteSensor = function(id) {
+       $scope.mSensorsDataCopy.splice(id,1);
+     }
+
+     $scope.sensorsTable = new NgTableParams({}, {dataset: $scope.mSensorsData});
+
+   });
+
+        <table ng-table="sensorsTable" class="table table-striped">
+            <tr ng-repeat="sensor in mSensorsData">
+                <td><input name="sensorID{{sensor.id}}" ng-model="sensorID"  ng-disabled="!enabledEdit[{{sensor.id}}]"/> </td>
+                <td data-title="'ID'">{{ sensor.id }}</td>
+                <td data-title="'Type'">{{ sensor.sensor_type }}</td>
+                <td data-title="'MID'">{{ sensor.sensor_mid }}</td>
+                <td data-title="'Address'">{{ sensor.sensor_address }}</td>
+                <td data-title="'Name'">{{ sensor.sensor_name }}</td>
+                <td >
+                    <div class="buttons">
+                        <button class="btn btn-primary" ng-click="editSensor(sensor.id)">Edit</button>
+                        <button class="btn btn-danger" ng-click="deleteSensor(sensor.id)">Delete</button>
+                    </div>
+                </td>
+            </tr>
+        </table>
 
 //----------------------------------------------------------------------------------------------------------------------
 
