@@ -159,6 +159,31 @@ app.get('/getallsensorparams', function (req, res) {
   });
 });
 
+//http://localhost:2200/updatesensorparams  {sensor_params}
+app.post('/updatesensorparams', function (req, res) {
+  console.log("server: POST /updatesensorparams");
+
+  let sensor = {
+    id : req.body.id,
+    sensor_type : req.body.sensor_type,
+    sensor_mid : req.body.sensor_mid,
+    sensor_address : req.body.sensor_address,
+    sensor_name : req.body.sensor_name
+  };
+  monitorApi.updateSensorParams(sensor, (result) => {
+    if (res != null){
+      if (result != null){
+        res.set('Content-Type', 'application/json')
+        res.send(result);
+      }else{
+        res.send(null);
+      }
+    }else{
+      console.log("/updatesensorparams res in NULL");
+    }
+  });
+});
+
 //http://localhost:2200/getuseridsensordata/DY001
 app.get('/getuseridsensordata/:user_id', function (req, res) {
   let user_id = req.params.user_id;

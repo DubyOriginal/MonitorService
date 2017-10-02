@@ -109,6 +109,27 @@ class MonitorApi {
     });
   };
 
+
+  updateSensorParams(sensor, callback){
+    console.log("MonitorApi: updateSensorParams");
+
+    let dbHelper = new DBHelper();
+    //UPDATE `monitor_db`.`sensor_params` SET `sensor_name`='test soba 22' WHERE `id`='102';
+    const sql = "UPDATE monitor_db.sensor_params SET id = ?, sensor_type = ?, sensor_mid = ?, sensor_address = ?, sensor_name = ? WHERE id = ?;";
+    console.log("updateSensorParams  SQL: " + sql);
+    dbHelper.query(sql, [sensor.id, sensor.sensor_type, sensor.sensor_mid, sensor.sensor_address, sensor.sensor_name, sensor.id], function(result, error) {
+      if (!error && result) {
+        console.log("MonitorApi: updateSensorParams:");
+        console.log("\t " + JSON.stringify(result));
+        if (callback) {
+          callback(result);
+        }
+      }else{
+        console.log("MonitorApi: updateSensorParams - SOME ERROR!");
+      }
+    });
+  };
+
   getLatestSensorValue(sensor_id, callback){
     console.log("MonitorApi: getLatestSensorValue");
 

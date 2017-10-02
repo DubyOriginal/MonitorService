@@ -20,7 +20,6 @@
 
       $scope.getData = function () {
         console.log("getData!");
-
         $http({
           method: 'GET',
           url: 'getallsensorparams'
@@ -31,6 +30,19 @@
         });
       };
       $scope.getData();  //initial data load
+
+    $scope.updateSensorParams = function (newSensor) {
+      console.log("getData!");
+      $http({
+        method: 'POST',
+        url: 'updatesensorparams',
+        data: JSON.stringify(newSensor)
+      }).then(function (response) {
+        $scope.model.sensorList = response.data;
+      }, function (error) {
+        console.log("getallsensorparams ERROR: " + error);
+      });
+    };
 
       $scope.toggleRawData = function () {
         $("#pre_toggle_data").toggle();
@@ -45,8 +57,11 @@
         $scope.model.sensorSelected = angular.copy(sensor);
       };
       $scope.sensorSave = function (idx) {
-        console.log("Saving sensor");
-        $scope.model.sensorList[idx] = angular.copy($scope.model.sensorSelected);
+        console.log("Saving sensor - " + idx);
+        let newSensor = angular.copy($scope.model.sensorSelected);
+        $scope.model.sensorList[idx] = newSensor;
+
+        $scope.updateSensorParams(newSensor);
         $scope.reset();
       };
       $scope.reset = function () {
@@ -77,9 +92,9 @@
                 <th class="col-md-1">Sensor ID</th>
                 <th class="col-md-2">Sensor TYPE</th>
                 <th class="col-md-2">Sensor MID</th>
-                <th class="col-md-4">Sensor ADDRESS</th>
+                <th class="col-md-3">Sensor ADDRESS</th>
                 <th class="col-md-2">Sensor NAME</th>
-                <th class="col-md-1">Action</th>
+                <th class="col-md-2">Action</th>
             </tr>
             </thead>
             <tbody>
