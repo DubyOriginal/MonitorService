@@ -38,16 +38,10 @@
         url: 'updatesensorparams',
         data: JSON.stringify(newSensor)
       }).then(function (response) {
-        $scope.model.sensorList = response.data;
       }, function (error) {
         console.log("getallsensorparams ERROR: " + error);
       });
     };
-
-      $scope.toggleRawData = function () {
-        $("#pre_toggle_data").toggle();
-      }
-
 
       $scope.getstudList = function (sensor) {
         if (sensor.id === $scope.model.sensorSelected.id) return 'edit';
@@ -124,13 +118,6 @@
                 <button ng-click="reset()" class="btn btn-danger">Cancel</button>
             </td>
         </script>
-
-
-        <div class="col-sm-12">
-            <button ng-click="toggleRawData()">Toggle  raw data</button>
-        </div>
-        <pre id="pre_toggle_data">{{model.sensorList|json}}</pre>
-
     </div>
 </div>
 

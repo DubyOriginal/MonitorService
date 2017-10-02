@@ -166,7 +166,14 @@
         </table>
 
 //----------------------------------------------------------------------------------------------------------------------
+        <div class="col-sm-12">
+            <button ng-click="toggleRawData()">Toggle  raw data</button>
+        </div>
+        <pre id="pre_toggle_data">{{model.sensorList|json}}</pre>
 
+              $scope.toggleRawData = function () {
+                $("#pre_toggle_data").toggle();
+              }
 
 //----------------------------------------------------------------------------------------------------------------------
 
