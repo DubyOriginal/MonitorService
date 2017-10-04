@@ -1,0 +1,46 @@
+
+body {
+    padding-top: 50px;
+    font: 14px Montserrat, sans-serif;
+    line-height: 1.8;
+    color: #606767;
+}
+
+p {
+    font-size: 16px;
+}
+
+.margin {
+    margin-bottom: 45px;
+}
+
+.bg-1 {
+    background-color: #1abc9c; /* Green */
+    color: #ffffff;
+}
+
+.bg-2 {
+    background-color: #474e5d; /* Dark Blue */
+    color: #ffffff;
+}
+
+.bg-3 {
+    background-color: #ffffff; /* White */
+    color: #555555;
+}
+
+.bg-4 {
+    background-color: #2f2f2f; /* Black Gray */
+    color: #fff;
+}
+
+.center {
+    margin: 0 auto;
+    width: 98%;
+}
+
+.container-fluid {
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+

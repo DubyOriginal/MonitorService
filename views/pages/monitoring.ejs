@@ -13,16 +13,10 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 
-<body class="container">
-
-<header>
-    <% include ../partials/header %>
-</header>
-
 <style>
     #chart_div {
-        display:block;
-        height:500px;
+        display: block;
+        height: 500px;
         margin-bottom: 30px;
     }
 </style>
@@ -38,7 +32,7 @@
     data.addColumn('number', 'test soba_2');
 
     data.addRows([
-      [4, 18, 10],  [5, 9, 5], [6, 11, 3], [7, 27, 19], [8, 33, 25], [9, 40, 32], [10, 32, 24],
+      [4, 18, 10], [5, 9, 5], [6, 11, 3], [7, 27, 19], [8, 33, 25], [9, 40, 32], [10, 32, 24],
     ]);
 
     var options = {
@@ -80,7 +74,18 @@
   }
 </script>
 
-<div id="chart_div"></div>
+<body class="container">
+<header>
+    <% include ../partials/header %>
+</header>
+
+<div class="row">
+    <div class="center">
+        <div class="col-md-12">
+            <div id="chart_div"></div>
+        </div>
+    </div>
+</div>
 
 <footer class="container-fluid bg-4 text-center">
     <% include ../partials/footer %>

@@ -7,46 +7,42 @@
     <% include ../partials/head %>
 </head>
 
-
+<body class="container">
 <header>
     <% include ../partials/header %>
 
 </header>
 
-<body class="container">
-<main>
-    <div class="row">
-        <div class="col-sm-12">
 
+<div class="row">
+    <div class="center">
+        <div class="col-md-12">
+            <h3>latest sensor data</h3>
 
-                <h3>latest sensor data</h3>
+            <table class="col-sm-12" class="table table-striped">
+                <tr>
+                    <th>rtimestamp</th>
+                    <th>sensor_id</th>
+                    <th>sensor_type</th>
+                    <th>sensor_mid</th>
+                    <th>sensor_name</th>
+                    <th>sensor_value</th>
+                </tr>
 
-                <table class="col-sm-12" class="table table-striped">
-                    <tr>
-                        <th>rtimestamp</th>
-                        <th>sensor_id</th>
-                        <th>sensor_type</th>
-                        <th>sensor_mid</th>
-                        <th>sensor_name</th>
-                        <th>sensor_value</th>
-                    </tr>
-
-                    <% allSensorData.forEach(function(sensor) { %>
-                    <tr>
-                        <td><%= sensor.rtimestamp %></td>
-                        <td><%= sensor.sensor_id %></td>
-                        <td><%= sensor.sensor_type %></td>
-                        <td><%= sensor.sensor_mid %></td>
-                        <td><%= sensor.sensor_name %></td>
-                        <td><%= sensor.sensor_value %></td>
-                    </tr>
-                    <% }); %>
-                </table>
-
-
+                <% allSensorData.forEach(function(sensor) { %>
+                <tr>
+                    <td><%= sensor.rtimestamp %></td>
+                    <td><%= sensor.sensor_id %></td>
+                    <td><%= sensor.sensor_type %></td>
+                    <td><%= sensor.sensor_mid %></td>
+                    <td><%= sensor.sensor_name %></td>
+                    <td><%= sensor.sensor_value %></td>
+                </tr>
+                <% }); %>
+            </table>
         </div>
     </div>
-</main>
+</div>
 
 <footer class="container-fluid bg-4 text-center">
     <% include ../partials/footer %>

@@ -13,23 +13,23 @@
 <script type="text/javascript">
   var liveApp = angular.module("liveApp", []);
   liveApp.controller("livectrl", function livectrl($scope, $http) {
-      $scope.model = {
-        sensorList: [],
-        sensorSelected: {}
-      };
+    $scope.model = {
+      sensorList: [],
+      sensorSelected: {}
+    };
 
-      $scope.getData = function () {
-        console.log("getData!");
-        $http({
-          method: 'GET',
-          url: 'getallsensorparams'
-        }).then(function (response) {
-          $scope.model.sensorList = response.data;
-        }, function (error) {
-          console.log("getallsensorparams ERROR: " + error);
-        });
-      };
-      $scope.getData();  //initial data load
+    $scope.getData = function () {
+      console.log("getData!");
+      $http({
+        method: 'GET',
+        url: 'getallsensorparams'
+      }).then(function (response) {
+        $scope.model.sensorList = response.data;
+      }, function (error) {
+        console.log("getallsensorparams ERROR: " + error);
+      });
+    };
+    $scope.getData();  //initial data load
 
     $scope.updateSensorParams = function (newSensor) {
       console.log("getData!");
@@ -43,76 +43,104 @@
       });
     };
 
-      $scope.getstudList = function (sensor) {
-        if (sensor.id === $scope.model.sensorSelected.id) return 'edit';
-        else return 'display';
-      };
-      $scope.sensorEdit = function (sensor) {
-        $scope.model.sensorSelected = angular.copy(sensor);
-      };
-      $scope.sensorSave = function (idx) {
-        console.log("Saving sensor - " + idx);
-        let newSensor = angular.copy($scope.model.sensorSelected);
-        $scope.model.sensorList[idx] = newSensor;
+    $scope.getstudList = function (sensor) {
+      if (sensor.id === $scope.model.sensorSelected.id) return 'edit';
+      else return 'display';
+    };
+    $scope.sensorEdit = function (sensor) {
+      $scope.model.sensorSelected = angular.copy(sensor);
+    };
+    $scope.sensorSave = function (idx) {
+      console.log("Saving sensor - " + idx);
+      let newSensor = angular.copy($scope.model.sensorSelected);
+      $scope.model.sensorList[idx] = newSensor;
 
-        $scope.updateSensorParams(newSensor);
-        $scope.reset();
-      };
-      $scope.reset = function () {
-        $scope.model.sensorSelected = {};
-      };
-    });
+      $scope.updateSensorParams(newSensor);
+      $scope.reset();
+    };
+    $scope.reset = function () {
+      $scope.model.sensorSelected = {};
+    };
+  });
 
 </script>
 
 <body class="container">
-
 <header>
     <% include ../partials/header %>
 </header>
 
-<div class="container">
-    <h3>Sensor manager</h3>
-    <div ng-app="liveApp" ng-controller="livectrl">
-        <table class="table">
-            <thead>
-            <tr>
-                <th class="col-md-1">Sensor ID</th>
-                <th class="col-md-2">Sensor TYPE</th>
-                <th class="col-md-2">Sensor MID</th>
-                <th class="col-md-3">Sensor ADDRESS</th>
-                <th class="col-md-2">Sensor NAME</th>
-                <th class="col-md-2">Action</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr ng-repeat="sensor in model.sensorList" ng-include="getstudList(sensor)">
-            </tr>
-            </tbody>
-        </table>
+<div ng-app="liveApp" ng-controller="livectrl">
 
-        <script type="text/ng-template" id="display">
-            <td>{{sensor.id}}</td>
-            <td>{{sensor.sensor_type}}</td>
-            <td>{{sensor.sensor_mid}}</td>
-            <td>{{sensor.sensor_address}}</td>
-            <td>{{sensor.sensor_name}}</td>
-            <td>
-                <button ng-click="sensorEdit(sensor)" class="btn btn-primary">Edit</button>
-            </td>
-        </script>
-        <script type="text/ng-template" id="edit">
-            <td><input type="text" class="form-control" ng-model="model.sensorSelected.id"/></td>
-            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_type"/></td>
-            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_mid"/></td>
-            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_address"/></td>
-            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_name"/></td>
-            <td>
-                <button ng-click="sensorSave($index)" class="btn btn-success">Save</button>
-                <button ng-click="reset()" class="btn btn-danger">Cancel</button>
-            </td>
-        </script>
+    <div class="row">
+        <div class="center">
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Sensor data</div>
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th class="col-md-1">Sensor ID</th>
+                                <th class="col-md-2">Sensor TYPE</th>
+                                <th class="col-md-2">Sensor MID</th>
+                                <th class="col-md-3">Sensor ADDRESS</th>
+                                <th class="col-md-2">Sensor NAME</th>
+                                <th class="col-md-2">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="sensor in model.sensorList" ng-include="getstudList(sensor)">
+                            </tr>
+                            </tbody>
+                        </table>
+
+                        <script type="text/ng-template" id="display">
+                            <td>{{sensor.id}}</td>
+                            <td>{{sensor.sensor_type}}</td>
+                            <td>{{sensor.sensor_mid}}</td>
+                            <td>{{sensor.sensor_address}}</td>
+                            <td>{{sensor.sensor_name}}</td>
+                            <td>
+                                <button ng-click="sensorEdit(sensor)" class="btn btn-primary">Edit</button>
+                            </td>
+                        </script>
+                        <script type="text/ng-template" id="edit">
+                            <td><input type="text" class="form-control" ng-model="model.sensorSelected.id"/></td>
+                            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_type"/>
+                            </td>
+                            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_mid"/>
+                            </td>
+                            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_address"/>
+                            </td>
+                            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_name"/>
+                            </td>
+                            <td>
+                                <button ng-click="sensorSave($index)" class="btn btn-success">Save</button>
+                                <button ng-click="reset()" class="btn btn-danger">Cancel</button>
+                            </td>
+                        </script>
+                    </div>
+                </div>
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading">User data</div>
+                    <div class="panel-body">
+                        some text
+                    </div>
+                </div>
+
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Device data</div>
+                    <div class="panel-body">
+                        some text
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+
 </div>
 
 <footer class="container-fluid bg-4 text-center">
