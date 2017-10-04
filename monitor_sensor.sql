@@ -104,3 +104,7 @@ VALUES ('123456', 'uređaj 1');
 
 INSERT INTO sensor_params (id, sensor_type, sensor_mid, sensor_name) 
 VALUES ('3563547', 'temp', 'DS1820', 'dnevna soba');
+
+
+
+UPDATE monitor_db.sensor_params SET 'id' = '101', 'sensor_type' = 'humi', 'sensor_mid' = 'DHT11', 'sensor_address' = '00 00 00 00 00 11 12 13', 'sensor_name' = 'test soba199' WHERE 'id' = '101';

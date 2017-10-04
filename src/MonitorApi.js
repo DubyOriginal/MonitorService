@@ -115,9 +115,9 @@ class MonitorApi {
 
     let dbHelper = new DBHelper();
     //UPDATE `monitor_db`.`sensor_params` SET `sensor_name`='test soba 22' WHERE `id`='102';
-    const sql = "UPDATE monitor_db.sensor_params SET id = ?, sensor_type = ?, sensor_mid = ?, sensor_address = ?, sensor_name = ? WHERE id = ?;";
+    const sql = "UPDATE monitor_db.sensor_params SET id = ?, sensor_type = ?, sensor_mid = ?, sensor_address = ?, sensor_name = ?, alarm_min = ?, alarm_max = ? WHERE id = ?;";
     console.log("updateSensorParams  SQL: " + sql);
-    dbHelper.query(sql, [sensor.id, sensor.sensor_type, sensor.sensor_mid, sensor.sensor_address, sensor.sensor_name, sensor.id], function(result, error) {
+    dbHelper.query(sql, [sensor.id, sensor.sensor_type, sensor.sensor_mid, sensor.sensor_address, sensor.sensor_name, sensor.alarm_min, sensor.alarm_max, sensor.id], function(result, error) {
       if (!error && result) {
         console.log("MonitorApi: updateSensorParams:");
         console.log("\t " + JSON.stringify(result));

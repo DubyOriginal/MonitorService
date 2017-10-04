@@ -78,15 +78,17 @@
                 <div class="panel panel-primary">
                     <div class="panel-heading">Sensor data</div>
                     <div class="panel-body">
-                        <table class="table">
+                        <table class="table" style="font-size: 13px">
                             <thead>
                             <tr>
-                                <th class="col-md-1">Sensor ID</th>
-                                <th class="col-md-2">Sensor TYPE</th>
-                                <th class="col-md-2">Sensor MID</th>
-                                <th class="col-md-3">Sensor ADDRESS</th>
-                                <th class="col-md-2">Sensor NAME</th>
-                                <th class="col-md-2">Action</th>
+                                <th class="col-sm-1">ID</th>
+                                <th class="col-sm-1">TYPE</th>
+                                <th class="col-sm-1">MID</th>
+                                <th class="col-sm-2">ADDRESS</th>
+                                <th class="col-sm-3">NAME</th>
+                                <th class="col-sm-1">MIN</th>
+                                <th class="col-sm-1">MAX</th>
+                                <th class="col-sm-2">ACTION</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -101,19 +103,33 @@
                             <td>{{sensor.sensor_mid}}</td>
                             <td>{{sensor.sensor_address}}</td>
                             <td>{{sensor.sensor_name}}</td>
+                            <td>{{sensor.alarm_min}}</td>
+                            <td>{{sensor.alarm_max}}</td>
                             <td>
                                 <button ng-click="sensorEdit(sensor)" class="btn btn-primary">Edit</button>
                             </td>
                         </script>
                         <script type="text/ng-template" id="edit">
-                            <td><input type="text" class="form-control" ng-model="model.sensorSelected.id"/></td>
-                            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_type"/>
+                            <td>
+                                <input type="text" class="form-control" ng-model="model.sensorSelected.id"/>
                             </td>
-                            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_mid"/>
+                            <td>
+                                <input type="text" class="form-control" ng-model="model.sensorSelected.sensor_type"/>
                             </td>
-                            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_address"/>
+                            <td>
+                                <input type="text" class="form-control" ng-model="model.sensorSelected.sensor_mid"/>
                             </td>
-                            <td><input type="text" class="form-control" ng-model="model.sensorSelected.sensor_name"/>
+                            <td>
+                                <input type="text" class="form-control" ng-model="model.sensorSelected.sensor_address"/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" ng-model="model.sensorSelected.sensor_name"/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" ng-model="model.sensorSelected.alarm_min"/>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control" ng-model="model.sensorSelected.alarm_max"/>
                             </td>
                             <td>
                                 <button ng-click="sensorSave($index)" class="btn btn-success">Save</button>

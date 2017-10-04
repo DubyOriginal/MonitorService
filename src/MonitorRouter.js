@@ -168,7 +168,9 @@ app.post('/updatesensorparams', function (req, res) {
     sensor_type : req.body.sensor_type,
     sensor_mid : req.body.sensor_mid,
     sensor_address : req.body.sensor_address,
-    sensor_name : req.body.sensor_name
+    alarm_min : req.body.alarm_min,
+    alarm_max : req.body.alarm_max,
+
   };
   monitorApi.updateSensorParams(sensor, (result) => {
     if (res != null){
