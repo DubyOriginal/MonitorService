@@ -19,6 +19,7 @@
 
     //-----------------------------------------------
     $scope.mSensorList = [];
+    $scope.selSensorData = {};
 
     $scope.getSensorList = function () {
       console.log("getSensorList!");
@@ -39,20 +40,24 @@
       console.log("getLatestMeasurementForSensorID");
       $http({
         method: 'GET',
-        url: 'getlatestsensormeasurement/' + $scope.selectedSensor.sensor_id
+        url: 'getlatestsensormeasurement/' + $scope.selSensorParams.id
       }).then(function (response) {
-        $scope.selectedSensor = response.data;
+        console.log("getLatestMeasurementForSensorID - DONE");
+        $scope.selSensorData = response.data[0];
+        console.log("selSensorData: " + JSON.stringify($scope.selSensorData));
+        drawChart();
       }, function (error) {
         console.log("getlatestsensormeasurement ERROR: " + error);
       });
     };
 
-    $(function() {
-      $('.selectpicker').on('change', function(){
-        var selected = $(this).find("option:selected.sensor_name");
-        alert(selected);
-      });
-    });
+
+    $scope.updateSelectBox = function () {
+      console.log("updateSelectBox");
+      console.log("selSensorParams -> " + $scope.selSensorParams.sensor_name);
+      $scope.getLatestMeasurementForSensorID();
+    }
+
 
     <!-- ........ GAUGE VIEW........ -->
     //-----------------------------------------------------------------------
@@ -62,8 +67,7 @@
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
         ['Label', 'Value'],
-        ['sensor 1', 80],
-        ['sensor 2', 55],
+        ['sensor 1', 80]
       ]);
 
       var options = {
@@ -75,11 +79,18 @@
       };
 
       var chart = new google.visualization.Gauge(document.getElementById('gauge_div'));
-      let sen1val = $scope.selectedSensor.sensor_value;
+      var sen1val = 0;
+      if ($scope.selSensorData) {
+        sen1val = $scope.selSensorData.sensor_value;
+      } else {
+        sen1val = 0;
+      }
+
       data.setValue(0, 1, sen1val);
       chart.draw(data, options);
-
     }
+
+
   });
 </script>
 
@@ -95,14 +106,24 @@
                 <div class="panel-heading">LATEST SENSOR MEASUREMENTS</div>
                 <div class="panel-body">
                     <div>
-                        <div class="row">
+                        <div class="row"  style="margin-bottom: 20px">
                             <div class="col-sm-4">
-                                <select class="selectpicker"
-                                        ng-model="selectedSensor"
-                                        ng-options="sensor.sensor_name for sensor in mSensorList">
-                                </select>
+                                <div style="margin-bottom: 20px">
+                                    <h6>Select sensor to tracking</h6>
+                                    <select class="selectpicker"
+                                            ng-change="updateSelectBox()"
+                                            ng-model="selSensorParams"
+                                            ng-options="sensor.id for sensor in mSensorList">
+                                    </select>
+                                </div>
+                                <div>
+                                    <button
+                                            ng-click="getLatestMeasurementForSensorID()"
+                                            type="button"
+                                            class="btn btn-default">Refresh
+                                    </button>
+                                </div>
                             </div>
-
 
                             <div class="col-sm-8">
                                 <h4>Analog temp.</h4>
@@ -110,18 +131,20 @@
                             </div>
                         </div>
 
-                        <table>
+                        <table class="table table-striped">
                             <tr>
                                 <th>ID</th>
                                 <th>TYPE</th>
                                 <th>MID</th>
                                 <th>NAME</th>
+                                <th>VALUE</th>
                             </tr>
                             <tr>
-                                <td>{{selectedSensor.id}}</td>
-                                <td>{{selectedSensor.sensor_type}}</td>
-                                <td>{{selectedSensor.sensor_mid}}</td>
-                                <td>{{selectedSensor.sensor_name}}</td>
+                                <td>{{selSensorData.sensor_id}}</td>
+                                <td>{{selSensorData.sensor_type}}</td>
+                                <td>{{selSensorData.sensor_mid}}</td>
+                                <td>{{selSensorData.sensor_name}}</td>
+                                <td>{{selSensorData.sensor_value}}</td>
                             </tr>
                         </table>
                     </div>

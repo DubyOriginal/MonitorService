@@ -1,9 +1,10 @@
 
 body {
-    padding-top: 50px;
+    padding-top: 5px;
     font: 14px Montserrat, sans-serif;
     line-height: 1.8;
     color: #606767;
+    background-color: #2b3232;
 }
 
 p {

@@ -7,6 +7,45 @@
     <% include ../partials/head %>
 </head>
 
+<style>
+    .scheme_container {
+        margin: 0px auto 50px auto;
+        width: 796px;
+        height: 581px;
+        background: url("images/img_basement_scheme.png") no-repeat;
+        background-size: contain;
+        position: relative;
+    }
+
+    .measure_point_box {
+        background-color: rgba(133, 221, 102, 0);
+        border: 1px;
+        font-family: "Times New Roman", Times, serif;
+        display: table;
+        position: absolute;
+    }
+
+    .box_a {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+    .box_b {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+    p.small {
+        line-height: 100%;
+        font-size: 12px;
+        color: #000000;
+        margin: auto auto;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
+</style>
+
 <body class="container">
 <header>
     <% include ../partials/header %>
@@ -15,8 +54,31 @@
 <div class="row">
     <div class="center">
         <div class="col-md-12">
-            <div class="tag">Featured</div>
-            <img class="img-responsive center-block" src="images/img_basement_scheme.png" alt="img1"/>
+            <div class="tag">Spoj sa mjernim točkama</div>
+
+            <div class="scheme_container">
+
+                <div class="measure_point_box" style="top: 0px; left: 0px">
+                    <div class="box_a">
+                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                    </div>
+                    <div class="box_b">
+                        <p class="small">ID: 102</p>
+                        <p class="small">77.5°C</p>
+                    </div>
+                </div>
+
+                <div class="measure_point_box" style="top: 502px; left: 290px">
+                    <div class="box_a">
+                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                    </div>
+                    <div class="box_b">
+                        <p class="small">ID: 102</p>
+                        <p class="small">77.5°C</p>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
