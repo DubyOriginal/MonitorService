@@ -7,63 +7,59 @@
     <% include ../partials/head %>
 
     <script src="angular/angular.js"></script>
-    <script src="ng-table-bundle/ng-table.min.js"></script>
     <script src="angular-google-chart/ng-google-chart.js"></script>
-    <script src="angularjs-dropdown-multiselect/src/angularjs-dropdown-multiselect.js"></script>
 
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
 </head>
 
 <script type="text/javascript">
-  var angularApp = angular.module('myApp', ['ngTable', 'angularjs-dropdown-multiselect']);
-  angularApp.controller('getSensorCtrl', function ($scope, NgTableParams, $http) {
-    $scope.tempSensor = {sensor_id: "11 33 55 77", sensor_type: "temp"};
+  var angularApp = angular.module('myApp', []);
+  angularApp.controller('getSensorCtrl', function ($scope, $http) {
 
-    $scope.example13model = [];
-    $scope.example13data = [
-      {id: 1, label: "David"},
-      {id: 2, label: "Jhon"},
-      {id: 3, label: "Lisa"},
-      {id: 4, label: "Nicole"},
-      {id: 5, label: "Danny"}];
-
-    $scope.example13settings = {
-      smartButtonMaxItems: 3,
-      smartButtonTextConverter: function(itemText, originalItem) {
-        if (itemText === 'Jhon') {
-          return 'Jhonny!';
-        }
-        return itemText;
-      }
-    };
-
+    //-----------------------------------------------
     $scope.mSensorList = [];
 
-
-    $scope.getData = function () {
-      console.log("getData CLICKED!");
-
+    $scope.getSensorList = function () {
+      console.log("getSensorList!");
       $http({
         method: 'GET',
-        url: 'getlatestsensormeasurement/' + $scope.tempSensor.sensor_id + "/" + $scope.tempSensor.sensor_type
+        url: 'getallsensorparams'
       }).then(function (response) {
         $scope.mSensorList = response.data;
+        console.log(">>>>>  mSensorList: " + JSON.stringify($scope.mSensorList));
+      }, function (error) {
+        console.log("getSensorList ERROR: " + error);
+      });
+    };
+    $scope.getSensorList();  //initial data load
+
+
+    $scope.getLatestMeasurementForSensorID = function () {
+      console.log("getLatestMeasurementForSensorID");
+      $http({
+        method: 'GET',
+        url: 'getlatestsensormeasurement/' + $scope.selectedSensor.sensor_id
+      }).then(function (response) {
+        $scope.selectedSensor = response.data;
       }, function (error) {
         console.log("getlatestsensormeasurement ERROR: " + error);
       });
-
     };
-    $scope.getData();  //initial data load
 
-    $scope.usersTable = new NgTableParams({}, {dataset: $scope.mSensorList});
+    $(function() {
+      $('.selectpicker').on('change', function(){
+        var selected = $(this).find("option:selected.sensor_name");
+        alert(selected);
+      });
+    });
 
     <!-- ........ GAUGE VIEW........ -->
+    //-----------------------------------------------------------------------
     google.charts.load('current', {'packages': ['gauge']});
     google.charts.setOnLoadCallback(drawChart);
 
     function drawChart() {
-
       var data = google.visualization.arrayToDataTable([
         ['Label', 'Value'],
         ['sensor 1', 80],
@@ -79,7 +75,7 @@
       };
 
       var chart = new google.visualization.Gauge(document.getElementById('gauge_div'));
-      let sen1val = $scope.mSensorList[0].sensor_value;
+      let sen1val = $scope.selectedSensor.sensor_value;
       data.setValue(0, 1, sen1val);
       chart.draw(data, options);
 
@@ -87,7 +83,7 @@
   });
 </script>
 
-<body class="container" ng-app="myApp">
+<body class="container" ng-app="myApp" ng-controller="getSensorCtrl">
 <header>
     <% include ../partials/header %>
 </header>
@@ -95,39 +91,40 @@
 <main>
     <div class="row">
         <div class="container" class="col-sm-12">
-            <div class="jumbotron">
-                <h3>latest sensor data</h3>
-                <div ng-controller="getSensorCtrl">
-                    <div class="row">
-                        <div class="col-sm-4">
-
-                            <div ng-dropdown-multiselect=""
-                                 options="example13data"
-                                 selected-model="example13model"
-                                 extra-settings="example13settings">
+            <div class="panel panel-info class">
+                <div class="panel-heading">LATEST SENSOR MEASUREMENTS</div>
+                <div class="panel-body">
+                    <div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <select class="selectpicker"
+                                        ng-model="selectedSensor"
+                                        ng-options="sensor.sensor_name for sensor in mSensorList">
+                                </select>
                             </div>
-                            <pre>Selected Model: {{example13model}} | json</pre>
 
-                            <button ng-click="getData()">Get sensor data</button>
 
+                            <div class="col-sm-8">
+                                <h4>Analog temp.</h4>
+                                <div id="gauge_div" style="width: 400px; height: 120px;"></div>
+                            </div>
                         </div>
 
-
-                        <div class="col-sm-8">
-                            <h4>Analog temp.</h4>
-                            <div id="gauge_div" style="width: 400px; height: 120px;"></div>
-                        </div>
+                        <table>
+                            <tr>
+                                <th>ID</th>
+                                <th>TYPE</th>
+                                <th>MID</th>
+                                <th>NAME</th>
+                            </tr>
+                            <tr>
+                                <td>{{selectedSensor.id}}</td>
+                                <td>{{selectedSensor.sensor_type}}</td>
+                                <td>{{selectedSensor.sensor_mid}}</td>
+                                <td>{{selectedSensor.sensor_name}}</td>
+                            </tr>
+                        </table>
                     </div>
-
-                    <table ng-table="usersTable" class="table table-striped">
-                        <tr ng-repeat="sensor in mSensorList">
-                            <td data-title="'Date'">{{ sensor.rtimestamp }}</td>
-                            <td data-title="'Sensor ID'">{{ sensor.sensor_id }}</td>
-                            <td data-title="'Type'">{{ sensor.sensor_type }}</td>
-                            <td data-title="'Name'">{{ sensor.sensor_name }}</td>
-                            <td data-title="'Value'">{{ sensor.sensor_value }}</td>
-                        </tr>
-                    </table>
                 </div>
             </div>
         </div>
