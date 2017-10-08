@@ -179,3 +179,32 @@
 
 <img class="img-responsive center-block" src="images/img_basement_scheme.png" alt="basement scheme"/>
 //----------------------------------------------------------------------------------------------------------------------
+            <!-- popover - measure point detail -->
+            <div class="popover_box" style="top: 5px; left: 630px">
+                <div>
+                    <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                </div>
+                <div class="table_middle popover_content">
+                    <p style="margin-bottom: 0px;">WEB TAG: 01</p>
+                    <select class="selectpicker"
+                            style="margin-bottom: 10px;"
+                            ng-change="updateSelectBox()"
+                            ng-model="selSensorParams"
+                            ng-options="sensor.id for sensor in mSensorList">
+                    </select>
+                    <div style="margin-bottom: 5px;">
+                        <button ng-click="sensorSave($index)" class="btn btn-success">Save</button>
+                        <button ng-click="reset()" class="btn btn-danger">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
+
+//----------------------------------------------------------------------------------------------------------------------

@@ -1,0 +1,59 @@
+.scheme_container {
+    margin: 0px auto 50px auto;
+    width: 796px;
+    height: 581px;
+    background: url("../images/img_basement_scheme.png") no-repeat;
+    background-size: contain;
+    position: relative;
+}
+
+.popover_box {
+    background-color: rgba(240, 221, 102, 127);
+    border: 1px;
+    font-family: "Times New Roman", Times, serif;
+    display: table;
+    position: absolute;
+}
+
+.popover_content{
+    background-color: #dd6d9a;
+    padding: 8px;
+}
+
+.measure_point_box {
+    background-color: rgba(133, 221, 102, 0);
+    border: 1px;
+    font-family: "Times New Roman", Times, serif;
+    display: table;
+    position: absolute;
+}
+
+.table_middle{
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.box_a {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.box_b {
+    display: table-cell;
+    vertical-align: middle;
+    background-color: #f3f3f3;
+}
+
+.vertical {
+    display:block;
+    text-align: center;
+}
+
+p.small {
+    line-height: 100%;
+    font-size: 12px;
+    color: #000000;
+    margin: auto auto;
+    margin-left: 5px;
+    margin-right: 5px;
+}

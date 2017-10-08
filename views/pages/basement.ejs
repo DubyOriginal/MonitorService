@@ -7,89 +7,102 @@
     <% include ../partials/head %>
 </head>
 
-<style>
-    .scheme_container {
-        margin: 0px auto 50px auto;
-        width: 796px;
-        height: 581px;
-        background: url("images/img_basement_scheme.png") no-repeat;
-        background-size: contain;
-        position: relative;
-    }
-
-    .measure_point_box {
-        background-color: rgba(133, 221, 102, 0);
-        border: 1px;
-        font-family: "Times New Roman", Times, serif;
-        display: table;
-        position: absolute;
-    }
-
-    .box_a {
-        display: table-cell;
-        vertical-align: middle;
-    }
-
-    .box_b {
-        display: table-cell;
-        vertical-align: middle;
-    }
-
-    p.small {
-        line-height: 100%;
-        font-size: 12px;
-        color: #000000;
-        margin: auto auto;
-        margin-left: 5px;
-        margin-right: 5px;
-    }
-
-</style>
-
 <body class="container">
 <header>
     <% include ../partials/header %>
 </header>
 
+<link rel="stylesheet" type="text/css" href="css/basement.css">
+
 <div class="row">
-    <div class="col-md-1" style="background-color: #1abc9c">
-    </div>
-    <div class="col-md-9">
+
         <div class="tag">Spoj sa mjernim točkama</div>
 
         <div class="scheme_container">
 
+            <!-- point 01 -->
             <div class="measure_point_box" style="top: 0px; left: 0px">
                 <div class="box_a">
-                    <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                    <a href="#" rel="comments">
+                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                    </a>
+
                 </div>
                 <div class="box_b">
+                    <p class="small">ID: 101</p>
+                    <p class="small">67.5°C</p>
+                </div>
+            </div>
+
+            <!-- point 02 -->
+            <div class="measure_point_box" style="top: 30px; left: 0px">
+                <div class="box_a vertical">
+                    <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                </div>
+                <div class="box_b vertical">
                     <p class="small">ID: 102</p>
                     <p class="small">77.5°C</p>
                 </div>
             </div>
 
+            <!-- point 03 -->
             <div class="measure_point_box" style="top: 502px; left: 290px">
-                <div class="box_a">
+                <div class="box_a vertical">
                     <img src="images/img_measure_point_small.png" alt="basement scheme"/>
                 </div>
-                <div class="box_b">
+                <div class="box_b vertical">
                     <p class="small">ID: 102</p>
                     <p class="small">77.5°C</p>
                 </div>
             </div>
 
+            <!-- popover - measure point detail -->
+            <div class="popover_box" style="top: 5px; left: 630px">
+                <div>
+                    <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                </div>
+                <div class="table_middle popover_content">
+                    <p style="margin-bottom: 0px;">WEB TAG: 01</p>
+                    <select class="selectpicker"
+                            style="margin-bottom: 10px;"
+                            ng-change="updateSelectBox()"
+                            ng-model="selSensorParams"
+                            ng-options="sensor.id for sensor in mSensorList">
+                    </select>
+                    <div style="margin-bottom: 5px;">
+                        <button ng-click="sensorSave($index)" class="btn btn-success">Save</button>
+                        <button ng-click="reset()" class="btn btn-danger">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- popover - measure point detail -->
+            <div class="popover_box" style="top: 5px; left: 630px">
+                <div>
+                    <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                </div>
+                <div class="table_middle popover_content">
+                    <p style="margin-bottom: 0px;">WEB TAG: 01</p>
+                    <select class="selectpicker"
+                            style="margin-bottom: 10px;"
+                            ng-change="updateSelectBox()"
+                            ng-model="selSensorParams"
+                            ng-options="sensor.id for sensor in mSensorList">
+                    </select>
+                    <div style="margin-bottom: 5px;">
+                        <button ng-click="sensorSave($index)" class="btn btn-success">Save</button>
+                        <button ng-click="reset()" class="btn btn-danger">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-    <div class="col-md-1" style="background-color: #55cdfa">
-        <div>
-            <button>
-                REFRESH
-            </button>
-        </div>
-    </div>
+
 </div>
 </div>
+
+
 
 <footer class="container-fluid bg-4 text-center">
     <% include ../partials/footer %>
