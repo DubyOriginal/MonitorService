@@ -5,28 +5,45 @@
 <head>
     <title>Basement</title>
     <% include ../partials/head %>
+
+    <script src="angular/angular.js"></script>
 </head>
 
-<body class="container">
+<link rel="stylesheet" type="text/css" href="css/basement.css">
+
+<script>
+  var liveApp = angular.module("liveApp", []);
+  liveApp.controller("livectrl", function livectrl($scope, $http) {
+    $scope.showDetailView = false;
+    $scope.mSelSensor = -1;
+    $scope.toggle = function (itemClicked) {
+      console.log("showDetailView for: " + itemClicked);
+      if ($scope.showDetailView && itemClicked == $scope.mSelSensor) {
+        $scope.showDetailView = false;
+        $scope.mSelSensor = -1;
+      } else {
+        $scope.showDetailView = true;
+        $scope.mSelSensor = itemClicked;
+      }
+    }
+  });
+</script>
+
+<body class="container" ng-app="liveApp" ng-controller="livectrl">
 <header>
     <% include ../partials/header %>
 </header>
 
-<link rel="stylesheet" type="text/css" href="css/basement.css">
-
-<div class="row">
-
-        <div class="tag">Spoj sa mjernim točkama</div>
-
-        <div class="scheme_container">
-
+<div class="center">
+    <div class="row">
+        <!-- ******* CONTAINER BOX ************************************************************************************* -->
+        <div class="main_container" ng-class="showDetailView ? 'col-xs-9' : 'col-xs-12'">
             <!-- point 01 -->
             <div class="measure_point_box" style="top: 0px; left: 0px">
                 <div class="box_a">
-                    <a href="#" rel="comments">
+                    <a href="#" ng-click='toggle(10)'>
                         <img src="images/img_measure_point_small.png" alt="basement scheme"/>
                     </a>
-
                 </div>
                 <div class="box_b">
                     <p class="small">ID: 101</p>
@@ -37,7 +54,9 @@
             <!-- point 02 -->
             <div class="measure_point_box" style="top: 30px; left: 0px">
                 <div class="box_a vertical">
-                    <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                    <a href="#" ng-click='toggle(11)'>
+                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                    </a>
                 </div>
                 <div class="box_b vertical">
                     <p class="small">ID: 102</p>
@@ -48,61 +67,41 @@
             <!-- point 03 -->
             <div class="measure_point_box" style="top: 502px; left: 290px">
                 <div class="box_a vertical">
-                    <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                    <a href="#" ng-click='toggle(12)'>
+                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                    </a>
                 </div>
                 <div class="box_b vertical">
                     <p class="small">ID: 102</p>
                     <p class="small">77.5°C</p>
                 </div>
             </div>
+        </div>
 
-            <!-- popover - measure point detail -->
-            <div class="popover_box" style="top: 5px; left: 630px">
-                <div>
-                    <img src="images/img_measure_point_small.png" alt="basement scheme"/>
-                </div>
-                <div class="table_middle popover_content">
-                    <p style="margin-bottom: 0px;">WEB TAG: 01</p>
-                    <select class="selectpicker"
-                            style="margin-bottom: 10px;"
-                            ng-change="updateSelectBox()"
-                            ng-model="selSensorParams"
-                            ng-options="sensor.id for sensor in mSensorList">
-                    </select>
-                    <div style="margin-bottom: 5px;">
-                        <button ng-click="sensorSave($index)" class="btn btn-success">Save</button>
-                        <button ng-click="reset()" class="btn btn-danger">Cancel</button>
-                    </div>
+        <!-- ******* DETAILS BOX *************************************************************************************** -->
+        <div class="detail_container" ng-class="showDetailView ? 'col-xs-3' : 'hidden'">
+            <div>
+                <img src="images/img_measure_point_small.png" alt="mp"/>
+            </div>
+            <div>
+                <p>MP TAG {{mSelSensor}}</p>
+                <p>text 2</p>
+                <p>text 3</p>
+                <p>text 4</p>
+                <select class="selectpicker"
+                        style="margin-bottom: 10px;"
+                        ng-change="updateSelectBox()"
+                        ng-model="selSensorParams"
+                        ng-options="sensor.id for sensor in mSensorList">
+                </select>
+                <div style="margin-bottom: 5px;">
+                    <button ng-click="sensorSave($index)" class="btn btn-success">Save</button>
+                    <button ng-click="reset()" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
-
-            <!-- popover - measure point detail -->
-            <div class="popover_box" style="top: 5px; left: 630px">
-                <div>
-                    <img src="images/img_measure_point_small.png" alt="basement scheme"/>
-                </div>
-                <div class="table_middle popover_content">
-                    <p style="margin-bottom: 0px;">WEB TAG: 01</p>
-                    <select class="selectpicker"
-                            style="margin-bottom: 10px;"
-                            ng-change="updateSelectBox()"
-                            ng-model="selSensorParams"
-                            ng-options="sensor.id for sensor in mSensorList">
-                    </select>
-                    <div style="margin-bottom: 5px;">
-                        <button ng-click="sensorSave($index)" class="btn btn-success">Save</button>
-                        <button ng-click="reset()" class="btn btn-danger">Cancel</button>
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
-
 </div>
-</div>
-
-
 
 <footer class="container-fluid bg-4 text-center">
     <% include ../partials/footer %>

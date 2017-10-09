@@ -4,7 +4,7 @@ body {
     font: 14px Montserrat, sans-serif;
     line-height: 1.8;
     color: #606767;
-    background-color: #2b3232;
+    background-color: #4b4b4b;
 }
 
 p {
@@ -44,6 +44,11 @@ p {
 .container-fluid {
     padding-top: 7px;
     padding-bottom: 7px;
+}
+
+.row{
+    margin-right: 0px;
+    margin-left: 0px;
 }
 
 .dy-container{

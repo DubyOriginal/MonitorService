@@ -1,24 +1,24 @@
-.scheme_container {
+.main_container {
     margin: 0px auto 50px auto;
     width: 796px;
     height: 581px;
     background: url("../images/img_basement_scheme.png") no-repeat;
     background-size: contain;
     position: relative;
+    background-color: #aedd48;
+    display: inline-block;
 }
 
-.popover_box {
+.detail_container {
     background-color: rgba(240, 221, 102, 127);
-    border: 1px;
     font-family: "Times New Roman", Times, serif;
-    display: table;
-    position: absolute;
+    display: flex;
+
+    border: 1px solid black;
+    overflow: hidden;
+    height: auto;
 }
 
-.popover_content{
-    background-color: #dd6d9a;
-    padding: 8px;
-}
 
 .measure_point_box {
     background-color: rgba(133, 221, 102, 0);
@@ -57,3 +57,4 @@ p.small {
     margin-left: 5px;
     margin-right: 5px;
 }
+
