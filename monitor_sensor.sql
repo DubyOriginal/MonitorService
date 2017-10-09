@@ -40,7 +40,7 @@ FROM monitor_db.monitor_data
 LEFT JOIN monitor_db.user_params ON monitor_db.monitor_data.user_id = monitor_db.user_params.id
 LEFT JOIN monitor_db.device_params ON monitor_db.monitor_data.device_id = monitor_db.device_params.id
 LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monitor_db.sensor_params.id
-WHERE sensor_id like '%00 00 00 00 00 11 12 13%' AND sensor_type like '%humi%'
+WHERE sensor_id like '%101%'
 ORDER BY monitor_data.timestamp DESC;
 
 
@@ -60,17 +60,11 @@ LEFT JOIN monitor_db.device_params ON monitor_db.monitor_data.device_id = monito
 LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monitor_db.sensor_params.id
 WHERE
 	monitor_data.timestamp = (SELECT MAX(timestamp) FROM monitor_data where
-	sensor_id like '%11 33 55 77%' AND sensor_type like '%humi%')
-    AND sensor_id like '%11 33 55 77%' AND sensor_type like '%humi%';
+	sensor_id like '%101%')
+    AND sensor_id like '%101%';
     
-SELECT MAX(timestamp) FROM monitor_data 
-where sensor_id like '%00 00 00 00 00 11 12 13%' 
-	AND sensor_type like '%humi%';
+SELECT MAX(timestamp) FROM monitor_data where sensor_id like '%101%';
 
-SELECT ord_num, ord_amount, ord_date, agent_code
-FROM orders
-WHERE monitor_data.timestamp = (
-SELECT MAX(timestamp) FROM monitor_data WHERE agent_code='A002');
 
 # log specific user
 SELECT 

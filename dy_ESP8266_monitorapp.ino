@@ -30,18 +30,18 @@
 //CONST
 const char* ssid     = "SkyNet";
 const char* password = "adidasneo";
-const char* serverUrl   = "192.168.1.37";
-const char* user_id     = "DY001";
-const char* device_id   = "123456";
+const char* serverUrl   = "192.168.1.34";
+const char* USER_ID     = "DY001";
+const char* DEVICE_ID   = "123456";
 const unsigned long HTTP_TIMEOUT = 10000;  // max respone time from server
-const int sensorNum = 4;
+const int sensorNum = 12;
 
-//STRUCT  {"sensor_id":"3563547","sensor_type":"temp","sensor_value":"22.22"}
+//STRUCT  {"sensor_address":"3563547","sensor_type":"temp","sensor_value":"22.22"}
 //------------------------------------------------------------------------------------------------------------------
 typedef struct{
-     DeviceAddress sensor_id;
-     String sensor_type;
-     String sensor_value;
+    String sensor_id;
+    DeviceAddress sensor_address;
+    String sensor_value;
 } TSensor;
 TSensor sensorsArr[sensorNum];
 
@@ -92,16 +92,43 @@ void setup() {
 
 }
 
-void defineDeviceSensors(){
-    // add values to sensor:    sensor_id  |  sensor_type  |  sensor_value;
-    //DeviceAddress -> typedef uint8_t DeviceAddress[8];
-    sensorsArr[0] = (TSensor) {{0x28, 0x06, 0xfe, 0x5b, 0x05, 0x00, 0x00, 0xd1}, "temp", "-"};
-    sensorsArr[1] = (TSensor) {{0x28, 0x29, 0xa0, 0x5b, 0x05, 0x00, 0x00, 0x74}, "temp", "-"};
-    sensorsArr[2] = (TSensor) {{0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x12, 0x13}, "temp", ""};
-    sensorsArr[3] = (TSensor) {{0x00, 0x00, 0x00, 0x00, 0x00, 0x11, 0x12, 0x13}, "humi", ""};
+//******************************************************************************************************************************
+// SENSOR MAPPING
+/*
+  SID (Sensor ID) -> ADDRESS
+  -------------------------------
+  101 -> 28 06 fe 5b 05 00 00 d1
+  102 -> 28 29 a0 5b 05 00 00 74
+  103 -> 28 ff 88 f1 30 17 04 7e
+  104 -> 28 ff b8 1c 31 17 04 85
+  105 -> 28 ff 8a 22 31 17 04 df
+  106 -> 28 ff 4e 6c 31 17 03 94
+  107 -> 28 ff 95 1a 31 17 04 98
+  108 -> 28 ff 75 1f 31 17 03 40
+  109 -> 28 ff c7 0c 31 17 03 3c
+  110 -> 28 ff 67 b6 30 17 04 ad
+  111 -> 28 ff b7 b8 30 17 04 e6
+  112 -> 28 ff 2f 15 31 17 03 73
+*/
 
+void defineDeviceSensors(){
+    //DeviceAddress -> typedef uint8_t DeviceAddress[8];
+    // add values to sensor:    sensor_id  |  sensor_address  |  sensor_value;
+    sensorsArr[0]  = (TSensor) {"101", {0x28, 0x06, 0xfe, 0x5b, 0x05, 0x00, 0x00, 0xd1}, ""};
+    sensorsArr[1]  = (TSensor) {"102", {0x28, 0x29, 0xa0, 0x5b, 0x05, 0x00, 0x00, 0x74}, ""};
+    sensorsArr[2]  = (TSensor) {"103", {0x28, 0xff, 0x88, 0xf1, 0x30, 0x17, 0x04, 0x7e}, ""};
+    sensorsArr[3]  = (TSensor) {"104", {0x28, 0xff, 0xb8, 0x1c, 0x31, 0x17, 0x04, 0x85}, ""};
+    sensorsArr[4]  = (TSensor) {"105", {0x28, 0xff, 0x8a, 0x22, 0x31, 0x17, 0x04, 0xdf}, ""};
+    sensorsArr[5]  = (TSensor) {"106", {0x28, 0xff, 0x4e, 0x6c, 0x31, 0x17, 0x03, 0x94}, ""};
+    sensorsArr[6]  = (TSensor) {"107", {0x28, 0xff, 0x95, 0x1a, 0x31, 0x17, 0x04, 0x98}, ""};
+    sensorsArr[7]  = (TSensor) {"108", {0x28, 0xff, 0x75, 0x1f, 0x31, 0x17, 0x03, 0x40}, ""};
+    sensorsArr[8]  = (TSensor) {"109", {0x28, 0xff, 0xc7, 0x0c, 0x31, 0x17, 0x03, 0x3c}, ""};
+    sensorsArr[9]  = (TSensor) {"110", {0x28, 0xff, 0x67, 0xb6, 0x30, 0x17, 0x04, 0xad}, ""};
+    sensorsArr[10] = (TSensor) {"111", {0x28, 0xff, 0xb7, 0xb8, 0x30, 0x17, 0x04, 0xe6}, ""};
+    sensorsArr[11] = (TSensor) {"112", {0x28, 0xff, 0x2f, 0x15, 0x31, 0x17, 0x03, 0x73}, ""};
 }
 
+//******************************************************************************************************************************
 String getStringFromDeviceAddress(DeviceAddress devAdr){
   //String result = String(devAdr[5], HEX) + "-" + String(devAdr[6], HEX) + "-" + String(devAdr[7], HEX);
   //String result = getFormatedStrFromHex8(&devAdr[5],1) + "-" + getFormatedStrFromHex8(&devAdr[6],1) + "-" + getFormatedStrFromHex8(&devAdr[7],1);
@@ -160,27 +187,25 @@ void readSensors(){
 
   // DS1820
   //-------------------------------------------------------------------------
-  float sensVal0 = readSensorDS18ByDeviceAddress(sensorsArr[0].sensor_id);
+  float sensVal0 = readSensorDS18ByDeviceAddress(sensorsArr[0].sensor_address);
   if (!isnan(sensVal0)){
     sensorsArr[0].sensor_value = String(sensVal0);
   }
 
-  float sensVal1 = readSensorDS18ByDeviceAddress(sensorsArr[1].sensor_id);
-  if (!isnan(sensVal1)){
-    sensorsArr[1].sensor_value = String(sensVal1);
+  float sensVal = 0;
+  for (int i=0; i < sensorNum; i++){
+    sensVal = readSensorDS18ByDeviceAddress(sensorsArr[i].sensor_address);
+    if (!isnan(sensVal)){
+      sensorsArr[i].sensor_value = String(sensVal);
+    }
   }
 
-  // DHT11
+  /* DHT11
   //-------------------------------------------------------------------------
   float sensVal2 = readSensorDHT11Temp();
   if (!isnan(sensVal2)){
     sensorsArr[2].sensor_value = String(sensVal2);
-  }
-
-  float sensVal3 = readSensorDHT11Humidity();
-  if (!isnan(sensVal3)){
-    sensorsArr[3].sensor_value = String(sensVal3);
-  }
+  }*/
 
 }
 
@@ -217,14 +242,13 @@ bool sendRequest(const char* host, const char* route) {
 }
 
 String prepareJOSNStringFromSensorsArr(){
-  String jsonStr = "{ \"user_id\" : \"" + String(user_id) + "\", \"device_id\" : \"" + String(device_id) + "\", ";
+  String jsonStr = "{ \"user_id\" : \"" + String(USER_ID) + "\", \"device_id\" : \"" + String(DEVICE_ID) + "\", ";
   jsonStr += "\"sensors\": [";
 
   serial.println("numOfSensors -> " + String(sensorNum));
   String sens = "";
   for (int i=0; i < sensorNum; i++){
-    String sens_id = getStringFromDeviceAddress(sensorsArr[i].sensor_id);    //"FD14433";    //String(sensorsArr[i].sensor_id);
-    sens = sens + "{\"sensor_id\":\"" + sens_id + "\",\"sensor_type\":\"" + String(sensorsArr[i].sensor_type) + "\",\"sensor_value\":\"" + String(sensorsArr[i].sensor_value) + "\"}";
+    sens = sens + "{\"sensor_id\":\"" + String(sensorsArr[i].sensor_id) + "\",\"sensor_value\":\"" + String(sensorsArr[i].sensor_value) + "\"}";
     if (i < (sensorNum-1)){
       sens += ",";
     }
@@ -278,7 +302,7 @@ void loop() {
   readSensors();  //after readings is complete value is stored in sensorsArr[TSensor]
 
   if (connect(serverUrl, 2200)) {
-    if (sendRequest(serverUrl, "/write") && skipResponseHeaders()) {
+    if (sendRequest(serverUrl, "/storedevicedata") && skipResponseHeaders()) {
       readReponseContent();
     }
   }
@@ -294,10 +318,8 @@ void loop() {
   "device_id" : "123456",
   "sensors" :
   [
-    {"sensor_id":"28 06 fe 5b 05 00 00 d1","sensor_type":"temp","sensor_value":"21.12"},
-    {"sensor_id":"28 29 a0 5b 05 00 00 74","sensor_type":"temp","sensor_value":"27.13"},
-    {"sensor_id":"00 00 00 00 00 11 12 13","sensor_type":"temp","sensor_value":"18.00"},
-    {"sensor_id":"00 00 00 00 00 11 12 13","sensor_type":"humi","sensor_value":"39.00"}
+    {"sensor_id":"3563547","sensor_type":"temp","sensor_value":"22.22"},
+    {"sensor_id":"3563547","sensor_type":"hum","sensor_value":"60"}
   ]
 }
-*/
+}*/
