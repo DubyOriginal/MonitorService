@@ -7,6 +7,7 @@
     <% include ../partials/head %>
 
     <script src="angular/angular.js"></script>
+    <script src="js/basic.js"></script>
 </head>
 
 <link rel="stylesheet" type="text/css" href="css/basic.css">
@@ -37,16 +38,26 @@
 
     $scope.toggleDetailBox = function (screen_id) {
       console.log("toggleDetailBox for: " + screen_id);
-      if ($scope.showDetailBox && screen_id == $scope.mSelScreenSensor.screen_id) {
+      if (isEmptyObjectAngular(angular, $scope.mSelScreenSensor)){
+        if ($scope.showDetailBox && screen_id === $scope.mSelScreenSensor.screen_id) {
+          $scope.closeDetailBox();
+        } else {
+          $scope.showDetailBox = true;
+          $scope.getSensorByScreenID(screen_id, () => {   //this will fill: mSelScreenSensor
+            if (!isEmptyObjectAngular(angular, $scope.mSelScreenSensor)){
+              console.log("toggleDetailBox: getSensorByScreenID mSelScreenSensor -> " + JSON.stringify($scope.mSelScreenSensor));
+              let filterArr = $scope.mSensorList.filter(function(item){return item.id === $scope.mSelScreenSensor.sensor_id})
+              $scope.mSelSensorParams = filterArr[0];
+              console.log("toggleDetailBox: getSensorByScreenID mSelSensorParams -> " + JSON.stringify($scope.mSelSensorParams));
+            }else{
+              $scope.mSelScreenSensor = {};
+              $scope.mSelSensorParams = {};
+            }
+          });
+        }
+      }else{
+        console.log("toggleDetailBox: mSelScreenSensor is NULL or EMPTY");
         $scope.closeDetailBox();
-      } else {
-        $scope.showDetailBox = true;
-        $scope.getSensorByScreenID(screen_id, () => {   //this will fill: mSelScreenSensor
-          console.log("toggleDetailBox: getSensorByScreenID mSelScreenSensor -> " + JSON.stringify($scope.mSelScreenSensor));
-          let filterArr = $scope.mSensorList.filter(function(item){return item.id == $scope.mSelScreenSensor.sensor_id})
-          $scope.mSelSensorParams = filterArr[0];
-          console.log("toggleDetailBox: getSensorByScreenID mSelSensorParams -> " + JSON.stringify($scope.mSelSensorParams));
-        });
       }
     }
 
@@ -72,16 +83,12 @@
 
     $scope.saveScreenSensor = function (idx) {
       console.log("Saving sensor - " + idx);
-      $scope.reset();
     };
 
     $scope.closeDetailBox = function () {
       $scope.showDetailBox = false;
       $scope.mSelScreenSensor = {};
-    };
-
-    $scope.reset = function () {
-      $scope.model.sensorSelected = {};
+      $scope.mSelSensorParams = {};
     };
 
   });
@@ -142,10 +149,34 @@
                 <img src="images/img_measure_point_small.png" alt="mp"/>
             </div>
             <div>
-                <p>SCREEN ID: <b>{{mSelScreenSensor.screen_id}}</b></p>
-                <p>SENSOR ID: <b>{{mSelSensorParams.id}}</b></p>
-                <p>NAME     : <b>{{mSelSensorParams.sensor_name}}</b></p>
-                <p>text 4</p>
+                <table style="width:100%; margin-left: 20px">
+                    <tr>
+                        <th>SCREEN ID:</th>
+                        <td><b>{{mSelScreenSensor.screen_id}}</b></td>
+                    </tr>
+                    <tr>
+                        <th>SENSOR ID:</th>
+                        <td><b>{{mSelSensorParams.id}}</b></td>
+                    </tr>
+                    <tr>
+                        <th>MID</th>
+                        <td><b>{{mSelSensorParams.sensor_mid}}</b></td>
+                    </tr>
+                    <tr>
+                        <th>NAME</th>
+                        <td><b>{{mSelSensorParams.sensor_name}}</b></td>
+                    </tr>
+                    <tr>
+                        <th>ALARM MIN</th>
+                        <td><b>{{mSelSensorParams.alarm_min}}</b></td>
+                    </tr>
+                    <tr>
+                        <th>ALARM MAX</th>
+                        <td><b>{{mSelSensorParams.alarm_max}}</b></td>
+                    </tr>
+
+                </table>
+
                 <div>
                     <p class="inline">SELECT SENSOR</p>
                     <select class="selectpicker inline"
