@@ -112,7 +112,7 @@ app.get('/getallsensorsdata', function (req, res) {
   monitorApi.getAllSensorsData();
 });
 
-//http://localhost:2200/getsensordata/00%2000%2000%2000%2000%2011%2012%2013
+//http://localhost:2200/getsensordata/101
 app.get('/getsensordata/:sensor_id', function (req, res) {
   let sensor_id = req.params.sensor_id;
   console.log("server: GET /getallsensorsdata/" + sensor_id);
@@ -122,7 +122,7 @@ app.get('/getsensordata/:sensor_id', function (req, res) {
   monitorApi.getSensorData(sensor_id);
 });
 
-//http://localhost:2200/getlatestsensormeasurement/00%2000%2000%2000%2000%2011%2012%2013/temp
+//http://localhost:2200/getlatestsensormeasurement/101
 app.get('/getlatestsensormeasurement/:sensor_id', function (req, res) {
   let sensor_id = req.params.sensor_id;
   console.log("server: GET /getlatestsensormeasurement/" + sensor_id);
@@ -137,6 +137,25 @@ app.get('/getlatestsensormeasurement/:sensor_id', function (req, res) {
       }
     }else{
       console.log("/getlatestsensormeasurement/ res in NULL");
+    }
+  });
+});
+
+//http://localhost:2200/getsensorbyscreenid/10
+app.get('/getsensorbyscreenid/:screen_id', function (req, res) {
+  let screen_id = req.params.screen_id;
+  console.log("server: GET /getsensorbyscreenid/" + screen_id);
+
+  monitorApi.getSensorByScreenID(screen_id, (result) => {
+    if (res != null){
+      if (result != null){
+        res.set('Content-Type', 'application/json')
+        res.send(result);
+      }else{
+        res.send(null);
+      }
+    }else{
+      console.log("/getsensorbyscreenid/ res in NULL");
     }
   });
 });

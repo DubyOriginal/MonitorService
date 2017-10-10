@@ -168,6 +168,24 @@ class MonitorApi {
     });
   };
 
+  getSensorByScreenID(screen_id, callback){
+    console.log("MonitorApi: getSensorByScreenID");
+
+    let dbHelper = new DBHelper();
+
+    const sql = "SELECT * FROM screen_sensor WHERE screen_id like ?;";
+    dbHelper.query(sql, [screen_id], function(result, error) {
+      if (!error && result) {
+        console.log("MonitorApi: getSensorByScreenID: " + JSON.stringify(result));
+        if (callback) {
+          callback(result);
+        }
+      }else{
+        console.log("MonitorApi: getSensorByScreenID - SOME ERROR!");
+      }
+    });
+  };
+
   getUserData(user_id){
     console.log("MonitorApi: getUserData LIMIT 20");
 
