@@ -5,7 +5,34 @@
 <head>
     <title>Datatable</title>
     <% include ../partials/head %>
+
+    <script src="angular/angular.js"></script>
+    <script src="ng-table-bundle/ng-table.min.js"></script>
 </head>
+
+<script type="text/javascript">
+  var liveApp = angular.module("liveApp", []);
+  liveApp.controller("livectrl", function livectrl($scope, $http) {
+
+    $scope.mDataList = [];
+
+    $scope.getData = function () {
+      console.log("getData!");
+      $http({
+        method: 'GET',
+        url: 'getallsensorsdata'
+      }).then(function (response) {
+        console.log("getData - LOADED!");
+        $scope.mDataList = response.data;
+      }, function (error) {
+        console.log("getallsensorsdata ERROR: " + error);
+      });
+    };
+    $scope.getData();  //initial data load
+
+  });
+
+</script>
 
 <body class="container">
 <header>
@@ -14,32 +41,37 @@
 </header>
 
 
-<div class="row">
-    <div class="center">
-        <div class="col-md-12">
-            <h3>latest sensor data</h3>
+<div ng-app="liveApp" ng-controller="livectrl">
 
-            <table class="col-sm-12" class="table table-striped">
-                <tr>
-                    <th>rtimestamp</th>
-                    <th>sensor_id</th>
-                    <th>sensor_type</th>
-                    <th>sensor_mid</th>
-                    <th>sensor_name</th>
-                    <th>sensor_value</th>
-                </tr>
-
-                <% allSensorData.forEach(function(sensor) { %>
-                <tr>
-                    <td><%= sensor.rtimestamp %></td>
-                    <td><%= sensor.sensor_id %></td>
-                    <td><%= sensor.sensor_type %></td>
-                    <td><%= sensor.sensor_mid %></td>
-                    <td><%= sensor.sensor_name %></td>
-                    <td><%= sensor.sensor_value %></td>
-                </tr>
-                <% }); %>
-            </table>
+    <div class="row">
+        <div class="center">
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">Latest</div>
+                    <div class="panel-body">
+                        <table class="table table-striped">
+                            <tr>
+                                <th>ID</th>
+                                <th>DATE</th>
+                                <th>USER NAME</th>
+                                <th>DEVICE NAME</th>
+                                <th>MID</th>
+                                <th>SENSR NAME</th>
+                                <th>VALUE</th>
+                            </tr>
+                            <tr ng-repeat="row in mDataList | orderBy : 'timestamp'">
+                                <td>{{row.sensor_id}}</td>
+                                <td>{{row.rtimestamp}}</td>
+                                <td>{{row.user_name}}</td>
+                                <td>{{row.device_name}}</td>
+                                <td>{{row.sensor_mid}}</td>
+                                <td>{{row.sensor_name}}</td>
+                                <td>{{row.sensor_value}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

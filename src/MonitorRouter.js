@@ -51,11 +51,15 @@ app.get('/', function (req, res) {
 // monitoring sensors data
 app.get('/datatable', function (req, res) {
 
+  res.render('./pages/datatable');
+
+  /*
   monitorApi.getAllSensorsData(function (allSensorData) {
     res.render('./pages/datatable', {
       allSensorData: allSensorData
     });
   });
+  */
 });
 
 // monitoring sensors data
@@ -107,9 +111,18 @@ app.use('/test', function (req, res, next) {
 // get values from DB
 app.get('/getallsensorsdata', function (req, res) {
   console.log("server: GET /getallsensorsdata");
-  res.set('Content-Type', 'application/json')
-  res.send("RECEIVED /getallsensorsdata");
-  monitorApi.getAllSensorsData();
+  monitorApi.getAllSensorsData((result) => {
+    if (res != null){
+      if (result != null){
+        res.set('Content-Type', 'application/json')
+        res.send(result);
+      }else{
+        res.send(null);
+      }
+    }else{
+      console.log("/getallsensorsdata res in NULL");
+    }
+  });
 });
 
 //http://localhost:2200/getsensordata/101

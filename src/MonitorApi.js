@@ -26,6 +26,7 @@ class MonitorApi {
     const sql = "SELECT \
       monitor_data.id, \
       FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+        timestamp, \
         device_name, \
         sensor_id, \
         sensor_type, \
@@ -37,16 +38,17 @@ class MonitorApi {
       LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
       ORDER BY monitor_data.timestamp DESC \
-      LIMIT 20;";
+      LIMIT 40;";
     dbHelper.query(sql, [], function(result, error) {
+      console.log("MonitorApi: getAllSensorsData DATA LOADED - A");
       if (!error && result) {
         if (callback){
           callback(result);
           console.log("MonitorApi: getAllSensorsData DATA LOADED - cnt: " + result.length);
           basicUtils.printJOSNRows(result);
+        }else{
+          console.log("MonitorApi: getAllSensorsData - callback is NULL!");
         }
-
-
       }else{
         console.log("MonitorApi: getAllSensorsData - SOME ERROR!");
       }
@@ -54,7 +56,7 @@ class MonitorApi {
   };
 
   getSensorData(sensor_id){
-    console.log("MonitorApi: getSensorData LIMIT 20");
+    console.log("MonitorApi: getSensorData LIMIT 40");
 
     let dbHelper = new DBHelper();
     let basicUtils = new BasicUtils();
@@ -78,7 +80,7 @@ class MonitorApi {
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
       WHERE sensor_id like ? \
       ORDER BY monitor_data.timestamp DESC \
-      LIMIT 20;";
+      LIMIT 40;";
     dbHelper.query(sql, [sensor_id], function(result, error) {
       if (!error && result) {
         console.log("MonitorApi: getSensorData DATA LOADED - cnt: " + result.length);
