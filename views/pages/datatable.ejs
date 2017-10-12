@@ -10,6 +10,20 @@
     <script src="ng-table-bundle/ng-table.min.js"></script>
 </head>
 
+<style>
+    table, th , td  {
+        border: 1px solid grey;
+        border-collapse: collapse;
+        padding: 5px;
+    }
+    table tr:nth-child(odd) {
+        background-color: #f1f1f1;
+    }
+    table tr:nth-child(even) {
+        background-color: #ffffff;
+    }
+</style>
+
 <script type="text/javascript">
   var liveApp = angular.module("liveApp", []);
   liveApp.controller("livectrl", function livectrl($scope, $http) {

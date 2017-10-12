@@ -225,6 +225,23 @@ class MonitorApi {
     });
   };
 
+  saveScreenSensor(screen_id, sensor_id, callback) {
+    console.log("MonitorApi: saveScreenSensor");
+
+    let dbHelper = new DBHelper();
+
+    var sql = "INSERT INTO screen_sensor (screen_id, sensor_id) VALUES (?, ?) ON DUPLICATE KEY UPDATE screen_id = values(screen_id),  sensor_id = values(sensor_id);";
+    dbHelper.query(sql, [screen_id, sensor_id], function(result, error) {
+      if (callback){
+        if (result){
+          callback({status: "success"});
+        }else {
+          callback({status: "error"});
+        }
+      }
+    });
+  };
+
 
   /*{
    "user_id":"DY001",

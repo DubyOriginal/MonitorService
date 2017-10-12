@@ -38,13 +38,13 @@
 
     $scope.toggleDetailBox = function (screen_id) {
       console.log("toggleDetailBox for: " + screen_id);
-      if (isEmptyObjectAngular(angular, $scope.mSelScreenSensor)){
+      if (isEmptyObject($scope.mSelScreenSensor)){
         if ($scope.showDetailBox && screen_id === $scope.mSelScreenSensor.screen_id) {
           $scope.closeDetailBox();
         } else {
           $scope.showDetailBox = true;
           $scope.getSensorByScreenID(screen_id, () => {   //this will fill: mSelScreenSensor
-            if (!isEmptyObjectAngular(angular, $scope.mSelScreenSensor)){
+            if (!isEmptyObject($scope.mSelScreenSensor)){
               console.log("toggleDetailBox: getSensorByScreenID mSelScreenSensor -> " + JSON.stringify($scope.mSelScreenSensor));
               let filterArr = $scope.mSensorList.filter(function(item){return item.id === $scope.mSelScreenSensor.sensor_id})
               $scope.mSelSensorParams = filterArr[0];
@@ -78,11 +78,29 @@
     }
 
     $scope.updateSelectBox = function () {
-      console.log("updateSelectBox -> " + $scope.mSelSensorParams.sensor_name);
+      console.log("updateSelectBox -> " + $scope.mPickerSensor.id);
     }
 
-    $scope.saveScreenSensor = function (idx) {
-      console.log("Saving sensor - " + idx);
+    $scope.saveScreenSensor = function () {
+      let screen_id = $scope.mSelScreenSensor.screen_id;
+      let sensor_id = $scope.mPickerSensor.id
+        console.log("Saving -> screen_id: " + screen_id + ", sensor_id: " + sensor_id);
+      $http({
+        method: 'GET',
+        url: 'savescreensensor/' + screen_id + "/" + sensor_id
+      }).then(function (response) {
+        let status = response.data.status;
+        console.log("saveScreenSensor: " + status);
+
+        $scope.getSensorByScreenID(screen_id, () => {
+          console.log("data reloaded! -> " + JSON.stringify($scope.mSelScreenSensor));
+          let filterArr = $scope.mSensorList.filter(function(item){return item.id === $scope.mSelScreenSensor.sensor_id})
+          $scope.mSelSensorParams = filterArr[0];
+        });
+
+      }, function (error) {
+        console.log("saveScreenSensor ERROR: " + error);
+      });
     };
 
     $scope.closeDetailBox = function () {
@@ -117,7 +135,7 @@
             </div>
 
             <!-- point 02 -->
-            <div class="measure_point_box" style="top: 30px; left: 0px">
+            <div class="measure_point_box" style="top: 45px; left: 0px">
                 <div class="box_a vertical">
                     <a href="#" ng-click='toggleDetailBox(11)'>
                         <img src="images/img_measure_point_small.png" alt="basement scheme"/>
@@ -148,9 +166,9 @@
             <div>
                 <img src="images/img_measure_point_small.png" alt="mp"/>
             </div>
-            <div>
-                <table style="width:100%; margin-left: 20px">
-                    <tr>
+            <div style="margin-left: 10px;">
+                <table class="my_table">
+                    <tr style="color: #dd3f4e; font-size: 18px;">
                         <th>SCREEN ID:</th>
                         <td><b>{{mSelScreenSensor.screen_id}}</b></td>
                     </tr>
@@ -177,18 +195,19 @@
 
                 </table>
 
-                <div>
-                    <p class="inline">SELECT SENSOR</p>
+                <div class="line"></div>
+
+                <div class="table_middle" style="background-color: #1abc9c;">
+                    <p class="inline" style="margin-bottom: 0;">CHANGE SENSOR</p>
                     <select class="selectpicker inline"
-                            style="margin-bottom: 10px;"
                             ng-change="updateSelectBox()"
                             ng-model="mPickerSensor"
                             ng-options="sensor.id for sensor in mSensorList">
                     </select>
                 </div>
 
-                <div style="margin-bottom: 5px;">
-                    <button ng-click="saveScreenSensor($index)" class="btn btn-success">Save</button>
+                <div style="margin-top: 15px; margin-bottom: 10px; width:100%;">
+                    <button ng-click="saveScreenSensor()" class="btn btn-success">Save</button>
                     <button ng-click="closeDetailBox()" class="btn btn-danger">Close</button>
                 </div>
             </div>

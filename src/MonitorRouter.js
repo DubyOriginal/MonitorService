@@ -229,6 +229,27 @@ app.get('/getuseridsensordata/:user_id', function (req, res) {
   monitorApi.getUserData(user_id);
 });
 
+
+//http://localhost:2200/getallsensorparams
+app.get('/savescreensensor/:screen_id/:sensor_id', function (req, res) {
+  let screen_id = req.params.screen_id;
+  let sensor_id = req.params.sensor_id;
+  console.log("server: GET /savescreensensor/" + screen_id + "/" + sensor_id);
+
+  monitorApi.saveScreenSensor(screen_id, sensor_id, (result) => {
+    if (res != null){
+      if (result != null){
+        res.set('Content-Type', 'application/json')
+        res.send(result);
+      }else{
+        res.send(null);
+      }
+    }else{
+      console.log("/savescreensensor res in NULL");
+    }
+  });
+});
+
 //**********************************************************************************************************************
 // CLIENT ROUTES - (from DEVICE)
 //**********************************************************************************************************************
