@@ -28,7 +28,7 @@
         url: 'getallsensorparams'
       }).then(function (response) {
         $scope.mSensorList = response.data;
-        console.log(">>>>>  mSensorList: " + JSON.stringify($scope.mSensorList));
+        //console.log(">>>>>  mSensorList: " + JSON.stringify($scope.mSensorList));
       }, function (error) {
         console.log("getSensorList ERROR: " + error);
       });

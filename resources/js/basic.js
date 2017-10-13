@@ -1,24 +1,19 @@
 /**
  * Created by dvrbancic on 11/10/2017.
  */
-testFunction = function () {
-  console.log("@@@@@@ - this is test function!");
-}
 
-//isEmptyObject({})); returns 'true'
-//isEmptyObject = function(object) {
-  //console.log("isEmptyObject -> object: " + JSON.stringify(object));
-  //let conditionA = Object.keys(object).length === 0;
-  //let conditionB = object.constructor === Object;
-  //let conditionC = typeof object === "undefined";
-  //let conditionC = object === null;
-  //console.log("isEmptyObject -> " + conditionC);
-  //return (conditionC);
-//}
+/*
+ isEmptyObject: {}        -> true
+ isEmptyObject: []        -> true
+ isEmptyObject: 3         -> true
+ isEmptyObject: null      -> true
+ isEmptyObject: undefined -> true
 
-// Speed up calls to hasOwnProperty
-var hasOwnProperty = Object.prototype.hasOwnProperty;
-isEmptyObject = function(obj) {
+ isEmptyObject: [{}]        -> false
+ isEmptyObject: {"a":1}     -> false
+ isEmptyObject: {"a":"abc"} -> false
+ */
+function isEmptyObject(obj) {
   // null and undefined are "empty"
   if (obj == null) return true;
 
@@ -32,6 +27,8 @@ isEmptyObject = function(obj) {
   // Is it empty?  Depends on your application.
   if (typeof obj !== "object") return true;
 
+  // Speed up calls to hasOwnProperty
+  var hasOwnProperty = Object.prototype.hasOwnProperty;
   // Otherwise, does it have any properties of its own?
   // Note that this doesn't handle
   // toString and valueOf enumeration bugs in IE < 9
@@ -41,4 +38,20 @@ isEmptyObject = function(obj) {
 
   return true;
 }
+
+//**********************************************************************************************************************
+//**********************************************************************************************************************
+testFunction = function () {
+  console.log("----------------------------------");
+
+  let object = null;
+  console.log("isEmptyObject: " + JSON.stringify(object) + " -> " + isEmptyObject(object));
+}
+
+//testFunction();
+
+
+
+
+
 

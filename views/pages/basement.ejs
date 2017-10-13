@@ -18,9 +18,9 @@
   liveApp.controller("livectrl", function livectrl($scope, $http) {
 
     $scope.showDetailBox = false;
-    $scope.mSelScreenSensor = {};  // {"screen_id":11, "sensor_id":102}
+    $scope.mSelScreenSensor = null;  // {"screen_id":11, "sensor_id":102}
     $scope.mSensorList = [];
-    $scope.mSelSensorParams = {};
+    $scope.mSelSensorParams = null;
 
     $scope.getSensorList = function () {
       console.log("getSensorList!");
@@ -29,7 +29,7 @@
         url: 'getallsensorparams'
       }).then(function (response) {
         $scope.mSensorList = response.data;
-        console.log(">>>>>  mSensorList: " + JSON.stringify($scope.mSensorList));
+        //console.log(">>>>>  mSensorList: " + JSON.stringify($scope.mSensorList));
       }, function (error) {
         console.log("getSensorList ERROR: " + error);
       });
@@ -50,8 +50,8 @@
               $scope.mSelSensorParams = filterArr[0];
               console.log("toggleDetailBox: getSensorByScreenID mSelSensorParams -> " + JSON.stringify($scope.mSelSensorParams));
             }else{
-              $scope.mSelScreenSensor = {};
-              $scope.mSelSensorParams = {};
+              $scope.mSelScreenSensor = null;
+              $scope.mSelSensorParams = null;
             }
           });
         }
@@ -105,8 +105,8 @@
 
     $scope.closeDetailBox = function () {
       $scope.showDetailBox = false;
-      $scope.mSelScreenSensor = {};
-      $scope.mSelSensorParams = {};
+      $scope.mSelScreenSensor = null;
+      $scope.mSelSensorParams = null;
     };
 
   });
