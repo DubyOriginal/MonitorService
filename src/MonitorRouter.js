@@ -76,7 +76,7 @@ app.get('/monitoring', function (req, res) {
 app.get('/basement', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
-    res.render('./pages/basement', {
+    res.render('./pages/basement2', {
       allSensorData: allSensorData
     });
   });
@@ -187,6 +187,24 @@ app.get('/getallsensorparams', function (req, res) {
       }
     }else{
       console.log("/getallsensorparams res in NULL");
+    }
+  });
+});
+
+//http://localhost:2200/getbasementsensordata
+app.get('/getbasementsensordata', function (req, res) {
+  console.log("server: GET /getbasementsensordata");
+
+  monitorApi.getBasementSensorData((result) => {
+    if (res != null){
+      if (result != null){
+        res.set('Content-Type', 'application/json')
+        res.send(result);
+      }else{
+        res.send(null);
+      }
+    }else{
+      console.log("/getbasementsensordata res in NULL");
     }
   });
 });

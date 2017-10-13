@@ -40,12 +40,12 @@ class MonitorApi {
       ORDER BY monitor_data.timestamp DESC \
       LIMIT 40;";
     dbHelper.query(sql, [], function(result, error) {
-      console.log("MonitorApi: getAllSensorsData DATA LOADED - A");
+      console.log("MonitorApi: getAllSensorsData DATA LOADED");
       if (!error && result) {
         if (callback){
           callback(result);
-          console.log("MonitorApi: getAllSensorsData DATA LOADED - cnt: " + result.length);
-          basicUtils.printJOSNRows(result);
+          //console.log("MonitorApi: getAllSensorsData DATA LOADED - cnt: " + result.length);
+          //basicUtils.printJOSNRows(result);
         }else{
           console.log("MonitorApi: getAllSensorsData - callback is NULL!");
         }
@@ -167,6 +167,41 @@ class MonitorApi {
         }
       }else{
         console.log("MonitorApi: getLatestSensorValue - SOME ERROR!");
+      }
+    });
+  };
+
+  getBasementSensorData(callback){
+    console.log("MonitorApi: getBasementSensorData");
+
+    let dbHelper = new DBHelper();
+    let basicUtils = new BasicUtils();
+
+    const sql = "SELECT \
+      monitor_data.sensor_id, \
+      FROM_UNIXTIME(monitor_data.timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+        screen_sensor.screen_id, \
+        sensor_params.sensor_type, \
+        sensor_params.sensor_mid, \
+        sensor_params.sensor_name, \
+        monitor_data.sensor_value \
+      FROM monitor_db.monitor_data \
+      LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
+      LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
+      LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
+      LEFT JOIN monitor_db.screen_sensor ON monitor_db.monitor_data.sensor_id = monitor_db.screen_sensor.sensor_id \
+      WHERE \
+        monitor_data.timestamp = (SELECT MAX(timestamp) FROM monitor_data);";
+
+    dbHelper.query(sql, [], function(result, error) {
+      if (!error && result) {
+        console.log("MonitorApi: getBasementSensorData:");
+        basicUtils.printJOSNRows(result);
+        if (callback) {
+          callback(result);
+        }
+      }else{
+        console.log("MonitorApi: getBasementSensorData - ERR: " + JSON.stringify(error));
       }
     });
   };
