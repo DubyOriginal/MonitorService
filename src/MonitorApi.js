@@ -37,8 +37,8 @@ class MonitorApi {
       LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
       LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
-      ORDER BY monitor_data.timestamp DESC \
-      LIMIT 40;";
+      ORDER BY monitor_data.timestamp ASC \
+      LIMIT 240;";
     dbHelper.query(sql, [], function(result, error) {
       console.log("MonitorApi: getAllSensorsData DATA LOADED");
       if (!error && result) {
@@ -297,6 +297,9 @@ class MonitorApi {
 
         var sensor_id = sensors[i].sensor_id;
         var sensor_value = sensors[i].sensor_value;
+        if (sensor_value <= -127){
+          sensor_value = "";
+        }
         var timestamp = moment().unix();
         console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
 
