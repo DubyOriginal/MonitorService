@@ -18,12 +18,15 @@ header {
 }
 
 footer {
-    background-color: #2d2b2b;
+    padding-top: 20px;
+    margin-top: 5px;
+    background-color: #222222;
 }
 
 .main_container{
-    padding: 15px auto;
-    background-color: #52ff70;
+    padding: 20px;
+    background-color: #f8f8f8;
+    display: block;
 }
 
 .margin {
@@ -31,7 +34,7 @@ footer {
 }
 
 .bg-1 {
-    background-color: #1abc9c; /* Green */
+    background-color: #222222; /* Green */
     color: #ffffff;
 }
 

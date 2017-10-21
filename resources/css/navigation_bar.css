@@ -1,10 +1,13 @@
 
 .navbar {
-
     border: 0;
     border-radius: 0;
     font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Geneva, Verdana, sans-serif;
     font-size: medium;
+}
+
+.navbar-nav {
+    padding-top: 15px;
 }
 
 .navbar-nav li a:hover{
