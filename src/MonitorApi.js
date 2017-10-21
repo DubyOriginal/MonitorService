@@ -24,21 +24,25 @@ class MonitorApi {
     let basicUtils = new BasicUtils();
 
     const sql = "SELECT \
-      monitor_data.id, \
-      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+        monitor_data.id, \
+        FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, \
         timestamp, \
+        user_id, \
+        user_name, \
+        device_id, \
         device_name, \
         sensor_id, \
         sensor_type, \
         sensor_mid, \
+        sensor_address, \
         sensor_name, \
         sensor_value \
       FROM monitor_db.monitor_data \
       LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
       LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
-      ORDER BY monitor_data.timestamp ASC \
-      LIMIT 240;";
+      ORDER BY monitor_data.timestamp DESC \
+      LIMIT 40;";
     dbHelper.query(sql, [], function(result, error) {
       console.log("MonitorApi: getAllSensorsData DATA LOADED");
       if (!error && result) {
@@ -285,7 +289,7 @@ class MonitorApi {
    }
    */
   storeDeviceData(user_id, device_id, sensors){
-    console.log("MonitorApi: storeDeviceData");
+    //console.log("MonitorApi: storeDeviceData");
 
     let dbHelper = new DBHelper();
 
@@ -301,7 +305,7 @@ class MonitorApi {
           sensor_value = "";
         }
         var timestamp = moment().unix();
-        console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
+        //console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
 
         //var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null,'" + timestamp + "', '" + user_id + "', '" + device_id + "', '" + sensor_id + "', '" + sensor_type + "', '" + sensor_value + "');";
         var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_value) VALUES (null, ?, ?, ?, ?, ?);";

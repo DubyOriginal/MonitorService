@@ -24,8 +24,24 @@ FROM monitor_db.monitor_data
 LEFT JOIN monitor_db.user_params ON monitor_db.monitor_data.user_id = monitor_db.user_params.id
 LEFT JOIN monitor_db.device_params ON monitor_db.monitor_data.device_id = monitor_db.device_params.id
 LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monitor_db.sensor_params.id
-ORDER BY monitor_data.timestamp DESC;
+ORDER BY monitor_data.timestamp DESC LIMIT 40;
 
+# get Basement Screen Sensor Data
+SELECT 
+	monitor_data.sensor_id,
+	FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, 
+    screen_sensor.screen_id,
+    sensor_params.sensor_type,
+    sensor_params.sensor_mid,
+    sensor_params.sensor_name,
+    monitor_data.sensor_value
+FROM monitor_db.monitor_data
+LEFT JOIN monitor_db.user_params ON monitor_db.monitor_data.user_id = monitor_db.user_params.id
+LEFT JOIN monitor_db.device_params ON monitor_db.monitor_data.device_id = monitor_db.device_params.id
+LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monitor_db.sensor_params.id
+LEFT JOIN monitor_db.screen_sensor ON monitor_db.monitor_data.sensor_id = monitor_db.screen_sensor.sensor_id
+WHERE
+	monitor_data.timestamp = (SELECT MAX(timestamp) FROM monitor_data);
 
 # log specific sensor
 SELECT 
@@ -101,5 +117,3 @@ INSERT INTO sensor_params (id, sensor_type, sensor_mid, sensor_name)
 VALUES ('3563547', 'temp', 'DS1820', 'dnevna soba');
 
 
-
-UPDATE monitor_db.sensor_params SET 'id' = '101', 'sensor_type' = 'humi', 'sensor_mid' = 'DHT11', 'sensor_address' = '00 00 00 00 00 11 12 13', 'sensor_name' = 'test soba199' WHERE 'id' = '101';

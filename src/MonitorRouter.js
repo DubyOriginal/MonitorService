@@ -287,7 +287,7 @@ app.post('/storedevicedata', function (req, res) {
   res.send("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
 
   console.log("server: POST /storedevicedata");
-  console.log("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
+  //console.log("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
 
   if (user_id != null && device_id != null && sensors != null) {
     monitorApi.storeDeviceData(user_id, device_id, sensors);
