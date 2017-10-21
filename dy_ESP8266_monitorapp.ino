@@ -30,11 +30,11 @@
 //CONST
 const char* ssid     = "SkyNet";
 const char* password = "adidasneo";
-const char* serverUrl   = "192.168.1.34";
+const char* serverUrl   = "192.168.1.37";
 const char* USER_ID     = "DY001";
 const char* DEVICE_ID   = "123456";
 const unsigned long HTTP_TIMEOUT = 10000;  // max respone time from server
-const int sensorNum = 12;
+const int sensorNum = 10;
 
 //STRUCT  {"sensor_address":"3563547","sensor_type":"temp","sensor_value":"22.22"}
 //------------------------------------------------------------------------------------------------------------------
@@ -97,36 +97,42 @@ void setup() {
 /*
   SID (Sensor ID) -> ADDRESS
   -------------------------------
-  101 -> 28 06 fe 5b 05 00 00 d1
-  102 -> 28 29 a0 5b 05 00 00 74
-  103 -> 28 ff 88 f1 30 17 04 7e
-  104 -> 28 ff b8 1c 31 17 04 85
-  105 -> 28 ff 8a 22 31 17 04 df
-  106 -> 28 ff 4e 6c 31 17 03 94
-  107 -> 28 ff 95 1a 31 17 04 98
-  108 -> 28 ff 75 1f 31 17 03 40
-  109 -> 28 ff c7 0c 31 17 03 3c
-  110 -> 28 ff 67 b6 30 17 04 ad
-  111 -> 28 ff b7 b8 30 17 04 e6
-  112 -> 28 ff 2f 15 31 17 03 73
+  100 -> 28 06 fe 5b 05 00 00 d1  - S6  - puffer 4
+  101 -> 28 29 a0 5b 05 00 00 74  - S5  - radi topla
+  102 -> 28 ff 88 f1 30 17 04 7e  - S7  - puffer 3
+  103 -> 28 ff 8a 22 31 17 04 df  - S4  - radi hladna
+  104 -> 28 ff 4e 6c 31 17 03 94  - S1  - ckp core
+  105 -> 28 ff 95 1a 31 17 04 98  - S2  - ckp pol
+  106 -> 28 ff c7 0c 31 17 03 3c  - S8  - puffer 2
+  107 -> 28 ff b7 b8 30 17 04 e6  - S3  - ckp pov
+  108 -> 28 ff 2f 15 31 17 03 73  - S9  - puffer 1
+  109 -> 28 ff b8 1c 31 17 04 85  - S10 - soba
+
+  109 -> 28 ff 67 b6 30 17 04 ad  - nema
+  107 -> 28 ff 75 1f 31 17 03 40  - nema
+  200 -> 10 e3 c4 71 01 08 00 4c - S10 - soba
 */
 
 void defineDeviceSensors(){
     //DeviceAddress -> typedef uint8_t DeviceAddress[8];
     // add values to sensor:    sensor_id  |  sensor_address  |  sensor_value;
-    sensorsArr[0]  = (TSensor) {"101", {0x28, 0x06, 0xfe, 0x5b, 0x05, 0x00, 0x00, 0xd1}, ""};
-    sensorsArr[1]  = (TSensor) {"102", {0x28, 0x29, 0xa0, 0x5b, 0x05, 0x00, 0x00, 0x74}, ""};
-    sensorsArr[2]  = (TSensor) {"103", {0x28, 0xff, 0x88, 0xf1, 0x30, 0x17, 0x04, 0x7e}, ""};
-    sensorsArr[3]  = (TSensor) {"104", {0x28, 0xff, 0xb8, 0x1c, 0x31, 0x17, 0x04, 0x85}, ""};
-    sensorsArr[4]  = (TSensor) {"105", {0x28, 0xff, 0x8a, 0x22, 0x31, 0x17, 0x04, 0xdf}, ""};
-    sensorsArr[5]  = (TSensor) {"106", {0x28, 0xff, 0x4e, 0x6c, 0x31, 0x17, 0x03, 0x94}, ""};
-    sensorsArr[6]  = (TSensor) {"107", {0x28, 0xff, 0x95, 0x1a, 0x31, 0x17, 0x04, 0x98}, ""};
-    sensorsArr[7]  = (TSensor) {"108", {0x28, 0xff, 0x75, 0x1f, 0x31, 0x17, 0x03, 0x40}, ""};
-    sensorsArr[8]  = (TSensor) {"109", {0x28, 0xff, 0xc7, 0x0c, 0x31, 0x17, 0x03, 0x3c}, ""};
-    sensorsArr[9]  = (TSensor) {"110", {0x28, 0xff, 0x67, 0xb6, 0x30, 0x17, 0x04, 0xad}, ""};
-    sensorsArr[10] = (TSensor) {"111", {0x28, 0xff, 0xb7, 0xb8, 0x30, 0x17, 0x04, 0xe6}, ""};
-    sensorsArr[11] = (TSensor) {"112", {0x28, 0xff, 0x2f, 0x15, 0x31, 0x17, 0x03, 0x73}, ""};
+    sensorsArr[0]  = (TSensor) {"100", {0x28, 0x06, 0xfe, 0x5b, 0x05, 0x00, 0x00, 0xd1}, ""};
+    sensorsArr[1]  = (TSensor) {"101", {0x28, 0x29, 0xa0, 0x5b, 0x05, 0x00, 0x00, 0x74}, ""};
+    sensorsArr[2]  = (TSensor) {"102", {0x28, 0xff, 0x88, 0xf1, 0x30, 0x17, 0x04, 0x7e}, ""};
+    sensorsArr[3]  = (TSensor) {"103", {0x28, 0xff, 0x8a, 0x22, 0x31, 0x17, 0x04, 0xdf}, ""};
+    sensorsArr[4]  = (TSensor) {"104", {0x28, 0xff, 0x4e, 0x6c, 0x31, 0x17, 0x03, 0x94}, ""};
+    sensorsArr[5]  = (TSensor) {"105", {0x28, 0xff, 0x95, 0x1a, 0x31, 0x17, 0x04, 0x98}, ""};
+    sensorsArr[6]  = (TSensor) {"106", {0x28, 0xff, 0xc7, 0x0c, 0x31, 0x17, 0x03, 0x3c}, ""};
+    sensorsArr[7]  = (TSensor) {"107", {0x28, 0xff, 0xb7, 0xb8, 0x30, 0x17, 0x04, 0xe6}, ""};
+    sensorsArr[8]  = (TSensor) {"108", {0x28, 0xff, 0x2f, 0x15, 0x31, 0x17, 0x03, 0x73}, ""};
+    sensorsArr[9]  = (TSensor) {"109", {0x28, 0xff, 0xb8, 0x1c, 0x31, 0x17, 0x04, 0x85}, ""};
+
 }
+
+//sensorsArr[9]  = (TSensor) {"109", {0x10, 0xe3, 0xc4, 0x71, 0x01, 0x08, 0x00, 0x4c}, ""}; //stari senzor
+//sensorsArr[7]  = (TSensor) {"108", {0x28, 0xff, 0x75, 0x1f, 0x31, 0x17, 0x03, 0x40}, ""};
+//sensorsArr[9]  = (TSensor) {"110", {0x28, 0xff, 0x67, 0xb6, 0x30, 0x17, 0x04, 0xad}, ""};
+//sensorsArr[3]  = (TSensor) {"104", {0x28, 0xff, 0xb8, 0x1c, 0x31, 0x17, 0x04, 0x85}, ""};
 
 //******************************************************************************************************************************
 String getStringFromDeviceAddress(DeviceAddress devAdr){
