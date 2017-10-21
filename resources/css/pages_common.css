@@ -1,15 +1,29 @@
 
 body {
     padding-top: 5px;
-    font: 14px Montserrat, sans-serif;
     line-height: 1.8;
     color: #606767;
     background-color: #4b4b4b;
+    margin: 0px 5%;
+
 }
 
 p {
     font-size: 14px;
     color: #1d1d1d;
+}
+
+header {
+    background-color: #0000FF;
+}
+
+footer {
+    background-color: #2d2b2b;
+}
+
+.main_container{
+    padding: 15px auto;
+    background-color: #52ff70;
 }
 
 .margin {
@@ -21,24 +35,9 @@ p {
     color: #ffffff;
 }
 
-.bg-2 {
-    background-color: #474e5d; /* Dark Blue */
-    color: #ffffff;
-}
-
-.bg-3 {
-    background-color: #ffffff; /* White */
-    color: #555555;
-}
-
-.bg-4 {
-    background-color: #2f2f2f; /* Black Gray */
-    color: #fff;
-}
-
 .center {
     margin: 0 auto;
-    width: 98%;
+    width: 100%;
 }
 
 .container-fluid {

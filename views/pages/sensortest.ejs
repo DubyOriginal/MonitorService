@@ -94,19 +94,19 @@
   });
 </script>
 
-<body class="container" ng-app="myApp" ng-controller="getSensorCtrl">
+<body ng-app="myApp" ng-controller="getSensorCtrl">
 <header>
     <% include ../partials/header %>
 </header>
 
-<main>
+<div class="main_container">
     <div class="row">
-        <div class="container" class="col-sm-12">
+        <div class="col-sm-12">
             <div class="panel panel-info class">
                 <div class="panel-heading">LATEST SENSOR MEASUREMENTS</div>
                 <div class="panel-body">
                     <div>
-                        <div class="row"  style="margin-bottom: 20px">
+                        <div class="row" style="margin-bottom: 20px">
                             <div class="col-sm-4">
                                 <div style="margin-bottom: 20px">
                                     <h6>Select sensor to tracking</h6>
@@ -152,7 +152,8 @@
             </div>
         </div>
     </div>
-</main>
+</div>
+
 
 <footer class="container-fluid bg-4 text-center">
     <% include ../partials/footer %>

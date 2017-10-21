@@ -38,17 +38,17 @@
 
     $scope.toggleDetailBox = function (screen_id) {
       console.log("toggleDetailBox for: " + screen_id);
-      if (isEmptyObject($scope.mActiveSensor)){
+      if (isEmptyObject($scope.mActiveSensor)) {
         console.log("A");
         $scope.getSensorByScreenID(screen_id, () => {     //this will fill: mActiveSensor
           $scope.showDetailBox = true;
         });
-      }else{
-        if ($scope.mActiveSensor.screen_id !== screen_id){
+      } else {
+        if ($scope.mActiveSensor.screen_id !== screen_id) {
           $scope.getSensorByScreenID(screen_id, () => {     //this will fill: mActiveSensor
             $scope.showDetailBox = true;
           });
-        }else{
+        } else {
           $scope.closeDetailBox();
         }
       }
@@ -56,7 +56,9 @@
 
     $scope.getSensorByScreenID = function (screen_id, callback) {
       console.log("getSensorByScreenID -> " + screen_id);
-      let filterArr = $scope.mBasementList.filter(function(item){return item.screen_id === screen_id})
+      let filterArr = $scope.mBasementList.filter(function (item) {
+        return item.screen_id === screen_id
+      })
       $scope.mActiveSensor = filterArr[0];
       console.log("mActiveSensor -> " + JSON.stringify($scope.mActiveSensor));
       callback();
@@ -69,7 +71,7 @@
     $scope.saveScreenSensor = function () {
       let screen_id = $scope.mActiveSensor.screen_id;
       let sensor_id = $scope.mPickerSensor.id
-        console.log("Saving -> screen_id: " + screen_id + ", sensor_id: " + sensor_id);
+      console.log("Saving -> screen_id: " + screen_id + ", sensor_id: " + sensor_id);
       $http({
         method: 'GET',
         url: 'savescreensensor/' + screen_id + "/" + sensor_id
@@ -92,117 +94,119 @@
   });
 </script>
 
-<body class="container" ng-app="basementApp" ng-controller="basementCtrl">
+<body ng-app="basementApp" ng-controller="basementCtrl">
 <header>
     <% include ../partials/header %>
 </header>
 
-<div class="center">
-    <div class="row">
-        <!-- ******* CONTAINER BOX ************************************************************************************* -->
-        <div class="main_container" ng-class="showDetailBox ? 'col-xs-9' : 'col-xs-12'">
-            <!-- point 10 -->
-            <div class="measure_point_box" style="top: 0px; left: 0px">
-                <div class="box_a">
-                    <a href="#" ng-click='toggleDetailBox(10)'>
-                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
-                    </a>
+<div class="main_container">
+    <div class="center">
+        <div class="col-md-12">
+            <!-- ******* CONTAINER BOX ************************************************************************************* -->
+            <div class="my_container">
+                <!-- point 10 -->
+                <div class="measure_point_box" style="top: 0px; left: 0px">
+                    <div class="box_a">
+                        <a href="#" ng-click='toggleDetailBox(10)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b">
+                        <p class="small">ID: {{mBasementList[0].screen_id}}</p>
+                        <p class="small">{{mBasementList[0].sensor_value}}°C</p>
+                    </div>
                 </div>
-                <div class="box_b">
-                    <p class="small">ID: {{mBasementList[0].screen_id}}</p>
-                    <p class="small">{{mBasementList[0].sensor_value}}°C</p>
+
+                <!-- point 11 -->
+                <div class="measure_point_box" style="top: 45px; left: 0px">
+                    <div class="box_a vertical">
+                        <a href="#" ng-click='toggleDetailBox(11)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b vertical">
+                        <p class="small">ID: {{mBasementList[1].screen_id}}</p>
+                        <p class="small">{{mBasementList[1].sensor_value}}°C</p>
+                    </div>
                 </div>
+
+                <!-- point 12 -->
+                <div class="measure_point_box" style="top: 502px; left: 290px">
+                    <div class="box_a vertical">
+                        <a href="#" ng-click='toggleDetailBox(12)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b vertical">
+                        <p class="small">ID: {{mBasementList[2].screen_id}}</p>
+                        <p class="small">{{mBasementList[2].sensor_value}}°C</p>
+                    </div>
+                </div>
+
+                <!-- point 13 -->
+                <div class="measure_point_box" style="top: 290px; left: 420px">
+                    <div class="box_a">
+                        <a href="#" ng-click='toggleDetailBox(13)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b">
+                        <p class="small">ID: {{mBasementList[3].screen_id}}</p>
+                        <p class="small">{{mBasementList[3].sensor_value}}°C</p>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- point 11 -->
-            <div class="measure_point_box" style="top: 45px; left: 0px">
-                <div class="box_a vertical">
-                    <a href="#" ng-click='toggleDetailBox(11)'>
-                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
-                    </a>
+            <!-- ******* DETAILS BOX *************************************************************************************** -->
+            <div class="detail_container" ng-class="showDetailBox ? 'col-xs-3' : 'hidden'">
+                <div>
+                    <img src="images/img_measure_point_small.png" alt="mp"/>
                 </div>
-                <div class="box_b vertical">
-                    <p class="small">ID: {{mBasementList[1].screen_id}}</p>
-                    <p class="small">{{mBasementList[1].sensor_value}}°C</p>
-                </div>
-            </div>
+                <div style="margin-left: 10px;">
+                    <table class="my_table">
+                        <tr style="color: #dd3f4e; font-size: 18px;">
+                            <th>SCREEN ID:</th>
+                            <td><b>{{mSelScreenSensor.screen_id}}</b></td>
+                        </tr>
+                        <tr>
+                            <th>SENSOR ID:</th>
+                            <td><b>{{mSelSensorParams.id}}</b></td>
+                        </tr>
+                        <tr>
+                            <th>MID</th>
+                            <td><b>{{mSelSensorParams.sensor_mid}}</b></td>
+                        </tr>
+                        <tr>
+                            <th>NAME</th>
+                            <td><b>{{mSelSensorParams.sensor_name}}</b></td>
+                        </tr>
+                        <tr>
+                            <th>ALARM MIN</th>
+                            <td><b>{{mSelSensorParams.alarm_min}}</b></td>
+                        </tr>
+                        <tr>
+                            <th>ALARM MAX</th>
+                            <td><b>{{mSelSensorParams.alarm_max}}</b></td>
+                        </tr>
 
-            <!-- point 12 -->
-            <div class="measure_point_box" style="top: 502px; left: 290px">
-                <div class="box_a vertical">
-                    <a href="#" ng-click='toggleDetailBox(12)'>
-                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
-                    </a>
-                </div>
-                <div class="box_b vertical">
-                    <p class="small">ID: {{mBasementList[2].screen_id}}</p>
-                    <p class="small">{{mBasementList[2].sensor_value}}°C</p>
-                </div>
-            </div>
+                    </table>
 
-            <!-- point 13 -->
-            <div class="measure_point_box" style="top: 290px; left: 420px">
-                <div class="box_a">
-                    <a href="#" ng-click='toggleDetailBox(13)'>
-                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
-                    </a>
-                </div>
-                <div class="box_b">
-                    <p class="small">ID: {{mBasementList[3].screen_id}}</p>
-                    <p class="small">{{mBasementList[3].sensor_value}}°C</p>
-                </div>
-            </div>
+                    <div class="line"></div>
 
-        </div>
+                    <div class="table_middle" style="background-color: #1abc9c;">
+                        <p class="inline" style="margin-bottom: 0;">CHANGE SENSOR</p>
+                        <select class="selectpicker inline"
+                                ng-change="updateSelectBox()"
+                                ng-model="mPickerSensor"
+                                ng-options="sensor.id for sensor in mBasementList">
+                        </select>
+                    </div>
 
-        <!-- ******* DETAILS BOX *************************************************************************************** -->
-        <div class="detail_container" ng-class="showDetailBox ? 'col-xs-3' : 'hidden'">
-            <div>
-                <img src="images/img_measure_point_small.png" alt="mp"/>
-            </div>
-            <div style="margin-left: 10px;">
-                <table class="my_table">
-                    <tr style="color: #dd3f4e; font-size: 18px;">
-                        <th>SCREEN ID:</th>
-                        <td><b>{{mSelScreenSensor.screen_id}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>SENSOR ID:</th>
-                        <td><b>{{mSelSensorParams.id}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>MID</th>
-                        <td><b>{{mSelSensorParams.sensor_mid}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>NAME</th>
-                        <td><b>{{mSelSensorParams.sensor_name}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>ALARM MIN</th>
-                        <td><b>{{mSelSensorParams.alarm_min}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>ALARM MAX</th>
-                        <td><b>{{mSelSensorParams.alarm_max}}</b></td>
-                    </tr>
-
-                </table>
-
-                <div class="line"></div>
-
-                <div class="table_middle" style="background-color: #1abc9c;">
-                    <p class="inline" style="margin-bottom: 0;">CHANGE SENSOR</p>
-                    <select class="selectpicker inline"
-                            ng-change="updateSelectBox()"
-                            ng-model="mPickerSensor"
-                            ng-options="sensor.id for sensor in mBasementList">
-                    </select>
-                </div>
-
-                <div style="margin-top: 15px; margin-bottom: 10px; width:100%;">
-                    <button ng-click="saveScreenSensor()" class="btn btn-success">Save</button>
-                    <button ng-click="closeDetailBox()" class="btn btn-danger">Close</button>
+                    <div style="margin-top: 15px; margin-bottom: 10px; width:100%;">
+                        <button ng-click="saveScreenSensor()" class="btn btn-success">Save</button>
+                        <button ng-click="closeDetailBox()" class="btn btn-danger">Close</button>
+                    </div>
                 </div>
             </div>
         </div>

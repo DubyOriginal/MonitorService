@@ -43,12 +43,13 @@ app.set('view engine', 'ejs');
 //**********************************************************************************************************************
 // FRONT ROUTES - PAGE
 //**********************************************************************************************************************
+//PAGE - Home
 app.get('/', function (req, res) {
   console.log("server: /ROOT");
   res.render('./pages/index')
 });
 
-// monitoring sensors data
+//PAGE - monitoring sensors data
 app.get('/datatable', function (req, res) {
 
   res.render('./pages/datatable');
@@ -62,7 +63,7 @@ app.get('/datatable', function (req, res) {
   */
 });
 
-// monitoring sensors data
+//PAGE - monitoring sensors data
 app.get('/monitoring', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
@@ -72,7 +73,7 @@ app.get('/monitoring', function (req, res) {
   });
 });
 
-// monitoring sensors data
+//PAGE - monitoring sensors data
 app.get('/basement', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
@@ -82,7 +83,7 @@ app.get('/basement', function (req, res) {
   });
 });
 
-// monitoring sensors data
+//PAGE - monitoring sensors data
 app.get('/house', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
@@ -92,14 +93,24 @@ app.get('/house', function (req, res) {
   });
 });
 
-//monitoring single sensor
+//PAGE - monitoring single sensor
 app.get('/sensortest', function (req, res) {
   res.render('./pages/sensortest');
 });
 
-//device manager
+//PAGE - device manager
 app.get('/devicemanager', function (req, res) {
   res.render('./pages/devicemanager');
+});
+
+//PAGE - Parts
+app.get('/parts', function (req, res) {
+  res.render('./pages/parts');
+});
+
+//PAGE - About
+app.get('/about', function (req, res) {
+  res.render('./pages/about');
 });
 
 //**********************************************************************************************************************

@@ -48,41 +48,41 @@
 
 </script>
 
-<body class="container">
+<body>
 <header>
     <% include ../partials/header %>
-
 </header>
 
+<div class="main_container">
+    <div ng-app="liveApp" ng-controller="livectrl">
 
-<div ng-app="liveApp" ng-controller="livectrl">
-
-    <div class="row">
-        <div class="center">
-            <div class="col-md-12">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">Latest</div>
-                    <div class="panel-body">
-                        <table class="table table-striped">
-                            <tr>
-                                <th>ID</th>
-                                <th>DATE</th>
-                                <th>USER NAME</th>
-                                <th>DEVICE NAME</th>
-                                <th>MID</th>
-                                <th>SENSR NAME</th>
-                                <th>VALUE</th>
-                            </tr>
-                            <tr ng-repeat="row in mDataList">
-                                <td>{{row.sensor_id}}</td>
-                                <td>{{row.rtimestamp}}</td>
-                                <td>{{row.user_name}}</td>
-                                <td>{{row.device_name}}</td>
-                                <td>{{row.sensor_mid}}</td>
-                                <td>{{row.sensor_name}}</td>
-                                <td>{{row.sensor_value}}</td>
-                            </tr>
-                        </table>
+        <div class="row">
+            <div class="center">
+                <div class="col-md-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">Latest</div>
+                        <div class="panel-body">
+                            <table class="table table-striped">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>DATE</th>
+                                    <th>USER NAME</th>
+                                    <th>DEVICE NAME</th>
+                                    <th>MID</th>
+                                    <th>SENSR NAME</th>
+                                    <th>VALUE</th>
+                                </tr>
+                                <tr ng-repeat="row in mDataList">
+                                    <td>{{row.sensor_id}}</td>
+                                    <td>{{row.rtimestamp}}</td>
+                                    <td>{{row.user_name}}</td>
+                                    <td>{{row.device_name}}</td>
+                                    <td>{{row.sensor_mid}}</td>
+                                    <td>{{row.sensor_name}}</td>
+                                    <td>{{row.sensor_value}}</td>
+                                </tr>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,12 +1,12 @@
-.main_container {
-    margin: 0px auto 50px auto;
-    width: 796px;
-    height: 581px;
+.my_container {
+    width: 1200px;
+    height: 800px;
     background: url("../images/img_basement_scheme.png") no-repeat;
     background-size: contain;
     position: relative;
-    background-color: #e9e9e9;
+    background-color: #f8f8f8;
     display: inline-block;
+    text-align: center;
 }
 
 .detail_container {
