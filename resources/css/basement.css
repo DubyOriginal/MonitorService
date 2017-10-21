@@ -5,19 +5,19 @@
     background-size: contain;
     position: relative;
     background-color: #f8f8f8;
-    display: inline-block;
-    text-align: center;
+    margin : 15px auto;
 }
 
 .detail_container {
+    padding: 20px;
     background-color: rgb(192, 192, 192);
-    font-family: "Times New Roman", Times, serif;
     display: flex;
     padding-top: 10px;
     border: 1px solid black;
     overflow: hidden;
     height: auto;
     margin-top: -1px;
+    float:right;
 }
 
 
