@@ -59,7 +59,7 @@ class MonitorApi {
     });
   };
 
-  getSensorData(sensor_id){
+  getSensorData(sensor_id, callback){
     console.log("MonitorApi: getSensorData LIMIT 40");
 
     let dbHelper = new DBHelper();
@@ -84,12 +84,16 @@ class MonitorApi {
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
       WHERE sensor_id like ? \
       ORDER BY monitor_data.timestamp DESC \
-      LIMIT 40;";
+      LIMIT 6000;";
     dbHelper.query(sql, [sensor_id], function(result, error) {
       if (!error && result) {
         console.log("MonitorApi: getSensorData DATA LOADED - cnt: " + result.length);
         //basicUtils.printJOSNRows(result);
-
+        if (callback){
+          callback(result);
+        }else{
+          console.log("MonitorApi: getSensorData - callback is NULL!");
+        }
       }else{
         console.log("MonitorApi: getSensorData - SOME ERROR!");
       }

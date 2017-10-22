@@ -28,12 +28,22 @@
   function drawAxisTickColors() {
     var data = new google.visualization.DataTable();
     data.addColumn('number', 'X');
-    data.addColumn('number', 'test soba_1');
-    data.addColumn('number', 'test soba_2');
+    data.addColumn('number', 'ckp_jezgra');
+    //data.addColumn('number', 'test soba_2');
 
-    data.addRows([
-      [4, 18, 10], [5, 9, 5], [6, 11, 3], [7, 27, 19], [8, 33, 25], [9, 40, 32], [10, 32, 24],
-    ]);
+    //data.addRows([[4, 18, 10], [5, 9, 5], [6, 11, 3], [7, 27, 19], [8, 33, 25], [9, 40, 32], [10, 32, 24]]);
+
+    //allSensorData
+    var mSensorData = <%- JSON.stringify(mSensorData) %>;
+    let arrCnt = mSensorData.length;
+    var cnt = 0;
+    for (var i = arrCnt-1; i > 0; i--) {
+    //for (var i = 0; i < arrCnt; i++) {
+      let sVal = parseFloat(mSensorData[i].sensor_value);
+      console.log("val["+ i + "] -> " + sVal);
+      data.addRow([cnt, sVal]);
+      cnt++;
+    }
 
     var options = {
       hAxis: {

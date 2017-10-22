@@ -20,6 +20,7 @@
     $scope.showDetailBox = false;
     $scope.mActiveSensor = null;  // {"screen_id":11, "sensor_id":102}
     $scope.mBasementList = [];
+    $scope.mCapacity = 0;
 
     $scope.getBasementList = function () {
       console.log("getBasementList!");
@@ -29,6 +30,7 @@
       }).then(function (response) {
         console.log("getBasementList - data loaded!");
         $scope.mBasementList = response.data;
+        $scope.calculateCapacity();
         //console.log(">>>>>  mBasementList: " + JSON.stringify($scope.mBasementList));
       }, function (error) {
         console.log("getBasementList ERROR: " + error);
@@ -102,6 +104,25 @@
       $scope.mActiveSensor = null;
 
     };
+
+    $scope.calculateCapacity = function () {
+      let sumPuffTemp =
+        parseFloat($scope.mBasementList[0].sensor_value) +
+        parseFloat($scope.mBasementList[1].sensor_value) +
+        parseFloat($scope.mBasementList[2].sensor_value) +
+        parseFloat($scope.mBasementList[3].sensor_value);
+      console.log("sumPuffTemp = " + sumPuffTemp);
+      let averageTemp = sumPuffTemp / 4;
+      console.log("averageTemp = " + averageTemp);
+
+      const rangeMin = 20;  //from 20°C as 0%
+      const rangeMax = 60;  //from 60°C as 100%
+      let percVal = 100 * (averageTemp - rangeMin) / (rangeMax - rangeMin)
+
+      $scope.mCapacity = parseInt(percVal);
+    };
+
+
   });
 </script>
 
@@ -167,7 +188,7 @@
                     </div>
                 </div>
 
-                <!-- point 10 - puffer 4 -->
+                <!-- screenID: 10, sensorID: 100, name: puffer 4 -->
                 <div class="measure_point_box" style="top: 365px; left: 725px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(10)'>
@@ -180,7 +201,7 @@
                     </div>
                 </div>
 
-                <!-- point 11 - puffer 3 -->
+                <!-- screenID: 11, sensorID: 102, name: puffer 3 -->
                 <div class="measure_point_box" style="top: 445px; left: 725px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(11)'>
@@ -193,7 +214,7 @@
                     </div>
                 </div>
 
-                <!-- point 12 - puffer 2 -->
+                <!-- screenID: 12, sensorID: 106, name: puffer 2 -->
                 <div class="measure_point_box" style="top: 525px; left: 725px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(12)'>
@@ -206,7 +227,7 @@
                     </div>
                 </div>
 
-                <!-- point 13 - puffer 1 -->
+                <!-- screenID: 13, sensorID: 108, name: puffer 1 -->
                 <div class="measure_point_box" style="top: 605px; left: 725px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(13)'>
@@ -219,7 +240,7 @@
                     </div>
                 </div>
 
-                <!-- point 14 -->
+                <!-- screenID: 14, sensorID: 105, name: CKP POL -->
                 <div class="measure_point_box" style="top: 417px; left: 204px">
                     <div class="box_a vertical">
                         <a href="#" ng-click='toggleDetailBox(14)'>
@@ -232,7 +253,7 @@
                     </div>
                 </div>
 
-                <!-- point 15-->
+                <!-- screenID: 15, sensorID: 107, name: CKP_POV -->
                 <div class="measure_point_box" style="top: 650px; left: 196px">
                     <div class="box_a vertical">
                         <a href="#" ng-click='toggleDetailBox(15)'>
@@ -245,7 +266,7 @@
                     </div>
                 </div>
 
-                <!-- point 16 -->
+                <!-- screenID: 16, sensorID: 104, name: CKP_JEZGRA -->
                 <div class="measure_point_box" style="top: 425px; left: 10px">
                     <div class="box_b">
                         <p class="small">ID: {{mBasementList[6].screen_id}}</p>
@@ -258,7 +279,7 @@
                     </div>
                 </div>
 
-                <!-- point 17 -->
+                <!-- screenID: 17, sensorID: 101, name: RADI_TOPLA -->
                 <div class="measure_point_box" style="top: 312px; left: 990px">
                     <div class="box_b vertical">
                         <p class="small">ID: {{mBasementList[7].screen_id}}</p>
@@ -271,7 +292,7 @@
                     </div>
                 </div>
 
-                <!-- point 18 -->
+                <!-- screenID: 18, sensorID: 103, name: RADI_HLADNA -->
                 <div class="measure_point_box" style="top: 624px; left: 1027px">
                     <div class="box_a vertical left">
                         <a href="#" ng-click='toggleDetailBox(18)'>
@@ -284,7 +305,7 @@
                     </div>
                 </div>
 
-                <!-- point 19 -->
+                <!-- screenID: 19, sensorID: 109, name: SOBA -->
                 <div class="measure_point_box" style="top: 150px; left: 150px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(19)'>
@@ -295,6 +316,12 @@
                         <p class="small">ID: {{mBasementList[9].screen_id}}</p>
                         <p class="small">{{mBasementList[9].sensor_value}}°C</p>
                     </div>
+                </div>
+
+                <!-- calculation -->
+                <div class="calculation_box" style="top: 565px; left: 622px; text-align: center">
+                    <p class="dy-p-2">CAPACITY</p>
+                    <p class="small">{{mCapacity}}%</p>
                 </div>
 
             </div>

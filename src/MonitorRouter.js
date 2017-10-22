@@ -66,21 +66,22 @@ app.get('/datatable', function (req, res) {
 //PAGE - monitoring sensors data
 app.get('/monitoring', function (req, res) {
 
-  monitorApi.getAllSensorsData(function (allSensorData) {
+  let sensor_id = 104;
+  monitorApi.getSensorData(sensor_id, function (mSensorData) {
     res.render('./pages/monitoring', {
-      allSensorData: allSensorData
+      mSensorData: mSensorData
     });
   });
 });
 
 //PAGE - monitoring sensors data
 app.get('/basement', function (req, res) {
-
-  monitorApi.getAllSensorsData(function (allSensorData) {
-    res.render('./pages/basement', {
-      allSensorData: allSensorData
-    });
-  });
+  res.render('./pages/basement');
+  //monitorApi.getAllSensorsData(function (allSensorData) {
+  //  res.render('./pages/basement', {
+  //    allSensorData: allSensorData
+  //  });
+  //});
 });
 
 //PAGE - monitoring sensors data
@@ -148,7 +149,18 @@ app.get('/getsensordata/:sensor_id', function (req, res) {
 
   res.set('Content-Type', 'application/json')
   res.send("RECEIVED /getsensordata/" + sensor_id);
-  monitorApi.getSensorData(sensor_id);
+  monitorApi.getSensorData(sensor_id, result => {
+    if (res != null){
+      if (result != null){
+        res.set('Content-Type', 'application/json')
+        res.send(result);
+      }else{
+        res.send(null);
+      }
+    }else{
+      console.log("/getsensordata res in NULL");
+    }
+  });
 });
 
 //http://localhost:2200/getlatestsensormeasurement/101
