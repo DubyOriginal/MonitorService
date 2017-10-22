@@ -195,7 +195,8 @@ class MonitorApi {
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
       LEFT JOIN monitor_db.screen_sensor ON monitor_db.monitor_data.sensor_id = monitor_db.screen_sensor.sensor_id \
       WHERE \
-        monitor_data.timestamp = (SELECT MAX(timestamp) FROM monitor_data);";
+        monitor_data.timestamp = (SELECT MAX(timestamp) FROM monitor_data) \
+      ORDER BY screen_sensor.screen_id";
 
     dbHelper.query(sql, [], function(result, error) {
       if (!error && result) {

@@ -14,83 +14,72 @@
 <link rel="stylesheet" type="text/css" href="css/basement.css">
 
 <script>
-  var liveApp = angular.module("liveApp", []);
-  liveApp.controller("livectrl", function livectrl($scope, $http) {
+  var basementApp = angular.module("basementApp", []);
+  basementApp.controller("basementCtrl", function basementCtrl($scope, $http) {
 
     $scope.showDetailBox = false;
-    $scope.mSelScreenSensor = null;  // {"screen_id":11, "sensor_id":102}
-    $scope.mSensorList = [];
-    $scope.mSelSensorParams = null;
+    $scope.mActiveSensor = null;  // {"screen_id":11, "sensor_id":102}
+    $scope.mBasementList = [];
 
-    $scope.getSensorList = function () {
-      console.log("getSensorList!");
+    $scope.getBasementList = function () {
+      console.log("getBasementList!");
       $http({
         method: 'GET',
-        url: 'getallsensorparams'
+        url: 'getbasementsensordata'
       }).then(function (response) {
-        $scope.mSensorList = response.data;
-        //console.log(">>>>>  mSensorList: " + JSON.stringify($scope.mSensorList));
+        console.log("getBasementList - data loaded!");
+        $scope.mBasementList = response.data;
+        //console.log(">>>>>  mBasementList: " + JSON.stringify($scope.mBasementList));
       }, function (error) {
-        console.log("getSensorList ERROR: " + error);
+        console.log("getBasementList ERROR: " + error);
       });
     };
-    $scope.getSensorList();   //call initially
+    $scope.getBasementList();   //call initially
 
     $scope.toggleDetailBox = function (screen_id) {
       console.log("toggleDetailBox for: " + screen_id);
-      if (isEmptyObject($scope.mSelScreenSensor)){
+      if (isEmptyObject($scope.mActiveSensor)) {
         console.log("A");
-        if ($scope.showDetailBox && screen_id === $scope.mSelScreenSensor.screen_id) {
-          console.log("B");
-          $scope.closeDetailBox();
-        } else {
-          console.log("C");
+        $scope.getSensorByScreenID(screen_id, () => {     //this will fill: mActiveSensor
           $scope.showDetailBox = true;
-          $scope.getSensorByScreenID(screen_id, () => {   //this will fill: mSelScreenSensor
-            if (!isEmptyObject($scope.mSelScreenSensor)){
-              console.log("D");
-              console.log("toggleDetailBox: getSensorByScreenID mSelScreenSensor -> " + JSON.stringify($scope.mSelScreenSensor));
-              let filterArr = $scope.mSensorList.filter(function(item){return item.id === $scope.mSelScreenSensor.sensor_id})
-              $scope.mSelSensorParams = filterArr[0];
-              console.log("toggleDetailBox: getSensorByScreenID mSelSensorParams -> " + JSON.stringify($scope.mSelSensorParams));
-            }else{
-              console.log("E");
-              $scope.mSelScreenSensor = null;
-              $scope.mSelSensorParams = null;
-            }
+        });
+      } else {
+        if ($scope.mActiveSensor.screen_id !== screen_id) {
+          $scope.getSensorByScreenID(screen_id, () => {     //this will fill: mActiveSensor
+            $scope.showDetailBox = true;
           });
+        } else {
+          $scope.closeDetailBox();
         }
-      }else{
-        console.log("F");
-        console.log("toggleDetailBox: mSelScreenSensor is NULL or EMPTY");
-        $scope.closeDetailBox();
       }
-    } 
+    }
 
     $scope.getSensorByScreenID = function (screen_id, callback) {
-      console.log("getSensorByScreenID[" + screen_id + "]");
-      $http({
-        method: 'GET',
-        url: 'getsensorbyscreenid/' + screen_id
-      }).then(function (response) {
-        //let sensorID = response.data[0].sensor_id;
-        $scope.mSelScreenSensor = response.data[0];
-        //console.log("toggleDetailBox: mSelScreenSensor A -> " + JSON.stringify($scope.mSelScreenSensor));
-        callback();
-      }, function (error) {
-        console.log("getSensorByScreenID ERROR: " + error);
-        callback();
-      });
+      console.log("getSensorByScreenID -> " + screen_id);
+      let filterArr = $scope.mBasementList.filter(function (item) {
+        return item.screen_id === screen_id
+      })
+      console.log("filterArr -> " + JSON.stringify(filterArr));
+      $scope.mActiveSensor = filterArr[0];
+
+      if (isEmptyObject($scope.mActiveSensor)) {
+        $scope.mActiveSensor = {
+          screen_id: screen_id
+        };
+      }
+
+      console.log("mActiveSensor -> " + JSON.stringify($scope.mActiveSensor));
+      callback();
     }
 
     $scope.updateSelectBox = function () {
-      console.log("updateSelectBox -> " + $scope.mPickerSensor.id);
+      console.log("updateSelectBox -> " + $scope.mPickerSensor.sensor_id);
     }
 
     $scope.saveScreenSensor = function () {
-      let screen_id = $scope.mSelScreenSensor.screen_id;
-      let sensor_id = $scope.mPickerSensor.id
-        console.log("Saving -> screen_id: " + screen_id + ", sensor_id: " + sensor_id);
+      let screen_id = $scope.mActiveSensor.screen_id;
+      let sensor_id = $scope.mPickerSensor.sensor_id
+      console.log("Saving -> screen_id: " + screen_id + ", sensor_id: " + sensor_id);
       $http({
         method: 'GET',
         url: 'savescreensensor/' + screen_id + "/" + sensor_id
@@ -98,11 +87,10 @@
         let status = response.data.status;
         console.log("saveScreenSensor: " + status);
 
-        $scope.getSensorByScreenID(screen_id, () => {
-          console.log("data reloaded! -> " + JSON.stringify($scope.mSelScreenSensor));
-          let filterArr = $scope.mSensorList.filter(function(item){return item.id === $scope.mSelScreenSensor.sensor_id})
-          $scope.mSelSensorParams = filterArr[0];
-        });
+        //$scope.getSensorByScreenID(screen_id, () => {     //this will fill: mActiveSensor
+        //  $scope.showDetailBox = true;
+        //});
+        $scope.closeDetailBox();
 
       }, function (error) {
         console.log("saveScreenSensor ERROR: " + error);
@@ -111,117 +99,211 @@
 
     $scope.closeDetailBox = function () {
       $scope.showDetailBox = false;
-      $scope.mSelScreenSensor = null;
-      $scope.mSelSensorParams = null;
-    };
+      $scope.mActiveSensor = null;
 
+    };
   });
 </script>
 
-<body class="container" ng-app="liveApp" ng-controller="livectrl">
+<body ng-app="basementApp" ng-controller="basementCtrl">
 <header>
     <% include ../partials/header %>
 </header>
 
-<div class="center">
-    <div class="row">
-        <!-- ******* CONTAINER BOX ************************************************************************************* -->
-        <div class="main_container" ng-class="showDetailBox ? 'col-xs-9' : 'col-xs-12'">
-            <!-- point 01 -->
-            <div class="measure_point_box" style="top: 0px; left: 0px">
-                <div class="box_a">
-                    <a href="#" ng-click='toggleDetailBox(10)'>
-                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
-                    </a>
+<div class="main_container" style="display: flex">
+    <div class="center">
+        <div class="col-md-12">
+            <!-- ******* CONTAINER BOX *********************** -->
+            <div class="my_container">
+                <!-- ******* DETAILS BOX ************************* -->
+                <div class="detail_container" ng-show=showDetailBox>
+                    <div>
+                        <img src="images/img_measure_point_small.png" alt="mp"/>
+                    </div>
+                    <div style="margin-left: 10px;">
+                        <table class="my_table">
+                            <tr style="color: #dd3f4e; font-size: 18px;">
+                                <th>SCREEN ID:</th>
+                                <td><b>{{mActiveSensor.screen_id}}</b></td>
+                            </tr>
+                            <tr>
+                                <th>SENSOR ID:</th>
+                                <td><b>{{mActiveSensor.sensor_id}}</b></td>
+                            </tr>
+                            <tr>
+                                <th>MID</th>
+                                <td><b>{{mActiveSensor.sensor_mid}}</b></td>
+                            </tr>
+                            <tr>
+                                <th>NAME</th>
+                                <td><b>{{mActiveSensor.sensor_name}}</b></td>
+                            </tr>
+                            <tr>
+                                <th>ALARM MIN</th>
+                                <td><b>{{mActiveSensor.alarm_min}}</b></td>
+                            </tr>
+                            <tr>
+                                <th>ALARM MAX</th>
+                                <td><b>{{mActiveSensor.alarm_max}}</b></td>
+                            </tr>
+
+                        </table>
+
+                        <div class="line"></div>
+
+                        <div class="table_middle" style="background-color: #1abc9c;">
+                            <p class="inline" style="margin-bottom: 0;">CHANGE SENSOR</p>
+                            <select class="selectpicker inline"
+                                    ng-change="updateSelectBox()"
+                                    ng-model="mPickerSensor"
+                                    ng-options="sensor.sensor_id for sensor in mBasementList">
+                            </select>
+                        </div>
+
+                        <div style="margin-top: 15px; margin-bottom: 10px; width:100%;">
+                            <button ng-click="saveScreenSensor()" class="btn btn-success">Save</button>
+                            <button ng-click="closeDetailBox()" class="btn btn-danger">Close</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="box_b">
-                    <p class="small">ID: 101</p>
-                    <p class="small">67.5°C</p>
+
+                <!-- point 10 - puffer 4 -->
+                <div class="measure_point_box" style="top: 365px; left: 725px">
+                    <div class="box_a">
+                        <a href="#" ng-click='toggleDetailBox(10)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b">
+                        <p class="small">ID: {{mBasementList[0].screen_id}}</p>
+                        <p class="small">{{mBasementList[0].sensor_value}}°C</p>
+                    </div>
                 </div>
+
+                <!-- point 11 - puffer 3 -->
+                <div class="measure_point_box" style="top: 445px; left: 725px">
+                    <div class="box_a">
+                        <a href="#" ng-click='toggleDetailBox(11)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b">
+                        <p class="small">ID: {{mBasementList[1].screen_id}}</p>
+                        <p class="small">{{mBasementList[1].sensor_value}}°C</p>
+                    </div>
+                </div>
+
+                <!-- point 12 - puffer 2 -->
+                <div class="measure_point_box" style="top: 525px; left: 725px">
+                    <div class="box_a">
+                        <a href="#" ng-click='toggleDetailBox(12)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b">
+                        <p class="small">ID: {{mBasementList[2].screen_id}}</p>
+                        <p class="small">{{mBasementList[2].sensor_value}}°C</p>
+                    </div>
+                </div>
+
+                <!-- point 13 - puffer 1 -->
+                <div class="measure_point_box" style="top: 605px; left: 725px">
+                    <div class="box_a">
+                        <a href="#" ng-click='toggleDetailBox(13)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b">
+                        <p class="small">ID: {{mBasementList[3].screen_id}}</p>
+                        <p class="small">{{mBasementList[3].sensor_value}}°C</p>
+                    </div>
+                </div>
+
+                <!-- point 14 -->
+                <div class="measure_point_box" style="top: 417px; left: 204px">
+                    <div class="box_a vertical">
+                        <a href="#" ng-click='toggleDetailBox(14)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b vertical">
+                        <p class="small">ID: {{mBasementList[4].screen_id}}</p>
+                        <p class="small">{{mBasementList[4].sensor_value}}°C</p>
+                    </div>
+                </div>
+
+                <!-- point 15-->
+                <div class="measure_point_box" style="top: 650px; left: 196px">
+                    <div class="box_a vertical">
+                        <a href="#" ng-click='toggleDetailBox(15)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b vertical">
+                        <p class="small">ID: {{mBasementList[5].screen_id}}</p>
+                        <p class="small">{{mBasementList[5].sensor_value}}°C</p>
+                    </div>
+                </div>
+
+                <!-- point 16 -->
+                <div class="measure_point_box" style="top: 425px; left: 10px">
+                    <div class="box_b">
+                        <p class="small">ID: {{mBasementList[6].screen_id}}</p>
+                        <p class="small">{{mBasementList[6].sensor_value}}°C</p>
+                    </div>
+                    <div class="box_a">
+                        <a href="#" ng-click='toggleDetailBox(16)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- point 17 -->
+                <div class="measure_point_box" style="top: 312px; left: 990px">
+                    <div class="box_b vertical">
+                        <p class="small">ID: {{mBasementList[7].screen_id}}</p>
+                        <p class="small">{{mBasementList[7].sensor_value}}°C</p>
+                    </div>
+                    <div class="box_a vertical">
+                        <a href="#" ng-click='toggleDetailBox(17)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- point 18 -->
+                <div class="measure_point_box" style="top: 624px; left: 1027px">
+                    <div class="box_a vertical left">
+                        <a href="#" ng-click='toggleDetailBox(18)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b vertical">
+                        <p class="small">ID: {{mBasementList[8].screen_id}}</p>
+                        <p class="small">{{mBasementList[8].sensor_value}}°C</p>
+                    </div>
+                </div>
+
+                <!-- point 19 -->
+                <div class="measure_point_box" style="top: 150px; left: 150px">
+                    <div class="box_a">
+                        <a href="#" ng-click='toggleDetailBox(19)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b">
+                        <p class="small">ID: {{mBasementList[9].screen_id}}</p>
+                        <p class="small">{{mBasementList[9].sensor_value}}°C</p>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- point 02 -->
-            <div class="measure_point_box" style="top: 45px; left: 0px">
-                <div class="box_a vertical">
-                    <a href="#" ng-click='toggleDetailBox(11)'>
-                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
-                    </a>
-                </div>
-                <div class="box_b vertical">
-                    <p class="small">ID: 102</p>
-                    <p class="small">77.5°C</p>
-                </div>
-            </div>
-
-            <!-- point 03 -->
-            <div class="measure_point_box" style="top: 502px; left: 290px">
-                <div class="box_a vertical">
-                    <a href="#" ng-click='toggleDetailBox(12)'>
-                        <img src="images/img_measure_point_small.png" alt="basement scheme"/>
-                    </a>
-                </div>
-                <div class="box_b vertical">
-                    <p class="small">ID: 102</p>
-                    <p class="small">77.5°C</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ******* DETAILS BOX *************************************************************************************** -->
-        <div class="detail_container" ng-class="showDetailBox ? 'col-xs-3' : 'hidden'">
-            <div>
-                <img src="images/img_measure_point_small.png" alt="mp"/>
-            </div>
-            <div style="margin-left: 10px;">
-                <table class="my_table">
-                    <tr style="color: #dd3f4e; font-size: 18px;">
-                        <th>SCREEN ID:</th>
-                        <td><b>{{mSelScreenSensor.screen_id}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>SENSOR ID:</th>
-                        <td><b>{{mSelSensorParams.id}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>MID</th>
-                        <td><b>{{mSelSensorParams.sensor_mid}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>NAME</th>
-                        <td><b>{{mSelSensorParams.sensor_name}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>ALARM MIN</th>
-                        <td><b>{{mSelSensorParams.alarm_min}}</b></td>
-                    </tr>
-                    <tr>
-                        <th>ALARM MAX</th>
-                        <td><b>{{mSelSensorParams.alarm_max}}</b></td>
-                    </tr>
-
-                </table>
-
-                <div class="line"></div>
-
-                <div class="table_middle" style="background-color: #1abc9c;">
-                    <p class="inline" style="margin-bottom: 0;">CHANGE SENSOR</p>
-                    <select class="selectpicker inline"
-                            ng-change="updateSelectBox()"
-                            ng-model="mPickerSensor"
-                            ng-options="sensor.id for sensor in mSensorList">
-                    </select>
-                </div>
-
-                <div style="margin-top: 15px; margin-bottom: 10px; width:100%;">
-                    <button ng-click="saveScreenSensor()" class="btn btn-success">Save</button>
-                    <button ng-click="closeDetailBox()" class="btn btn-danger">Close</button>
-                </div>
-            </div>
         </div>
     </div>
 </div>
 
-<footer class="container-fluid bg-4 text-center">
+<footer class="container-fluid text-center">
     <% include ../partials/footer %>
 </footer>
 

@@ -77,7 +77,7 @@ app.get('/monitoring', function (req, res) {
 app.get('/basement', function (req, res) {
 
   monitorApi.getAllSensorsData(function (allSensorData) {
-    res.render('./pages/basement2', {
+    res.render('./pages/basement', {
       allSensorData: allSensorData
     });
   });
@@ -103,9 +103,14 @@ app.get('/devicemanager', function (req, res) {
   res.render('./pages/devicemanager');
 });
 
-//PAGE - Parts
-app.get('/parts', function (req, res) {
-  res.render('./pages/parts');
+//PAGE - Parts / CKP
+app.get('/parts_ckp', function (req, res) {
+  res.render('./pages/parts_ckp');
+});
+
+//PAGE - Parts / Puffer
+app.get('/parts_casbs', function (req, res) {
+  res.render('./pages/parts_casbs');
 });
 
 //PAGE - About

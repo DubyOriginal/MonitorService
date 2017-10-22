@@ -1,9 +1,9 @@
 .my_container {
     height: 730px;
+    width: 1183px;
     background: url("../images/img_basement_scheme.png") bottom no-repeat;
-    background-color: #eedba1;
-    margin : 15px auto 15px;
-    padding: 15px;
+    background-color: #f6f6f6;
+    display: block;
 }
 
 .detail_container {
@@ -40,12 +40,16 @@
 .box_b {
     display: table-cell;
     vertical-align: middle;
-    background-color: #f3f3f3;
+    background-color: #f36a5b;
 }
 
 .vertical {
     display:block;
     text-align: center;
+}
+
+.left {
+    text-align: left;
 }
 
 p.small {
