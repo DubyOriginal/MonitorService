@@ -10,15 +10,10 @@
     <script src="/angular/angular.js"></script>
     <script src="/angular-google-chart/ng-google-chart.js"></script>
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-</head>
 
-<style>
-    #chart_div {
-        display: block;
-        height: 600px;
-    }
-</style>
+
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+</head>
 
 <script type="text/javascript">
   //-------------------------------------------------------------------------------------
@@ -49,8 +44,9 @@
     }
   });
 
-  //-------------------------------------------------------------------------------------
-  google.charts.load('current', {packages: ['corechart', 'line']});
+  //********************************************************************************************************************
+
+  google.load('visualization', '1', {packages: ['controls', 'charteditor']});
 
   function loadSensorData(sensor_id, sensorName) {
     $.ajax({
@@ -60,7 +56,7 @@
         console.log("result.length -> " + result.length);
         mSensorData = result;
 
-        google.charts.setOnLoadCallback(drawData(sensorName));
+        google.setOnLoadCallback(drawData(sensorName));
       }
     });
   };
@@ -81,10 +77,11 @@
       data.addRow([sTSDate, sVal]);
     }
 
-    var options = {
+    var chartOptions = {
+      height: 400,
+      chartArea: {left: 70, top: 50, width: "95%"},
       legend: {position: 'top', alignment: 'end'},
       interpolateNulls: false,
-      chartArea: {left: 70, top: 50, width: "100%"},
       hAxis: {
         title: '',
         format: 'HH:mm:ss',
@@ -122,9 +119,52 @@
       colors: ['#c53d47', '#31925a'],
       backgroundColor: '#f6f6f6'
     };
-    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-    chart.draw(data, options);
+
+    var dash = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
+
+    var control = new google.visualization.ControlWrapper({
+      controlType: 'ChartRangeFilter',
+      containerId: 'control_div',
+      options: {
+        filterColumnIndex: 0,
+        ui: {
+          chartOptions: {
+            height: 60,
+            width: "95%",
+            chartArea: {
+              left: 70,
+              width: '90%'
+            },
+            backgroundColor: '#dfdfdf'
+          },
+          chartView: {
+            columns: [0, 1]
+          }
+        }
+      }
+    });
+
+    var chart = new google.visualization.ChartWrapper({
+      chartType: 'LineChart',
+      containerId: 'chart_div',
+    });
+    function setOptions (wrapper) {
+      wrapper.setOptions(chartOptions);
+    }
+
+    setOptions(chart);
+
+    dash.bind([control], [chart]);
+    dash.draw(data);
+    google.visualization.events.addListener(control, 'statechange', function () {
+      var v = control.getState();
+      let dateStartStr = v.range.start;
+      let dateEndStr = v.range.end;
+      document.getElementById('chart_range_span').innerHTML = dateStartStr + '  to  ' + dateEndStr;
+      return 0;
+    });
   }
+
 </script>
 
 <body ng-app="myApp" ng-controller="getSensorCtrl">
@@ -144,7 +184,12 @@
     <div class="row">
         <div class="center">
             <div class="col-md-12">
-                <div id="chart_div"></div>
+                <!-- <div id="chart_div"></div> -->
+                <div id="dashboard_div">
+                    <div id="chart_div" style="display: block;"></div>
+                    <div id="control_div"></div>
+                    <p><span id='chart_range_span'></span></p>
+                </div>
             </div>
         </div>
     </div>
