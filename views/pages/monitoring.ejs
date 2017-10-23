@@ -16,80 +16,131 @@
 <style>
     #chart_div {
         display: block;
-        height: 500px;
-        margin-bottom: 30px;
+        height: 600px;
     }
 </style>
 
 <script type="text/javascript">
-  google.charts.load('current', {packages: ['corechart', 'line']});
-  google.charts.setOnLoadCallback(drawAxisTickColors);
+  //-------------------------------------------------------------------------------------
+  var angularApp = angular.module('myApp', []);
+  angularApp.controller('getSensorCtrl', function ($scope, $http) {
+    $scope.mSensorList = [];
 
-  function drawAxisTickColors() {
+    $scope.getSensorList = function () {
+      console.log("getSensorList!");
+      $http({
+        method: 'GET',
+        url: 'getallsensorparams'
+      }).then(function (response) {
+        $scope.mSensorList = response.data;
+        $scope.selSensor = $scope.mSensorList[4];   //set initial value
+        $scope.updateSelectBox();                   //imulate select for initial value
+      }, function (error) {
+        console.log("getSensorList ERROR: " + error);
+      });
+    };
+    $scope.getSensorList();  //initial data load
+
+    $scope.updateSelectBox = function () {
+      let selSensID = $scope.selSensor.id;
+      let selSensName = $scope.selSensor.sensor_name;
+      console.log("updateSelectBox: selSensor[" + selSensID + "] -> " + selSensName);
+      loadSensorData(selSensID, selSensName);
+    }
+  });
+
+  //-------------------------------------------------------------------------------------
+  google.charts.load('current', {packages: ['corechart', 'line']});
+
+  function loadSensorData(sensor_id, sensorName) {
+    $.ajax({
+      type: 'GET',
+      url: '/getsensordata/' + sensor_id,
+      success: function (result) {
+        console.log("result.length -> " + result.length);
+        mSensorData = result;
+
+        google.charts.setOnLoadCallback(drawData(sensorName));
+      }
+    });
+  };
+
+  function drawData(sensorName) {
     var data = new google.visualization.DataTable();
-    data.addColumn('number', 'X');
-    data.addColumn('number', 'ckp_jezgra');
+    //data.addColumn('number', 'X');
+    data.addColumn('datetime', 'Date');
+    data.addColumn('number', sensorName);
     //data.addColumn('number', 'test soba_2');
 
-    //data.addRows([[4, 18, 10], [5, 9, 5], [6, 11, 3], [7, 27, 19], [8, 33, 25], [9, 40, 32], [10, 32, 24]]);
-
-    //allSensorData
-    var mSensorData = <%- JSON.stringify(mSensorData) %>;
-    let arrCnt = mSensorData.length;
-    var cnt = 0;
-    for (var i = arrCnt-1; i > 0; i--) {
-    //for (var i = 0; i < arrCnt; i++) {
+    for (var i = 0; i < mSensorData.length; i++) {
       let sVal = parseFloat(mSensorData[i].sensor_value);
-      console.log("val["+ i + "] -> " + sVal);
-      data.addRow([cnt, sVal]);
-      cnt++;
+      //console.log("val[" + i + "] -> " + sVal);
+
+      let sTS = parseInt(mSensorData[i].timestamp * 1000);
+      let sTSDate = new Date(sTS);
+      data.addRow([sTSDate, sVal]);
     }
 
     var options = {
+      legend: {position: 'top', alignment: 'end'},
+      interpolateNulls: false,
+      chartArea: {left: 70, top: 50, width: "100%"},
       hAxis: {
-        title: 'Time',
-        textStyle: {
-          color: '#01579b',
-          fontSize: 18,
-          fontName: 'Arial',
-          bold: true,
-          italic: true
+        title: '',
+        format: 'HH:mm:ss',
+        gridlines: {
+          count: 8,
+          color: "#8c8c8c"
         },
-        titleTextStyle: {
+        baselineColor: '#40cc34',
+        textStyle: {
           color: '#01579b',
           fontSize: 18,
           fontName: 'Arial',
           bold: false,
-          italic: true
+          italic: false
         }
       },
       vAxis: {
-        title: 'Očitanja senzora',
+        title: 'Temperatura',
         textStyle: {
-          color: '#2b3232',
+          color: '#8b5f0a',
           fontSize: 18,
           bold: false
         },
         titleTextStyle: {
-          color: '#2b3232',
+          color: '#8b5f0a',
           fontSize: 18,
           bold: true
-        }
+        },
+        gridlines: {
+          count: 8,
+          color: "#8C8C8C"
+        },
+        baselineColor: '#222222'
       },
-      colors: ['#c54852', '#31925a'],
-      backgroundColor: '#f1f1f1'
+      colors: ['#c53d47', '#31925a'],
+      backgroundColor: '#f6f6f6'
     };
     var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
     chart.draw(data, options);
   }
 </script>
 
-<body>
+<body ng-app="myApp" ng-controller="getSensorCtrl">
 <header>
     <% include ../partials/header %>
 </header>
 
 <div class="main_container" style="display: block">
+    <div class="row">
+        <h5>Select sensor to monitor</h5>
+        <select class="selectpicker"
+                ng-change="updateSelectBox()"
+                ng-model="selSensor"
+                ng-options="sensor.sensor_name for sensor in mSensorList">
+        </select>
+    </div>
     <div class="row">
         <div class="center">
             <div class="col-md-12">
@@ -97,6 +148,8 @@
             </div>
         </div>
     </div>
+
+
 </div>
 
 

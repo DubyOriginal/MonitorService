@@ -57,8 +57,8 @@ FROM monitor_db.monitor_data
 LEFT JOIN monitor_db.user_params ON monitor_db.monitor_data.user_id = monitor_db.user_params.id
 LEFT JOIN monitor_db.device_params ON monitor_db.monitor_data.device_id = monitor_db.device_params.id
 LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monitor_db.sensor_params.id
-WHERE sensor_id like '%101%'
-ORDER BY monitor_data.timestamp DESC;
+WHERE sensor_id like '%104%'
+ORDER BY monitor_data.timestamp ASC;
 
 
 # get Latest Sensor Value
@@ -117,3 +117,8 @@ INSERT INTO sensor_params (id, sensor_type, sensor_mid, sensor_name)
 VALUES ('3563547', 'temp', 'DS1820', 'dnevna soba');
 
 
+######################################################################################################
+######################################################################################################
+SELECT * FROM monitor_db.monitor_data WHERE sensor_id = 104;
+
+DELETE FROM monitor_db.monitor_data WHERE sensor_id = 104 AND sensor_value IS NULL;

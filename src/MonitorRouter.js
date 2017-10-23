@@ -65,13 +65,13 @@ app.get('/datatable', function (req, res) {
 
 //PAGE - monitoring sensors data
 app.get('/monitoring', function (req, res) {
-
-  let sensor_id = 104;
+  res.render('./pages/monitoring');
+  /*let sensor_id = 104;
   monitorApi.getSensorData(sensor_id, function (mSensorData) {
     res.render('./pages/monitoring', {
       mSensorData: mSensorData
     });
-  });
+  });*/
 });
 
 //PAGE - monitoring sensors data
@@ -145,14 +145,12 @@ app.get('/getallsensorsdata', function (req, res) {
 //http://localhost:2200/getsensordata/101
 app.get('/getsensordata/:sensor_id', function (req, res) {
   let sensor_id = req.params.sensor_id;
-  console.log("server: GET /getallsensorsdata/" + sensor_id);
+  console.log("server: GET /getsensordata/" + sensor_id);
 
   res.set('Content-Type', 'application/json')
-  res.send("RECEIVED /getsensordata/" + sensor_id);
   monitorApi.getSensorData(sensor_id, result => {
     if (res != null){
       if (result != null){
-        res.set('Content-Type', 'application/json')
         res.send(result);
       }else{
         res.send(null);

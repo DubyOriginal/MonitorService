@@ -4,6 +4,7 @@
   "description": "sensor logging",
   "main": "MonitorApp.js",
   "dependencies": {
+    "ajax-request": "^1.2.3",
     "body-parser": "^1.18.1",
     "ejs": "^2.5.7",
     "express": "^4.15.4",

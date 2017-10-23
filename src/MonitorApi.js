@@ -67,7 +67,7 @@ class MonitorApi {
 
     const sql = "SELECT \
       monitor_data.id, \
-      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, \
         timestamp, \
         user_id, \
         user_name, \
@@ -148,7 +148,7 @@ class MonitorApi {
 
     const sql = "SELECT \
       monitor_data.id, \
-      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, \
         timestamp, \
         user_id, \
         user_name, \
@@ -187,7 +187,7 @@ class MonitorApi {
 
     const sql = "SELECT \
       monitor_data.sensor_id, \
-      FROM_UNIXTIME(monitor_data.timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+      FROM_UNIXTIME(monitor_data.timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, \
         screen_sensor.screen_id, \
         sensor_params.sensor_type, \
         sensor_params.sensor_mid, \
@@ -241,7 +241,7 @@ class MonitorApi {
 
     const sql = "SELECT \
       monitor_data.id, \
-      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%m:%s') as rtimestamp, \
+      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, \
         user_id, \
         user_name, \
         device_id, \
