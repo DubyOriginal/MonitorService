@@ -29,7 +29,7 @@
       }).then(function (response) {
         $scope.mSensorList = response.data;
         $scope.selSensor = $scope.mSensorList[4];   //set initial value
-        $scope.updateSelectBox();                   //imulate select for initial value
+        $scope.updateSelectBox();                   //simulate select for initial value
       }, function (error) {
         console.log("getSensorList ERROR: " + error);
       });
@@ -68,6 +68,10 @@
     data.addColumn('number', sensorName);
     //data.addColumn('number', 'test soba_2');
 
+    console.log("current TS: " + new Date().toUTCString());
+    console.log("current TS locale: " + new Date().toLocaleString());
+    //console.time('Timer name');
+
     for (var i = 0; i < mSensorData.length; i++) {
       let sVal = parseFloat(mSensorData[i].sensor_value);
       //console.log("val[" + i + "] -> " + sVal);
@@ -79,9 +83,15 @@
 
     var chartOptions = {
       height: 400,
-      chartArea: {left: 70, top: 50, width: "95%"},
+      chartArea: {left: 70, right: 70, top: 50, width: "95%"},
       legend: {position: 'top', alignment: 'end'},
       interpolateNulls: false,
+      series: {
+        1: {
+          type: "line",
+          interpolateNulls: false
+        }
+      },
       hAxis: {
         title: '',
         format: 'HH:mm:ss',
@@ -133,6 +143,7 @@
             width: "95%",
             chartArea: {
               left: 70,
+              right:70,
               width: '90%'
             },
             backgroundColor: '#dfdfdf'

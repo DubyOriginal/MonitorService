@@ -1,12 +1,12 @@
 {
-  "web": {
-    "port": 3001,
-    "siteurl": "http://localhost:8080/"
+  "service": {
+    "port": 2200,
+    "siteurl": "http://localhost:2200/"
   },
   "database": {
     "host": "localhost",
     "port": 3306,
-    "username": "root",
+    "user": "root",
     "password": "root",
     "database": "monitor_db"
   }

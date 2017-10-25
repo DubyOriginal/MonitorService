@@ -5,6 +5,7 @@ const MonitorApi = require('./MonitorApi');
 const path = require('path');
 const express = require('express');
 const request = require('request');
+var config = require('config.json')('./config/develop.json');
 
 const bodyParser = require('body-parser');
 var monitorApi;
@@ -21,7 +22,7 @@ class MonitorRouter {
 
 new MonitorRouter();
 
-const APP_PORT = 2200;
+const APP_PORT = config.service.port;
 
 //**********************************************************************************************************************
 // EXPRESS CONFIGURATION

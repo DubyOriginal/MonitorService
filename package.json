@@ -6,6 +6,7 @@
   "dependencies": {
     "ajax-request": "^1.2.3",
     "body-parser": "^1.18.1",
+    "config.json": "0.0.4",
     "ejs": "^2.5.7",
     "express": "^4.15.4",
     "moment": "^2.18.1",
@@ -15,7 +16,19 @@
     "request": "^2.81.0",
     "router": "^1.3.1"
   },
-  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "[git-url-of-your-project]"
+  },
+  "devDependencies": {
+    "gulp": "latest",
+    "gulp-util": "latest",
+    "gulp-sass": "latest",
+    "gulp-coffee": "latest",
+    "gulp-uglify": "latest",
+    "gulp-concat": "latest",
+    "gulp-connect": "latest"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -28,7 +28,8 @@
         url: 'getallsensorparams'
       }).then(function (response) {
         $scope.mSensorList = response.data;
-        //console.log(">>>>>  mSensorList: " + JSON.stringify($scope.mSensorList));
+        $scope.selSensorParams = $scope.mSensorList[4];   //set initial value
+        $scope.updateSelectBox();                   //simulate select for initial value
       }, function (error) {
         console.log("getSensorList ERROR: " + error);
       });
@@ -113,7 +114,7 @@
                                     <select class="selectpicker"
                                             ng-change="updateSelectBox()"
                                             ng-model="selSensorParams"
-                                            ng-options="sensor.id for sensor in mSensorList">
+                                            ng-options="sensor.sensor_name for sensor in mSensorList">
                                     </select>
                                 </div>
                                 <div>

@@ -3,17 +3,23 @@
  */
 'use strict'
 var mysql = require('mysql');
+var config = require('config.json')('./config/develop.json');
 /*
  DB    - monitor_db
  TABLE - monitor_data
  */
 
+var test = function() {
+  console.log("mysql pool -> host: ", config.database.host, ", port: ", config.database.port, ", db: ", config.database.database);
+}
+test();
+
 var dbPool = mysql.createPool({
-  host: 'localhost',
-  port: 3306,
-  user: 'root',
-  password: 'root',
-  database: 'monitor_db',
+  host: config.database.host,
+  port: config.database.port,
+  user: config.database.user,
+  password: config.database.password,
+  database: config.database.database,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
