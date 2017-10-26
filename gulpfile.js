@@ -5,7 +5,6 @@ var sourcemaps = require('gulp-sourcemaps')
 var concat = require('gulp-concat-util')
 var child_process = require('child_process')
 var path = require('path')
-var sass = require('gulp-sass')
 var zip = require('gulp-zip')
 var execSync = require('child_process').execSync
 
@@ -18,13 +17,8 @@ function exec(format, params) {
   execSync(require('util').format.apply(null, arguments))
 }
 
-gulp.task('compile-sass', function () {
-  return gulp.src('resources/web/scss/*.scss')
-    .pipe(sass().on('error', sass.logError))
-    .pipe(gulp.dest('dist/resources/web/css'))
-})
 
-gulp.task('compile-common', ['compile-sass'], function (done) {
+gulp.task('compile-common', function (done) {
 
   exec('cp -a views dist/')
   exec('cp -a resources dist/')

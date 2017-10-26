@@ -9,10 +9,10 @@ var config = require('config.json')('./config/develop.json');
  TABLE - monitor_data
  */
 
-var test = function() {
+var logDBConnectInfo = function() {
   console.log("mysql pool -> host: ", config.database.host, ", port: ", config.database.port, ", db: ", config.database.database);
 }
-test();
+logDBConnectInfo();
 
 var dbPool = mysql.createPool({
   host: config.database.host,
