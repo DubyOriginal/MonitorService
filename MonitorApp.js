@@ -16,15 +16,23 @@
 
  */
 
-require('./src/MonitorRouter');
-
 class MonitorApp {
 
   constructor(app) {
-
     console.log("MonitorApp initialized");
     //this.monitor_router = new MonitorRouter()
   }
 }
 
-var mApp = new MonitorApp();
+var logStartingInfo = function() {
+  console.log("------------------------------------------------------------");
+  console.log("starting MonitorService...");
+}
+
+
+logStartingInfo();
+new MonitorApp();
+require('./src/MonitorRouter');
+
+
+

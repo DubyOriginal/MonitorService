@@ -1,10 +1,15 @@
 {
+  "server": {
+    "user": "duby",
+    "ip": "192.168.1.26",
+    "port": 2200
+  },
   "service": {
-    "port": 2200,
-    "siteurl": "http://localhost:8080/"
+    "version": "1.0.2",
+    "path": "/home/duby/MonitorService"
   },
   "database": {
-    "host": "localhost",
+    "host": "192.168.1.26",
     "port": 3306,
     "user": "duby",
     "password": "dubyoriginal",

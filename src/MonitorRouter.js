@@ -5,7 +5,8 @@ const MonitorApi = require('./MonitorApi');
 const path = require('path');
 const express = require('express');
 const request = require('request');
-var config = require('config.json')('./config/develop.json');
+var configLive    = require('config.json')('./config/live.json');
+var configDevelop = require('config.json')('./config/develop.json');
 
 const bodyParser = require('body-parser');
 var monitorApi;
@@ -22,7 +23,7 @@ class MonitorRouter {
 
 new MonitorRouter();
 
-const APP_PORT = config.service.port;
+const APP_PORT = configLive.server.port;
 
 //**********************************************************************************************************************
 // EXPRESS CONFIGURATION
@@ -340,7 +341,8 @@ app.listen(APP_PORT, function (err) {
     console.log("app.listen err -> " + err)
     throw err;
   }
-  console.log('Server started on PORT: ' + APP_PORT.toString())
+  console.log('Server started on PORT: ' + APP_PORT.toString());
+  console.log("------------------------------------------------------------");
 }).on('error', function (err) {
   if (err) {
     console.warn("app.on.error -> " + err)

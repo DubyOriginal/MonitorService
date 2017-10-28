@@ -1,7 +1,12 @@
 {
+  "server": {
+    "user": "duby",
+    "ip": "192.168.1.26",
+    "port": 2200
+  },
   "service": {
-    "port": 2200,
-    "siteurl": "http://localhost:2200/"
+    "version": "1.0.2",
+    "siteurl": "http://localhost"
   },
   "database": {
     "host": "localhost",

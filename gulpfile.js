@@ -1,125 +1,93 @@
-var gulp = require('gulp')
-require('gulp-run-seq')
-var babel = require('gulp-babel')
-var sourcemaps = require('gulp-sourcemaps')
-var concat = require('gulp-concat-util')
+var gulp = require('gulp');
+var gutil = require('gulp-util');
 var child_process = require('child_process')
 var path = require('path')
-var zip = require('gulp-zip')
+
 var execSync = require('child_process').execSync
 
-var execDelay = 0
+//---------------------------------------------------
 
-process.stdout.setMaxListeners(100)
-process.stderr.setMaxListeners(100)
+var configLive    = require('config.json')('./config/live.json');
+var configDevelop = require('config.json')('./config/develop.json');
+
+
 
 function exec(format, params) {
   execSync(require('util').format.apply(null, arguments))
 }
 
 
-gulp.task('compile-common', function (done) {
+function deployLive(server_user, server_ip) {
+  console.log("------------------------------------------------------------");
+  console.log('deploy LIVE to server: ', server_ip);
+  console.log("stopping MonitorApp....");
+  try { exec('ssh %s@%s "pm2 delete MonitorApp"', server_user, server_ip);} catch(e){};      //connect to server
 
-  exec('cp -a views dist/')
-  exec('cp -a resources dist/')
-  exec('mkdir -p dist/wsdl')
-  exec('mkdir -p dist/logs')
-  exec('cp -a wsdl/dev/* dist/wsdl')
-  exec('cp -a config/config.dev.json dist/config.json')
-  exec('cp -a package.json dist/')
-  exec('cp -a README.md dist/')
-  exec('cp -a LICENSE.md dist/')
-  exec('cp -a sitemap.xml dist/')
-
-
-  done()
-})
-
-gulp.task('compile-web', ['compile-common'], function (done) {
-  return gulp.src([
-    'src/lib/**/*.js',
-    'src/web/**/*.js',
-  ])
-    .pipe(sourcemaps.init())
-    .pipe(babel({stage: 0, optional: ['runtime']}))
-    .on('error', function (e) {
-      console.log('>>> ERROR\n', e.name, ':', e.message)
-      this.emit('end')
-    })
-    .pipe(concat('web.js'))
-    .pipe(concat.header("require('source-map-support').install();\n"))
-    .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest('dist'))
-    .on('end', function () {
-      done()
-    })
-})
-
-gulp.task('compile', [['compile-web']])
-
-var task_web
-
-gulp.task('restart-web', ['compile-web'], function (done) {
-  if (task_web) {
-    task_web.stdout.unpipe()
-    task_web.stderr.unpipe()
-    task_web.kill('SIGKILL')
-  }
-
-  setTimeout(function () {
-    task_web = child_process.spawn('node', [path.join(__dirname, 'dist/web.js')])
-    task_web.stdout.pipe(process.stdout)
-    task_web.stderr.pipe(process.stdout)
-
-    done()
-  }, execDelay)
-})
-
-gulp.task('develop-restart', ['restart-web'])
+  console.log("transfer source....");
+  exec('scp package.json %s@%s:./MonitorService/', server_user, server_ip);
+  exec('scp -r config %s@%s:./MonitorService/', server_user, server_ip);
+  exec('scp -r src %s@%s:./MonitorService/', server_user, server_ip);
+  exec('scp -r resources %s@%s:./MonitorService/', server_user, server_ip);
+  exec('scp -r views %s@%s:./MonitorService/', server_user, server_ip);
+  //exec('cp -R config/live.json config/live.json');
+  //exec('cp -a src src');
 
 
-function deploy(server, target) {
-  console.log('deploy', target, 'to', server)
+  console.log("starting MonitorApp....");
+  //exec("ssh %s@%s \'pm2 start %s/MonitorApp.js --watch --log-date-format \'YYYY-MM-DD HH:mm:ss\'\'", server_user, server_ip, configLive.service.path);      //connect to server
+  exec("ssh %s@%s \'pm2 start %s/MonitorApp.js\'", server_user, server_ip, configLive.service.path);
+  //exec('ls -al');
+  //exec('cd ~/home/duby/MonitorService');
+  //try { exec('pm2 delete MonitorApp"'); } catch(e) {}
+  //exec('pm2 stop all');
+  //exec('pm2 start MonitorApp.js');
 
-  console.log('  - stopping services')
-  try {
-    exec('ssh -i deploy.key services@%s "pm2 delete %s-web"', server, target);
-  } catch (e) {
-  }
+  //
 
-  console.log('  - transfering files')
-  exec('rsync -avz --exclude "resources/upload/*" --exclude "resources/web/upload/*" -e "ssh -i deploy.key" dist/* services@%s:%s/', server, target)
-
-  console.log('  - installing npm modules')
-  exec('ssh -i deploy.key services@%s "cd %s; npm install" ', server, target)
-
-  console.log('  - starting services')
-  exec('ssh -i deploy.key services@%s "cd %s; pm2 start web.js -f -n %s-web -i 3"', server, target, target)
+  console.log("------------------------------------------------------------");
 }
 
-gulp.task('test', [], function (done) { // 'compile'
+function deployDevelop() {
+  console.log("------------------------------------------------------------");
+  console.log('deploy DEVELOP - (locally)');
+  //exec('pm2 delete MonitorApp');
+  exec('pm2 stop all');
+  exec('pm2 start MonitorApp.js -f -i 1');
+  //exec('pm2 start MonitorApp.js --log-date-format \"YYYY-MM-DD HH:mm:ss\"');
 
-  exec('rm -rf dist/wsdl')
-  exec('mkdir -p dist/wsdl')
-  exec('cp -a wsdl/prelive/* dist/wsdl/')
-  exec('cp config/config.test.json dist/config.json')
+  console.log("------------------------------------------------------------");
+}
 
-  var server = '192.168.1.26';
-  deploy(server, 'live');
+//gulp tasks
+//--------------------------------------------------------------------------
+gulp.task('default', function() {
+  return gutil.log('Gulp is running!')
+});
+
+gulp.task('copyNotes', function() {
+  gulp.src('notes.txt').pipe(gulp.dest('.'));
+});
+
+gulp.task('copyHtml', function() {
+  // copy any html files in source/ to public/
+  gulp.src('source/*.html').pipe(gulp.dest('public'));
+});
+
+
+//--------------------------------------------------------------------------
+gulp.task('live', [], function (done) {
+  var server_user = configLive.server.user;
+  var server_ip = configLive.server.ip;
+  deployLive(server_user, server_ip);
 
   done()
 })
 
-gulp.task('live', [], function (done) { // 'compile'
-  exec('rm -rf dist/wsdl')
-  exec('mkdir -p dist/wsdl')
-  exec('cp -a wsdl/live/* dist/wsdl/')
-  exec('cp config/config.live.json dist/config.json')
-
-  var server = '192.168.1.26';
-  deploy(server, 'live');
+gulp.task('develop', [], function (done) {
+  deployDevelop();
 
   done()
 })
 
-gulp.task('develop', [['develop-restart', 'develop-watch']])
+
+

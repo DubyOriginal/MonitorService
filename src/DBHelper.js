@@ -3,23 +3,24 @@
  */
 'use strict'
 var mysql = require('mysql');
-var config = require('config.json')('./config/develop.json');
+var configLive    = require('config.json')('./config/live.json');
+var configDevelop = require('config.json')('./config/develop.json');
 /*
  DB    - monitor_db
  TABLE - monitor_data
  */
 
 var logDBConnectInfo = function() {
-  console.log("mysql pool -> host: ", config.database.host, ", port: ", config.database.port, ", db: ", config.database.database);
+  console.log("DATABASE: \n    host: ", configLive.database.host, ":", configLive.database.port, "\n    name: ", configLive.database.database);
 }
 logDBConnectInfo();
 
 var dbPool = mysql.createPool({
-  host: config.database.host,
-  port: config.database.port,
-  user: config.database.user,
-  password: config.database.password,
-  database: config.database.database,
+  host: configLive.database.host,
+  port: configLive.database.port,
+  user: configLive.database.user,
+  password: configLive.database.password,
+  database: configLive.database.database,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0
@@ -49,8 +50,6 @@ class DBHelper {
       }
     })
   }
-
-
 }
 
 
