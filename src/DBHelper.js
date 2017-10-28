@@ -2,15 +2,17 @@
  * Created by dvrbancic on 16/09/2017.
  */
 'use strict'
-var mysql = require('mysql');
-var configLive    = require('config.json')('./config/live.json');
+var configLive = require('config.json')('./config/live.json');
 var configDevelop = require('config.json')('./config/develop.json');
+var mysql = require('mysql');
+
 /*
  DB    - monitor_db
  TABLE - monitor_data
  */
 
 var logDBConnectInfo = function() {
+  console.log("######### : " + JSON.stringify(configLive.database));
   console.log("DATABASE: \n    host: ", configLive.database.host, ":", configLive.database.port, "\n    name: ", configLive.database.database);
 }
 logDBConnectInfo();

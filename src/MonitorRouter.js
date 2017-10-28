@@ -5,7 +5,7 @@ const MonitorApi = require('./MonitorApi');
 const path = require('path');
 const express = require('express');
 const request = require('request');
-var configLive    = require('config.json')('./config/live.json');
+var configLive = require('config.json')('./config/live.json');
 var configDevelop = require('config.json')('./config/develop.json');
 
 const bodyParser = require('body-parser');
