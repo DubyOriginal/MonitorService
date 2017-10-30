@@ -16,6 +16,9 @@
 
  */
 
+var configLive = require('config.json')('./config/live.json');
+var configDevelop = require('config.json')('./config/develop.json');
+
 class MonitorApp {
 
   constructor(app) {
@@ -26,7 +29,7 @@ class MonitorApp {
 
 var logStartingInfo = function() {
   console.log("------------------------------------------------------------");
-  console.log("starting MonitorService...");
+  console.log("starting MonitorService (v%s)...", configLive.service.version);
 }
 
 

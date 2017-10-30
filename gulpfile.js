@@ -19,9 +19,13 @@ function exec(format, params) {
 
 function deployLive(server_user, server_ip) {
   console.log("------------------------------------------------------------");
-  console.log('deploy LIVE to server: ', server_ip);
+  console.log('deploy LIVE (v%s) to server: %s', configLive.service.version, server_ip);
   console.log("stopping MonitorApp....");
-  try { exec('ssh %s@%s "pm2 delete MonitorApp"', server_user, server_ip);} catch(e){};      //connect to server
+  try {
+    exec('ssh %s@%s "pm2 delete --silent MonitorApp"', server_user, server_ip);
+  } catch(e){
+    console.log("MonitorApp not running or some error:", e);
+  };
 
   console.log("transfer source....");
   exec('scp package.json %s@%s:./MonitorService/', server_user, server_ip);
@@ -30,13 +34,13 @@ function deployLive(server_user, server_ip) {
   exec('scp -r src %s@%s:./MonitorService/', server_user, server_ip);
   exec('scp -r resources %s@%s:./MonitorService/', server_user, server_ip);
   exec('scp -r views %s@%s:./MonitorService/', server_user, server_ip);
-  //exec('cp -R config/live.json config/live.json');
-  //exec('cp -a src src');
 
 
   console.log("starting MonitorApp....");
+  let logTS = "--log-date-format \'YYYY-MM-DD HH:mm:ss\'";
+  //console.log("CMD: " + "ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s\"", configLive.server.user, configLive.server.ip, configLive.service.path, logTS );
+  exec("ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s\"", configLive.server.user, configLive.server.ip, configLive.service.path, logTS);
   //exec("ssh %s@%s \'pm2 start %s/MonitorApp.js --watch --log-date-format \'YYYY-MM-DD HH:mm:ss\'\'", server_user, server_ip, configLive.service.path);      //connect to server
-  exec("ssh %s@%s \'pm2 start %s/MonitorApp.js\'", server_user, server_ip, configLive.service.path);
   //exec('ls -al');
   //exec('cd ~/home/duby/MonitorService');
   //try { exec('pm2 delete MonitorApp"'); } catch(e) {}
@@ -59,28 +63,46 @@ function deployDevelop() {
   console.log("------------------------------------------------------------");
 }
 
+function restartMonitorApp() {
+  var status = "SUCCESS";
+  try {
+    exec('ssh %s@%s "pm2 delete --silent MonitorApp"', configLive.server.user, configLive.server.ip);
+  } catch(e){
+    //console.log("error:", e);
+    status = "FAILED";
+  };
+  try {
+    //exec("ssh %s@%s 'cd %s; pm2 start MonitorApp.js'", configLive.server.user, configLive.server.ip, configLive.service.path);
+    let logTS = "--log-date-format \'YYYY-MM-DD HH:mm:ss\'";
+    exec("ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s\"", configLive.server.user, configLive.server.ip, configLive.service.path, logTS);
+  } catch(e){
+    //console.log("error:", e);
+    status = "FAILED";
+  };
+  return status;
+}
+
 //gulp tasks
 //--------------------------------------------------------------------------
-gulp.task('default', function() {
-  return gutil.log('Gulp is running!')
+gulp.task('restart MonitorApp', function() {
+  var status = restartMonitorApp();
+  return gutil.log('restarting MonitorApp service: ', status)
 });
 
-gulp.task('copyNotes', function() {
-  gulp.src('notes.txt').pipe(gulp.dest('.'));
-});
+//gulp.task('default', function() {
+//  return gutil.log('Gulp is running!')
+//});
 
-gulp.task('copyHtml', function() {
+// copy files locally
+//gulp.task('copyHtml', function() {
   // copy any html files in source/ to public/
-  gulp.src('source/*.html').pipe(gulp.dest('public'));
-});
+//  gulp.src('source/*.html').pipe(gulp.dest('public'));
+//});
 
 
 //--------------------------------------------------------------------------
 gulp.task('live', [], function (done) {
-  var server_user = configLive.server.user;
-  var server_ip = configLive.server.ip;
-  deployLive(server_user, server_ip);
-
+  deployLive(configLive.server.user, configLive.server.ip);
   done()
 })
 
