@@ -2,8 +2,9 @@
  * Created by dvrbancic on 16/09/2017.
  */
 'use strict'
-var configLive = require('config.json')('./config/live.json');
-var configDevelop = require('config.json')('./config/develop.json');
+//var config = require('config.json')('./config/live.json');
+//var config = require('config.json')('./config/develop.json');
+var Config = require('../config/Config.js'), config = new Config();
 var mysql = require('mysql');
 
 /*
@@ -12,17 +13,17 @@ var mysql = require('mysql');
  */
 
 var logDBConnectInfo = function() {
-  console.log("######### : " + JSON.stringify(configLive.database));
-  console.log("DATABASE: \n    host: ", configLive.database.host, ":", configLive.database.port, "\n    name: ", configLive.database.database);
+  console.log("######### : " + JSON.stringify(config.database));
+  console.log("DATABASE: \n    host: ", config.database.host, ":", config.database.port, "\n    name: ", config.database.database);
 }
 logDBConnectInfo();
 
 var dbPool = mysql.createPool({
-  host: configLive.database.host,
-  port: configLive.database.port,
-  user: configLive.database.user,
-  password: configLive.database.password,
-  database: configLive.database.database,
+  host: config.database.host,
+  port: config.database.port,
+  user: config.database.user,
+  password: config.database.password,
+  database: config.database.database,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0

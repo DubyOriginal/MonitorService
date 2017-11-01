@@ -5,8 +5,8 @@
     "port": 2200
   },
   "service": {
-    "version": "1.0.2",
-    "siteurl": "http://localhost"
+    "version": "1.0.4",
+    "path": "/home/duby/MonitorService"
   },
   "database": {
     "host": "localhost",

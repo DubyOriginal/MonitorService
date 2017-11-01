@@ -76,6 +76,39 @@
         <div class="row">
             <div class="center">
                 <div class="col-md-12">
+
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">CONTROL PANEL</div>
+                        <div class="panel-body">
+                            <div class="col-md-6" style="background-color: #1abc9c">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">ROOM TEMPERATURE</div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-5">
+                                                <label for="ex1">current room reading:</label>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input class="form-control" id="ex1" type="text" title="24.45°C">
+                                            </div>
+                                        </div>
+                                        <div class="row justify-content-center">
+                                            <button class="btn-info">STORE TO UPLOAD</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="background-color: #756ebc">
+                                <div class="panel panel-info">
+                                    <div class="panel-heading">TEST DEVICES</div>
+                                    <div class="panel-body">
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="panel panel-primary">
                         <div class="panel-heading">Sensor data</div>
                         <div class="panel-body">
@@ -115,16 +148,19 @@
                                     <input type="text" class="form-control" ng-model="model.sensorSelected.id"/>
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control" ng-model="model.sensorSelected.sensor_type"/>
+                                    <input type="text" class="form-control"
+                                           ng-model="model.sensorSelected.sensor_type"/>
                                 </td>
                                 <td>
                                     <input type="text" class="form-control" ng-model="model.sensorSelected.sensor_mid"/>
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control" ng-model="model.sensorSelected.sensor_address"/>
+                                    <input type="text" class="form-control"
+                                           ng-model="model.sensorSelected.sensor_address"/>
                                 </td>
                                 <td>
-                                    <input type="text" class="form-control" ng-model="model.sensorSelected.sensor_name"/>
+                                    <input type="text" class="form-control"
+                                           ng-model="model.sensorSelected.sensor_name"/>
                                 </td>
                                 <td>
                                     <input type="text" class="form-control" ng-model="model.sensorSelected.alarm_min"/>

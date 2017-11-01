@@ -16,8 +16,12 @@
 
  */
 
-var configLive = require('config.json')('./config/live.json');
-var configDevelop = require('config.json')('./config/develop.json');
+//var config = require('config.json')('./config/live.json');
+//var config = require('config.json')('./config/develop.json');
+var Config = require('./config/Config.js'), config = new Config();
+
+//process.env['NODE_ENV'] = 'live';
+var enviroment = process.env.NODE_ENV;
 
 class MonitorApp {
 
@@ -29,7 +33,10 @@ class MonitorApp {
 
 var logStartingInfo = function() {
   console.log("------------------------------------------------------------");
-  console.log("starting MonitorService (v%s)...", configLive.service.version);
+  console.log("starting MonitorService - %s (v%s)...", enviroment, config.service.version);
+  //
+
+
 }
 
 

@@ -5,8 +5,9 @@ const MonitorApi = require('./MonitorApi');
 const path = require('path');
 const express = require('express');
 const request = require('request');
-var configLive = require('config.json')('./config/live.json');
-var configDevelop = require('config.json')('./config/develop.json');
+//var config = require('config.json')('./config/live.json');
+//var config = require('config.json')('./config/develop.json');
+var Config = require('../config/Config.js'), config = new Config();
 
 const bodyParser = require('body-parser');
 var monitorApi;
@@ -23,7 +24,7 @@ class MonitorRouter {
 
 new MonitorRouter();
 
-const APP_PORT = configLive.server.port;
+const APP_PORT = config.server.port;
 
 //**********************************************************************************************************************
 // EXPRESS CONFIGURATION
@@ -53,27 +54,12 @@ app.get('/', function (req, res) {
 
 //PAGE - monitoring sensors data
 app.get('/datatable', function (req, res) {
-
   res.render('./pages/datatable');
-
-  /*
-  monitorApi.getAllSensorsData(function (allSensorData) {
-    res.render('./pages/datatable', {
-      allSensorData: allSensorData
-    });
-  });
-  */
 });
 
 //PAGE - monitoring sensors data
 app.get('/monitoring', function (req, res) {
   res.render('./pages/monitoring');
-  /*let sensor_id = 104;
-  monitorApi.getSensorData(sensor_id, function (mSensorData) {
-    res.render('./pages/monitoring', {
-      mSensorData: mSensorData
-    });
-  });*/
 });
 
 //PAGE - monitoring sensors data

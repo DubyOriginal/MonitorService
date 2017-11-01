@@ -6,11 +6,7 @@ var path = require('path')
 var execSync = require('child_process').execSync
 
 //---------------------------------------------------
-
-var configLive = require('config.json')('./config/live.json');
-var configDevelop = require('config.json')('./config/develop.json');
-
-
+var Config = require('./config/Config.js'), config = new Config();
 
 function exec(format, params) {
   execSync(require('util').format.apply(null, arguments))
@@ -19,10 +15,13 @@ function exec(format, params) {
 
 function deployLive(server_user, server_ip) {
   console.log("------------------------------------------------------------");
-  console.log('deploy LIVE (v%s) to server: %s', configLive.service.version, server_ip);
+  console.log('deploy LIVE (v%s) to server: %s', config.service.version, server_ip);
+
+  //console.log("######### : " + JSON.stringify(config));
+
   console.log("stopping MonitorApp....");
   try {
-    exec('ssh %s@%s "pm2 delete --silent MonitorApp"', server_user, server_ip);
+    exec('ssh %s@%s "pm2 delete MonitorApp"', server_user, server_ip);
   } catch(e){
     console.log("MonitorApp not running or some error:", e);
   };
@@ -37,17 +36,10 @@ function deployLive(server_user, server_ip) {
 
 
   console.log("starting MonitorApp....");
-  let logTS = "--log-date-format \'YYYY-MM-DD HH:mm:ss\'";
-  //console.log("CMD: " + "ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s\"", configLive.server.user, configLive.server.ip, configLive.service.path, logTS );
-  exec("ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s\"", configLive.server.user, configLive.server.ip, configLive.service.path, logTS);
-  //exec("ssh %s@%s \'pm2 start %s/MonitorApp.js --watch --log-date-format \'YYYY-MM-DD HH:mm:ss\'\'", server_user, server_ip, configLive.service.path);      //connect to server
-  //exec('ls -al');
-  //exec('cd ~/home/duby/MonitorService');
-  //try { exec('pm2 delete MonitorApp"'); } catch(e) {}
-  //exec('pm2 stop all');
-  //exec('pm2 start MonitorApp.js');
-
-  //
+  let addLogTS = "--log-date-format \'YYYY-MM-DD HH:mm:ss\'";
+  let addPSNumber = "-i 1";
+  //console.log("CMD: " + "ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s %s\"", config.server.user, config.server.ip, config.service.path, addLogTS, addPSNumber );
+  exec("ssh %s@%s \"cd %s; NODE_ENV=LIVE pm2 start MonitorApp.js %s %s\"", config.server.user, config.server.ip, config.service.path, addLogTS, addPSNumber);
 
   console.log("------------------------------------------------------------");
 }
@@ -55,9 +47,8 @@ function deployLive(server_user, server_ip) {
 function deployDevelop() {
   console.log("------------------------------------------------------------");
   console.log('deploy DEVELOP - (locally)');
-  //exec('pm2 delete MonitorApp');
-  exec('pm2 stop all');
-  exec('pm2 start MonitorApp.js -f -i 1');
+  try {exec('pm2 delete MonitorApp --silent');} catch (e) {}
+  exec('NODE_ENV=DEVELOP pm2 start MonitorApp.js');
   //exec('pm2 start MonitorApp.js --log-date-format \"YYYY-MM-DD HH:mm:ss\"');
 
   console.log("------------------------------------------------------------");
@@ -66,15 +57,15 @@ function deployDevelop() {
 function restartMonitorApp() {
   var status = "SUCCESS";
   try {
-    exec('ssh %s@%s "pm2 delete --silent MonitorApp"', configLive.server.user, configLive.server.ip);
+    exec('ssh %s@%s "pm2 delete --silent MonitorApp"', config.server.user, config.server.ip);
   } catch(e){
     //console.log("error:", e);
     status = "FAILED";
   };
   try {
-    //exec("ssh %s@%s 'cd %s; pm2 start MonitorApp.js'", configLive.server.user, configLive.server.ip, configLive.service.path);
-    let logTS = "--log-date-format \'YYYY-MM-DD HH:mm:ss\'";
-    exec("ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s\"", configLive.server.user, configLive.server.ip, configLive.service.path, logTS);
+    //exec("ssh %s@%s 'cd %s; pm2 start MonitorApp.js'", config.server.user, config.server.ip, config.service.path);
+    let addLogTS = "--log-date-format \'YYYY-MM-DD HH:mm:ss\'";
+    exec("ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s\"", config.server.user, config.server.ip, config.service.path, addLogTS);
   } catch(e){
     //console.log("error:", e);
     status = "FAILED";
@@ -101,16 +92,27 @@ gulp.task('restart MonitorApp', function() {
 
 
 //--------------------------------------------------------------------------
-gulp.task('live', [], function (done) {
-  deployLive(configLive.server.user, configLive.server.ip);
+gulp.task('live_pm2', [], function (done) {
+  deployLive(config.server.user, config.server.ip);
   done()
 })
 
-gulp.task('develop', [], function (done) {
+gulp.task('develop_pm2', [], function (done) {
   deployDevelop();
-
   done()
 })
+
+gulp.task('develop_node', function() {
+  var env = Object.create(process.env);
+  env.NODE_ENV = 'DEVELOP';  // LIVE  or  DEVELOP
+
+  try {exec('pm2 delete MonitorApp --silent');} catch (e) {}
+  try {exec('killall node');} catch (e) {}
+
+  var spawn = require('child_process').spawn;
+  spawn('node', ['MonitorApp.js'], { stdio: 'inherit', env: env});
+
+});
 
 
 
