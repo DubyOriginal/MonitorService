@@ -11,7 +11,6 @@
     <script src="/angular-google-chart/ng-google-chart.js"></script>
 
 
-
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
 </head>
 
@@ -42,8 +41,107 @@
       console.log("updateSelectBox: selSensor[" + selSensID + "] -> " + selSensName);
       loadSensorData(selSensID, selSensName);
     }
-  });
 
+
+    //********************************************************************************************************************
+    // DATEPICKER PART
+
+    $scope.today = function () {
+      $scope.dt = new Date();
+    };
+    $scope.today();
+
+    $scope.clear = function () {
+      $scope.dt = null;
+    };
+
+    $scope.inlineOptions = {
+      customClass: getDayClass,
+      minDate: new Date(),
+      showWeeks: true
+    };
+
+    $scope.dateOptions = {
+      dateDisabled: disabled,
+      formatYear: 'yy',
+      maxDate: new Date(2020, 5, 22),
+      minDate: new Date(),
+      startingDay: 1
+    };
+
+    // Disable weekend selection
+    function disabled(data) {
+      var date = data.date,
+        mode = data.mode;
+      return mode === 'day' && (date.getDay() === 0 || date.getDay() === 6);
+    }
+
+    $scope.toggleMin = function () {
+      $scope.inlineOptions.minDate = $scope.inlineOptions.minDate ? null : new Date();
+      $scope.dateOptions.minDate = $scope.inlineOptions.minDate;
+    };
+
+    $scope.toggleMin();
+
+    $scope.open1 = function () {
+      console.log("open1");
+      $scope.popup1.opened = true;
+    };
+
+    $scope.open2 = function () {
+      console.log("open2")
+      $scope.popup2.opened = true;
+    };
+
+    $scope.setDate = function (year, month, day) {
+      $scope.dt = new Date(year, month, day);
+    };
+
+    $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+    $scope.format = $scope.formats[2];
+    $scope.altInputFormats = ['M!/d!/yyyy'];
+
+    $scope.popup1 = {
+      opened: false
+    };
+
+    $scope.popup2 = {
+      opened: false
+    };
+
+    var tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    var afterTomorrow = new Date();
+    afterTomorrow.setDate(tomorrow.getDate() + 1);
+    $scope.events = [
+      {
+        date: tomorrow,
+        status: 'full'
+      },
+      {
+        date: afterTomorrow,
+        status: 'partially'
+      }
+    ];
+
+    function getDayClass(data) {
+      var date = data.date,
+        mode = data.mode;
+      if (mode === 'day') {
+        var dayToCheck = new Date(date).setHours(0, 0, 0, 0);
+
+        for (var i = 0; i < $scope.events.length; i++) {
+          var currentDay = new Date($scope.events[i].date).setHours(0, 0, 0, 0);
+
+          if (dayToCheck === currentDay) {
+            return $scope.events[i].status;
+          }
+        }
+      }
+
+      return '';
+    }
+  });  // END - angularApp.controller
   //********************************************************************************************************************
 
   google.load('visualization', '1', {packages: ['controls', 'charteditor']});
@@ -68,11 +166,11 @@
     data.addColumn('number', sensorName);
     //data.addColumn('number', 'test soba_2');
 
-    console.log("current TS: " + new Date().toUTCString());
+    //console.log("current TS: " + new Date().toUTCString());
     console.log("current TS locale: " + new Date().toLocaleString());
     //console.time('Timer name');
 
-    for (var i = 0; i < mSensorData.length; i++) {
+    for (var i = 0; i < mSensorData.length; i += 1) {
       let sVal = parseFloat(mSensorData[i].sensor_value);
       //console.log("val[" + i + "] -> " + sVal);
 
@@ -120,6 +218,10 @@
           fontSize: 18,
           bold: true
         },
+        minValue: 0,
+        viewWindow: {
+          min: 0
+        },
         gridlines: {
           count: 8,
           color: "#8C8C8C"
@@ -143,7 +245,7 @@
             width: "95%",
             chartArea: {
               left: 70,
-              right:70,
+              right: 70,
               width: '90%'
             },
             backgroundColor: '#dfdfdf'
@@ -159,7 +261,8 @@
       chartType: 'LineChart',
       containerId: 'chart_div',
     });
-    function setOptions (wrapper) {
+
+    function setOptions(wrapper) {
       wrapper.setOptions(chartOptions);
     }
 
@@ -185,12 +288,40 @@
 
 <div class="main_container" style="display: block">
     <div class="row">
-        <h5>Select sensor to monitor</h5>
-        <select class="selectpicker"
-                ng-change="updateSelectBox()"
-                ng-model="selSensor"
-                ng-options="sensor.sensor_name for sensor in mSensorList">
-        </select>
+        <div class="col-md-2">
+            <h5>Select sensor to monitor</h5>
+            <select class="selectpicker"
+                    ng-change="updateSelectBox()"
+                    ng-model="selSensor"
+                    ng-options="sensor.sensor_name for sensor in mSensorList">
+            </select>
+        </div>
+        <div class="col-md-2">
+            <h5>FROM DATE:</h5>
+            <p class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt"
+                       is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close"
+                       alt-input-formats="altInputFormats"/>
+                <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="open1()">
+                <i class="glyphicon glyphicon-calendar"></i>
+            </button>
+          </span>
+            </p>
+        </div>
+
+        <div class="col-md-2">
+            <h5>TO DATE:</h5>
+            <p class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup ng-model="dt" is-open="popup2.opened"
+                       datepicker-options="dateOptions" ng-required="true" close-text="Close"/>
+                <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="open2()">
+                <i class="glyphicon glyphicon-calendar"></i>
+            </button>
+          </span>
+            </p>
+        </div>
     </div>
     <div class="row">
         <div class="center">

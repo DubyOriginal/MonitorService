@@ -16,9 +16,7 @@ function exec(format, params) {
 function deployLive(server_user, server_ip) {
   console.log("------------------------------------------------------------");
   console.log('deploy LIVE (v%s) to server: %s', config.service.version, server_ip);
-
   //console.log("######### : " + JSON.stringify(config));
-
   console.log("stopping MonitorApp....");
   try {
     exec('ssh %s@%s "pm2 delete MonitorApp"', server_user, server_ip);
