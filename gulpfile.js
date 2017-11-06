@@ -19,7 +19,7 @@ function deployLive(server_user, server_ip) {
   //console.log("######### : " + JSON.stringify(config));
   console.log("stopping MonitorApp....");
   try {
-    exec('ssh %s@%s "pm2 delete MonitorApp"', server_user, server_ip);
+    exec('ssh %s@%s "pm2 delete MonitorApp --silent"', server_user, server_ip);
   } catch(e){
     console.log("MonitorApp not running or some error:", e);
   };

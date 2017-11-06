@@ -26,6 +26,33 @@ LEFT JOIN monitor_db.device_params ON monitor_db.monitor_data.device_id = monito
 LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monitor_db.sensor_params.id
 ORDER BY monitor_data.timestamp DESC LIMIT 40;
 
+
+#getSensorDataWithRange
+#192.168.1.26:2200/getsensordatawithrange/104/1509883979.931/1509905579.931
+SELECT 
+	monitor_data.id, 
+	FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, 
+    timestamp, 
+    user_id, 
+    user_name,
+    device_id,
+    device_name,
+    sensor_id,
+    sensor_type,
+    sensor_mid,
+    sensor_address,
+    sensor_name,
+    sensor_value
+FROM monitor_db.monitor_data
+LEFT JOIN monitor_db.user_params ON monitor_db.monitor_data.user_id = monitor_db.user_params.id
+LEFT JOIN monitor_db.device_params ON monitor_db.monitor_data.device_id = monitor_db.device_params.id
+LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monitor_db.sensor_params.id
+      WHERE sensor_id like 104
+      AND ((timestamp >= 1509883979.931) AND (timestamp < 1509905579.931)) 
+      ORDER BY monitor_data.timestamp DESC 
+      LIMIT 100000;
+
+
 # get Basement Screen Sensor Data
 SELECT 
 	monitor_data.sensor_id,

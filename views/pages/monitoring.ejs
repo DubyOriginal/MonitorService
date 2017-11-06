@@ -8,15 +8,18 @@
     <% include ../partials/head %>
 
     <script src="/angular/angular.js"></script>
+
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>  <!-- for DatePicker -->
+
     <script src="/angular-google-chart/ng-google-chart.js"></script>
-
-
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
+
+
 </head>
 
 <script type="text/javascript">
   //-------------------------------------------------------------------------------------
-  var angularApp = angular.module('myApp', []);
+  var angularApp = angular.module('myApp', ['ui.bootstrap']);
   angularApp.controller('getSensorCtrl', function ($scope, $http) {
     $scope.mSensorList = [];
 
@@ -38,50 +41,90 @@
     $scope.updateSelectBox = function () {
       let selSensID = $scope.selSensor.id;
       let selSensName = $scope.selSensor.sensor_name;
+      let fromD = $scope.fromDate / 1000;
+      let toD = $scope.toDate / 1000;
       console.log("updateSelectBox: selSensor[" + selSensID + "] -> " + selSensName);
-      loadSensorData(selSensID, selSensName);
+      loadSensorData(selSensID, selSensName, fromD, toD);
     }
 
 
     //********************************************************************************************************************
-    // DATEPICKER PART
+    // Datepicker Popup (ui.bootstrap.datepickerPopup)
 
-    $scope.today = function () {
-      $scope.dt = new Date();
+    var fNow = new Date();
+    var f1Hour = (new Date()).setHours(fNow.getHours() - 6);
+    var f6Hours = (new Date()).setHours(fNow.getHours() - 6);
+    var f12Hours = (new Date()).setHours(fNow.getHours() - 12);
+    var f24Hours = (new Date()).setDate(fNow.getDate() -1);
+    var fLastWeek = (new Date()).setDate(fNow.getDate() -7);
+    var fLastMonth = (new Date()).setMonth(fNow.getMonth() - 1);
+
+    console.log("fNow        ------> " + fNow.getTime());
+    console.log("f1Hour      ------> " + f1Hour);
+    console.log("f6Hours     ------> " + f6Hours);
+    console.log("f12Hours    ------> " + f12Hours);
+    console.log("f24Hours    ------> " + f24Hours);
+    console.log("fLastWeek   ------> " + fLastWeek);
+    console.log("fLastMonth  ------> " + fLastMonth);
+
+    $scope.setInitiaDate = function () {
+      $scope.fromDate = f1Hour;
+      $scope.toDate = fNow.getTime();  //unix timestamp
     };
-    $scope.today();
+    $scope.setInitiaDate();
+
+    $scope.f1Hour = function () {$scope.fromDate = f1Hour; console.log("fromDate is set to: " + $scope.fromDate)};
+    $scope.f6Hours = function () {$scope.fromDate = f6Hours; console.log("fromDate is set to: " + $scope.fromDate)};
+    $scope.f12Hours = function () {$scope.fromDate = f12Hours; console.log("fromDate is set to: " + $scope.fromDate)};
+    $scope.f24Hours = function () {$scope.fromDate = f24Hours; console.log("fromDate is set to: " + $scope.fromDate)};
+    $scope.fLastWeek = function () {$scope.fromDate = fLastWeek; console.log("fromDate is set to: " + $scope.fromDate)};
+    $scope.fLastMonth = function () {$scope.fromDate = fLastMonth; console.log("fromDate is set to: " + $scope.fromDate)};
+
+
+    $scope.reloadData = function () {
+      let selSensID = $scope.selSensor.id;
+      let selSensName = $scope.selSensor.sensor_name;
+      let fromD = $scope.fromDate / 1000;
+      let toD = $scope.toDate / 1000;
+      loadSensorData(selSensID, selSensName, fromD, toD);
+
+    };
 
     $scope.clear = function () {
-      $scope.dt = null;
+      $scope.fromDate = null;
+      $scope.toDate = null;
     };
 
+    //--------------------------------------------
     $scope.inlineOptions = {
-      customClass: getDayClass,
-      minDate: new Date(),
+      //customClass: getDayClass,
+      minDate: new Date(2017, 9, 1),
       showWeeks: true
     };
 
     $scope.dateOptions = {
       dateDisabled: disabled,
       formatYear: 'yy',
-      maxDate: new Date(2020, 5, 22),
-      minDate: new Date(),
+      maxDate: new Date(),
+      minDate: new Date(2017, 9, 1),
       startingDay: 1
     };
 
     // Disable weekend selection
+    //--------------------------------------------
     function disabled(data) {
       var date = data.date,
         mode = data.mode;
       return mode === 'day' && (date.getDay() === 0 || date.getDay() === 6);
     }
 
+    /*
     $scope.toggleMin = function () {
-      $scope.inlineOptions.minDate = $scope.inlineOptions.minDate ? null : new Date();
+      $scope.inlineOptions.minDate = $scope.inlineOptions.minDate ? null : new Date(2017, 10, 1);
       $scope.dateOptions.minDate = $scope.inlineOptions.minDate;
     };
-
     $scope.toggleMin();
+    */
 
     $scope.open1 = function () {
       console.log("open1");
@@ -94,7 +137,7 @@
     };
 
     $scope.setDate = function (year, month, day) {
-      $scope.dt = new Date(year, month, day);
+      $scope.fromDate = new Date(year, month, day);
     };
 
     $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
@@ -109,6 +152,9 @@
       opened: false
     };
 
+    /*
+    var yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
     var tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     var afterTomorrow = new Date();
@@ -140,16 +186,17 @@
       }
 
       return '';
-    }
+    }*/
   });  // END - angularApp.controller
-  //********************************************************************************************************************
 
+  //********************************************************************************************************************
+  // CHART PART
   google.load('visualization', '1', {packages: ['controls', 'charteditor']});
 
-  function loadSensorData(sensor_id, sensorName) {
+  function loadSensorData(sensor_id, sensorName, fromuxdate, touxdate) {
     $.ajax({
       type: 'GET',
-      url: '/getsensordata/' + sensor_id,
+      url: '/getsensordatawithrange/' + sensor_id + '/' + fromuxdate + '/' + touxdate,
       success: function (result) {
         console.log("result.length -> " + result.length);
         mSensorData = result;
@@ -172,6 +219,7 @@
 
     for (var i = 0; i < mSensorData.length; i += 1) {
       let sVal = parseFloat(mSensorData[i].sensor_value);
+      if (sVal < 0){ sVal = 0;}
       //console.log("val[" + i + "] -> " + sVal);
 
       let sTS = parseInt(mSensorData[i].timestamp * 1000);
@@ -287,7 +335,8 @@
 </header>
 
 <div class="main_container" style="display: block">
-    <div class="row">
+    <div class="row-eq-height align-items-center">
+
         <div class="col-md-2">
             <h5>Select sensor to monitor</h5>
             <select class="selectpicker"
@@ -296,31 +345,59 @@
                     ng-options="sensor.sensor_name for sensor in mSensorList">
             </select>
         </div>
-        <div class="col-md-2">
-            <h5>FROM DATE:</h5>
-            <p class="input-group">
-                <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt"
-                       is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close"
-                       alt-input-formats="altInputFormats"/>
-                <span class="input-group-btn">
+
+        <div class="col-md-4">
+            <div class="col-md-6">
+                <h5>FROM DATE:</h5>
+                <p class="input-group">
+                    <input type="text"
+                           class="form-control"
+                           uib-datepicker-popup="{{format}}"
+                           ng-model="fromDate"
+                           is-open="popup1.opened"
+                           datepicker-options="dateOptions"
+                           ng-required="true"
+                           close-text="Close"
+                           close-on-date-selection="true"
+                           alt-input-formats="altInputFormats"/>
+                    <span class="input-group-btn">
             <button type="button" class="btn btn-default" ng-click="open1()">
                 <i class="glyphicon glyphicon-calendar"></i>
             </button>
           </span>
-            </p>
-        </div>
-
-        <div class="col-md-2">
-            <h5>TO DATE:</h5>
-            <p class="input-group">
-                <input type="text" class="form-control" uib-datepicker-popup ng-model="dt" is-open="popup2.opened"
-                       datepicker-options="dateOptions" ng-required="true" close-text="Close"/>
-                <span class="input-group-btn">
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h5>TO DATE:</h5>
+                <p class="input-group">
+                    <input type="text"
+                           class="form-control"
+                           uib-datepicker-popup="{{format}}"
+                           ng-model="toDate"
+                           is-open="popup2.opened"
+                           datepicker-options="dateOptions"
+                           ng-required="true"
+                           close-text="Close"/>
+                    <span class="input-group-btn">
             <button type="button" class="btn btn-default" ng-click="open2()">
                 <i class="glyphicon glyphicon-calendar"></i>
             </button>
           </span>
-            </p>
+                </p>
+            </div>
+
+            <div class="col-md-12">
+                <button type="button" class="btn btn-sm btn-info" ng-click="f1Hour()">1 h</button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="f6Hours()">6 h</button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="f12Hours()">12 h</button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="f24Hours">24 h</button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="fLastWeek()">1 week</button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="fLastMonth()">1 month</button>
+            </div>
+        </div>
+
+        <div class="col-md-2" style="background-color: #756ebc; vertical-align: middle">
+            <button type="button" class="btn btn-sm btn-success" ng-click="reloadData()">RELOAD</button>
         </div>
     </div>
     <div class="row">
