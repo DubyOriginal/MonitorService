@@ -26,6 +26,7 @@ function deployLive(server_user, server_ip) {
 
   console.log("transfer source....");
   exec('scp package.json %s@%s:./MonitorService/', server_user, server_ip);
+  exec('scp bower.json %s@%s:./MonitorService/', server_user, server_ip);
   exec('scp MonitorApp.js %s@%s:./MonitorService/', server_user, server_ip);
   exec('scp -r config %s@%s:./MonitorService/', server_user, server_ip);
   exec('scp -r src %s@%s:./MonitorService/', server_user, server_ip);

@@ -11,6 +11,8 @@
 
     <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>  <!-- for DatePicker -->
 
+    <script src="/angular-spinner/dist/angular-spinner.min.js"></script>
+
     <script src="/angular-google-chart/ng-google-chart.js"></script>
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
 
@@ -19,10 +21,22 @@
 
 <script type="text/javascript">
   //-------------------------------------------------------------------------------------
-  var angularApp = angular.module('myApp', ['ui.bootstrap']);
-  angularApp.controller('getSensorCtrl', function ($scope, $http) {
+  var angularApp = angular.module('myApp', ['ui.bootstrap', 'angularSpinner']);
+  angularApp.controller('getSensorCtrl', ['$scope', '$http', 'usSpinnerService', function ($scope, $http, usSpinnerService) {
     $scope.mSensorList = [];
+    $scope.loadingPeriod = 0;  //12h
 
+    //spinner
+    //********************************************************************************************************************
+    $scope.startSpin = function(){
+      usSpinnerService.spin('spinner-1');
+    }
+    $scope.stopSpin = function(){
+      usSpinnerService.stop('spinner-1');
+    }
+
+
+    //********************************************************************************************************************
     $scope.getSensorList = function () {
       console.log("getSensorList!");
       $http({
@@ -44,6 +58,9 @@
       let fromD = $scope.fromDate / 1000;
       let toD = $scope.toDate / 1000;
       console.log("updateSelectBox: selSensor[" + selSensID + "] -> " + selSensName);
+
+      $scope.loadingPeriod = (toD - fromD) / 60 / 60;   //in hours
+      console.log("selected time range: " + $scope.loadingPeriod + " h");
       loadSensorData(selSensID, selSensName, fromD, toD);
     }
 
@@ -52,7 +69,7 @@
     // Datepicker Popup (ui.bootstrap.datepickerPopup)
 
     var fNow = new Date();
-    var f1Hour = (new Date()).setHours(fNow.getHours() - 6);
+    var f1Hour = (new Date()).setHours(fNow.getHours() - 1);
     var f6Hours = (new Date()).setHours(fNow.getHours() - 6);
     var f12Hours = (new Date()).setHours(fNow.getHours() - 12);
     var f24Hours = (new Date()).setDate(fNow.getDate() -1);
@@ -82,10 +99,13 @@
 
 
     $scope.reloadData = function () {
+      $scope.startSpin();
       let selSensID = $scope.selSensor.id;
       let selSensName = $scope.selSensor.sensor_name;
       let fromD = $scope.fromDate / 1000;
       let toD = $scope.toDate / 1000;
+      $scope.loadingPeriod = (toD - fromD) / 60 / 60;   //in hours
+      console.log("selected time range: " + $scope.loadingPeriod + " h");
       loadSensorData(selSensID, selSensName, fromD, toD);
 
     };
@@ -187,7 +207,7 @@
 
       return '';
     }*/
-  });  // END - angularApp.controller
+  }]);  // END - angularApp.controller
 
   //********************************************************************************************************************
   // CHART PART
@@ -200,6 +220,7 @@
       success: function (result) {
         console.log("result.length -> " + result.length);
         mSensorData = result;
+        angular.element(document.getElementById('moduleHolder')).scope().stopSpin();
 
         google.setOnLoadCallback(drawData(sensorName));
       }
@@ -329,12 +350,14 @@
 
 </script>
 
-<body ng-app="myApp" ng-controller="getSensorCtrl">
+<body id="moduleHolder" ng-app="myApp" ng-controller="getSensorCtrl">
 <header>
     <% include ../partials/header %>
 </header>
 
 <div class="main_container" style="display: block">
+    <span us-spinner="{radius:30, width:8, length: 16}" spinner-key="spinner-1" spinner-on="showSpinner" spinner-start-active="stop"></span>
+
     <div class="row-eq-height align-items-center">
 
         <div class="col-md-2">
@@ -390,9 +413,13 @@
                 <button type="button" class="btn btn-sm btn-info" ng-click="f1Hour()">1 h</button>
                 <button type="button" class="btn btn-sm btn-info" ng-click="f6Hours()">6 h</button>
                 <button type="button" class="btn btn-sm btn-info" ng-click="f12Hours()">12 h</button>
-                <button type="button" class="btn btn-sm btn-info" ng-click="f24Hours">24 h</button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="f24Hours()">24 h</button>
                 <button type="button" class="btn btn-sm btn-info" ng-click="fLastWeek()">1 week</button>
                 <button type="button" class="btn btn-sm btn-info" ng-click="fLastMonth()">1 month</button>
+                <h5>time range: {{loadingPeriod}} h</h5>
+                <input type="button" ng-click="startSpin()" value="Start spinner" />
+                <input type="button" ng-click="stopSpin()" value="Stop spinner" />
+
             </div>
         </div>
 

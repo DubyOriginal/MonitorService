@@ -48,7 +48,7 @@ LEFT JOIN monitor_db.user_params ON monitor_db.monitor_data.user_id = monitor_db
 LEFT JOIN monitor_db.device_params ON monitor_db.monitor_data.device_id = monitor_db.device_params.id
 LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monitor_db.sensor_params.id
       WHERE sensor_id like 104
-      AND ((timestamp >= 1509883979.931) AND (timestamp < 1509905579.931)) 
+      AND ((timestamp >= 1508583979.931) AND (timestamp < 1508905579.931)) 
       ORDER BY monitor_data.timestamp DESC 
       LIMIT 100000;
 
