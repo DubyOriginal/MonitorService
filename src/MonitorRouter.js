@@ -304,7 +304,7 @@ app.get('/savescreensensor/:screen_id/:sensor_id', function (req, res) {
 });
 
 //**********************************************************************************************************************
-// CLIENT ROUTES - (from DEVICE)
+// CLIENT ROUTES - (from DEVICE - ESP8266)
 //**********************************************************************************************************************
 // Store values to DB -> addValues(user_id, device_id, sensor_type, sensor_value){
 app.post('/storedevicedata', function (req, res) {
@@ -340,6 +340,33 @@ app.get('/requestcommand', function (req, res) {
   }
   res.set('Content-Type', 'application/json')
   res.send(JSON.stringify(response));
+});
+
+
+//**********************************************************************************************************************
+// CLIENT ROUTES - (from mobile)
+//**********************************************************************************************************************
+//http://localhost:2200/updatemobilefcmtoken  {id: "DY001", msisdn: "0989088414", token: "xxx..", platform: "android"}
+app.post('/updatepushtoken', function (req, res) {
+  console.log("server: POST /updatepushtoken");
+
+  let id       = req.body.id;
+  let msisdn   = req.body.msisdn;
+  let token    = req.body.token;
+  let platform = req.body.platform;
+
+  monitorApi.updatePushToken(id, msisdn, token, platform, (result) => {
+    if (res != null){
+      if (result != null){
+        //res.set('Content-Type', 'application/json')
+        res.send(result);
+      }else{
+        res.send(null);
+      }
+    }else{
+      console.log("/updatepushtoken res in NULL");
+    }
+  });
 });
 
 //**********************************************************************************************************************

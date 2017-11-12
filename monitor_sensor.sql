@@ -3,6 +3,7 @@ SELECT * FROM monitor_db.user_params;
 SELECT * FROM monitor_db.device_params;
 SELECT * FROM monitor_db.sensor_params;
 SELECT * FROM monitor_db.screen_sensor;
+SELECT * FROM monitor_db.fcm_user;
 
 SELECT CONVERT_TZ(NOW(), @@session.time_zone, '+02:00');
 #readAllSensors

@@ -10,5 +10,6 @@ gen
 /node_modules/
 /bower_components/
 
-/deploy.key
+/private/deploy.key
+/private/serviceAccountKey.json
 

@@ -367,6 +367,29 @@ class MonitorApi {
       console.log("no sensors");
     }
   };
+
+  //this will update "fcm_user" with latest push token
+  updatePushToken(id, msisdn, token, platform, callback){
+    console.log("MonitorApi: updatePushToken");
+
+    let dbHelper = new DBHelper();
+    var last_modified = moment().unix();
+
+    var sql = "INSERT INTO fcm_user (id, msisdn, token, platform, last_modified) VALUES (?, ?, ?, ?, ?) " +
+      "ON DUPLICATE KEY UPDATE id = values(id), msisdn = values(msisdn), token = values(token), platform = values(platform), last_modified = values(last_modified);";
+    dbHelper.query(sql, [id, msisdn, token, platform, last_modified], function(result, error) {
+      if (callback){
+        if (result){
+          console.log("MonitorApi: updatePushToken -> SUCCESS");
+          callback({status: "success"});
+        }else {
+          console.log("MonitorApi: updatePushToken -> OK");
+          callback({status: "error"});
+        }
+      }
+    });
+  }
+
 }
 
 
