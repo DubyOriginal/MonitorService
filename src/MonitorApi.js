@@ -170,6 +170,25 @@ class MonitorApi {
   };
 
 
+  getParamsForSensorID(sensor_id, callback){
+    //console.log("MonitorApi: getParamsForSensorID");
+
+    let dbHelper = new DBHelper();
+
+    const sql = "SELECT * FROM monitor_db.sensor_params WHERE id = " + sensor_id + ";";
+    dbHelper.query(sql, [], function(result, error) {
+      if (!error && result) {
+        //console.log("MonitorApi: getParamsForSensorID:");
+        //console.log("\t " + JSON.stringify(result));
+        if (callback) {
+          callback(result[0]);
+        }
+      }else{
+        console.log("MonitorApi: getParamsForSensorID - SOME ERROR!");
+      }
+    });
+  };
+
   updateSensorParams(sensor, callback){
     console.log("MonitorApi: updateSensorParams");
 
@@ -364,7 +383,10 @@ class MonitorApi {
         //console.log("MonitorApi: storeDeviceData TS -> " + new Date(timestamp).toLocaleDateString());
         //console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
 
-        this.analyzeSensorsData(user_id, device_id, sensor_id, sensor_value);
+        //if (sensor_id == 104){
+          this.analyzeSensorsData(user_id, device_id, sensor_id, sensor_value);
+        //}
+
 
         //var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null,'" + timestamp + "', '" + user_id + "', '" + device_id + "', '" + sensor_id + "', '" + sensor_type + "', '" + sensor_value + "');";
         var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_value) VALUES (null, ?, ?, ?, ?, ?);";
@@ -431,87 +453,100 @@ class MonitorApi {
 
     user_id = "DY001";
     this.testSensorAlarm(user_id, device_id, sensor_id, sensor_value, (result) => {
-      if (result.status !== "OK"){
+      if (result){
+        if (result.status == "ALARM"){
+          console.log("MonitorApi: analyzeSensorsData.testSensorAlarm result.status -> ALARM");
 
-        let msgTitle = "MONITOR INFO"
-        let msgDescription = result.msgDescription;
-        let msgData = result.msgData;
+          let msgTitle = "MONITOR INFO"
+          let msgDescription = result.msgDescription;
+          let msgData = result.msgData;
 
-        this.getUserToken(user_id, (error, mobToken) => {
-          if (!error) {
-            if (mobToken && mobToken.length > 0){
-              fcmHelper.pushMessage(mobToken, msgTitle, msgDescription, msgData);
-            }else{
-              console.log("MonitorApi: Invalid mobToken for userID: " + user_id);
+          this.getUserToken(user_id, (error, mobToken) => {
+            if (!error) {
+              if (mobToken && mobToken.length > 0){
+                fcmHelper.pushMessage(mobToken, msgTitle, msgDescription, msgData);
+              }else{
+                console.log("MonitorApi: Invalid mobToken for userID: " + user_id + ", token: " + mobToken);
+              }
+
+            } else {
+              console.log("MonitorApi: analyzeSensorsData.getUserToken ERROR -> " + JSON.stringify(error))
             }
-
-          } else {
-            console.log("MonitorApi: analyzeSensorsData.getUserToken ERROR -> " + JSON.stringify(error))
-          }
-        });
+          });
+        }else{
+          console.log("MonitorApi: analyzeSensorsData.testSensorAlarm result.status -> OK");
+        }
+      }else{
+        console.log("MonitorApi: analyzeSensorsData.testSensorAlarm -> result is NULL!");
       }
+
     });
   }
 
 
   //********************************************************************************************************************
   testSensorAlarm(user_id, device_id, sensor_id, sensor_value, callback){
-    let sName1 = "CKP_CORE";
-    let cpk_coreID = 104;
-    let cpk_coreMin = 30;
-    let cpk_coreMax = 60;
 
-    let sName2 = "S_VANI";
-    let vaniID = 110;
-    let vaniMin = 0;
-    let vaniMax = 30;
+    this.getParamsForSensorID(sensor_id, (sensorParams) => {
+      //console.log("MonitorApi: getParamsForSensorID -> " + JSON.stringify(result));
 
-    let sName3 = "S_SOBA";
-    let sobaID = 110;
-    let sobaMin = 15;
-    let sobaMax = 26;
+      let sName = "-";
+      let sID = 0;
+      var sMin = 0;
+      var sMax = 0;
 
-
-
-    var result = {
-      status: "OK",
-      msgDescription:  "all ok",
-      msgData:{
-        sensor_id: sensor_id,
-        sensor_value: sensor_value,
-        sensor_alarm_min: "",
-        sensor_alarm_max: ""
+      var result = {
+        status: "OK",
+        msgDescription:  "all ok",
+        msgData:{
+          sensor_id: sensor_id,
+          sensor_value: sensor_value,
+          sensor_alarm_min: "",
+          sensor_alarm_max: ""
+        }
       }
-    }
 
-    if (callback){
-      if (sensor_id == cpk_coreID && sensor_value > cpk_coreMax) {
-        result.status = "ALARM";
-        result.msgDescription = "critical: " + sName1 + " temp. -> " + sensor_value;
-        result.msgData.sensor_alarm_min = cpk_coreMin.toString();
-        result.msgData.sensor_alarm_min = cpk_coreMax.toString();
-        callback(result);
+      if (sensorParams != null){
+        //console.log("MonitorApi: getParamsForSensorID -> result: " + JSON.stringify(sensorParams));
+        sName = sensorParams.sensor_name;
+        sMin = sensorParams.alarm_min;
+        sMax = sensorParams.alarm_max;
+      }
 
-      }else if (sensor_id == vaniID && sensor_value < vaniMin) {
-        result.status = "ALARM";
-        result.msgDescription = "critical: " + sName2 + " temp. -> " + sensor_value;
-        result.msgData.sensor_alarm_min = vaniMin.toString();
-        result.msgData.sensor_alarm_min = vaniMax.toString();
-        callback(result);
+      if (callback){
+        //console.log("testSensorAlarm -> sensor_value: " + sensor_value + ", sMin: " + sMin + ", sMax: " + sMax);
+        if (sMin && sMax && sensor_value){
+          if (sensor_value > sMax || sensor_value < sMin) {
+            //console.log("testSensorAlarm -> status -> ALARM");
+            result.status = "ALARM";
+            result.msgDescription = "critical: " + sName + " temp. -> " + sensor_value;
+            result.msgData.sensor_alarm_min = sMin.toString();
+            result.msgData.sensor_alarm_max = sMax.toString();
+            callback(result);
 
-      }else if (sensor_id == sobaID && sensor_value > sobaMax) {
-        result.status = "ALARM";
-        result.msgDescription = "critical: " + sName3 + " temp. -> " + sensor_value;
-        result.msgData.sensor_alarm_min = sobaMin.toString();
-        result.msgData.sensor_alarm_min = sobaMax.toString();
-        callback(result);
+          }else{
+            //console.log("testSensorAlarm -> status -> OK");
+            result.status = "OK";
+            callback(result);
+          }
+        }else{
+          console.log("testSensorAlarm -> [sMin || sMax || sensor_value] -> is NULL!");
+          result.status = "UNAVAILABLE";
+          callback(result);
+        }
 
       }else{
-        result.status = "OK";
-        callback(result);
+        console.log("testSensorAlarm -> callback is NULL!");
       }
-    }
+    });
+
+
+
+
+
+
   }
+
 }
 
 module.exports = MonitorApi;
