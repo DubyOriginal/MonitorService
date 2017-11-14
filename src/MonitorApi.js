@@ -14,7 +14,16 @@ const BasicUtils = require('./BasicUtils');
 const moment = require('moment');
 const APP_SESSION_TIMEOUT_CHECK = 1000 * 60 * 60 // One hour time
 
+let fcmHelper = new FCMHelper();
+
+const ERR_CODE_DB_GET_TOKEN_FOR_ORIGIN = 'ERR_CODE_DB_GET_TOKEN_FOR_ORIGIN'
+const ERR_CODE_NO_TOKEN_FOR_ORIGIN = 'ERR_CODE_NO_TOKEN_FOR_ORIGIN';
+
 class MonitorApi {
+
+  constructor() {
+    console.log("MonitorApi initialized");
+  }
 
   getAllSensorsData(callback){
     console.log("MonitorApi: getAllSensorsData");
@@ -338,7 +347,7 @@ class MonitorApi {
     //console.log("MonitorApi: storeDeviceData");
 
     let dbHelper = new DBHelper();
-    let fcmHelper = new FCMHelper();
+    //let fcmHelper = new FCMHelper();
 
     if (sensors){
       var writeSensorValue = (i) => {
@@ -392,9 +401,12 @@ class MonitorApi {
     });
   }
 
-  //**********************************************************************************************************************
+  //********************************************************************************************************************
   getUserToken(user_id, callback) {
-    app.db.query("SELECT * FROM fcm_user WHERE id = ?", [user_id], (result, error) => {
+
+    let dbHelper = new DBHelper();
+
+    dbHelper.query("SELECT * FROM fcm_user WHERE id = ?", [user_id], (result, error) => {
       if (!error) {
         if (result && result.length > 0) {
           if (callback) {
@@ -402,27 +414,104 @@ class MonitorApi {
           }
         } else {
           if (callback) {
-            callback(ERR_CODE_NO_TOKEN_FOR_ORIGIN)
+            callback(ERR_CODE_NO_TOKEN_FOR_ORIGIN);
           }
         }
       } else {
         if (callback) {
-          callback(ERR_CODE_DB_GET_TOKEN_FOR_ORIGIN)
+          callback(ERR_CODE_DB_GET_TOKEN_FOR_ORIGIN);
         }
       }
     })
   };
 
-  //****
+  //********************************************************************************************************************
   analyzeSensorsData(user_id, device_id, sensor_id, sensor_value){
     console.log("MonitorApi: analyzeSensorsData -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
 
-    let fcmHelper = new FCMHelper();
     user_id = "DY001";
-    fcmHelper.pushMessage(user_id);
+    this.testSensorAlarm(user_id, device_id, sensor_id, sensor_value, (result) => {
+      if (result.status !== "OK"){
 
+        let msgTitle = "MONITOR INFO"
+        let msgDescription = result.msgDescription;
+        let msgData = result.msgData;
+
+        this.getUserToken(user_id, (error, mobToken) => {
+          if (!error) {
+            if (mobToken && mobToken.length > 0){
+              fcmHelper.pushMessage(mobToken, msgTitle, msgDescription, msgData);
+            }else{
+              console.log("MonitorApi: Invalid mobToken for userID: " + user_id);
+            }
+
+          } else {
+            console.log("MonitorApi: analyzeSensorsData.getUserToken ERROR -> " + JSON.stringify(error))
+          }
+        });
+      }
+    });
+  }
+
+
+  //********************************************************************************************************************
+  testSensorAlarm(user_id, device_id, sensor_id, sensor_value, callback){
+    let sName1 = "CKP_CORE";
+    let cpk_coreID = 104;
+    let cpk_coreMin = 30;
+    let cpk_coreMax = 60;
+
+    let sName2 = "S_VANI";
+    let vaniID = 110;
+    let vaniMin = 0;
+    let vaniMax = 30;
+
+    let sName3 = "S_SOBA";
+    let sobaID = 110;
+    let sobaMin = 15;
+    let sobaMax = 26;
+
+
+
+    var result = {
+      status: "OK",
+      msgDescription:  "all ok",
+      msgData:{
+        sensor_id: sensor_id,
+        sensor_value: sensor_value,
+        sensor_alarm_min: "",
+        sensor_alarm_max: ""
+      }
+    }
+
+    if (callback){
+      if (sensor_id == cpk_coreID && sensor_value > cpk_coreMax) {
+        result.status = "ALARM";
+        result.msgDescription = "critical: " + sName1 + " temp. -> " + sensor_value;
+        result.msgData.sensor_alarm_min = cpk_coreMin.toString();
+        result.msgData.sensor_alarm_min = cpk_coreMax.toString();
+        callback(result);
+
+      }else if (sensor_id == vaniID && sensor_value < vaniMin) {
+        result.status = "ALARM";
+        result.msgDescription = "critical: " + sName2 + " temp. -> " + sensor_value;
+        result.msgData.sensor_alarm_min = vaniMin.toString();
+        result.msgData.sensor_alarm_min = vaniMax.toString();
+        callback(result);
+
+      }else if (sensor_id == sobaID && sensor_value > sobaMax) {
+        result.status = "ALARM";
+        result.msgDescription = "critical: " + sName3 + " temp. -> " + sensor_value;
+        result.msgData.sensor_alarm_min = sobaMin.toString();
+        result.msgData.sensor_alarm_min = sobaMax.toString();
+        callback(result);
+
+      }else{
+        result.status = "OK";
+        callback(result);
+      }
+    }
   }
 }
-
 
 module.exports = MonitorApi;

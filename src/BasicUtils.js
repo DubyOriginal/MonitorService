@@ -19,3 +19,9 @@ class BasicUtils {
 
 
 module.exports = BasicUtils;
+
+/*
+ //message: base64.encode(JSON.stringify(payload))
+ //message: base64.decode(JSON.stringify(payload.message))}
+
+*/
