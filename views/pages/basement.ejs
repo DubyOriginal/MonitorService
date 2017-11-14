@@ -116,7 +116,7 @@
       console.log("averageTemp = " + averageTemp);
 
       const rangeMin = 20;  //from 20°C as 0%
-      const rangeMax = 60;  //from 60°C as 100%
+      const rangeMax = 70;  //from 60°C as 100%
       let percVal = 100 * (averageTemp - rangeMin) / (rangeMax - rangeMin)
 
       $scope.mCapacity = parseInt(percVal);
@@ -315,6 +315,19 @@
                     <div class="box_b">
                         <p class="small">ID: {{mBasementList[9].screen_id}}</p>
                         <p class="small">{{mBasementList[9].sensor_value}}°C</p>
+                    </div>
+                </div>
+
+                <!-- screenID: 20, sensorID: 110, name: VANI -->
+                <div class="measure_point_box" style="top: 100px; left: 100px">
+                    <div class="box_a">
+                        <a href="#" ng-click='toggleDetailBox(20)'>
+                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                        </a>
+                    </div>
+                    <div class="box_b">
+                        <p class="small">ID: {{mBasementList[10].screen_id}}</p>
+                        <p class="small">{{mBasementList[10].sensor_value}}°C</p>
                     </div>
                 </div>
 

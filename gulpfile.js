@@ -32,6 +32,7 @@ function deployLive(server_user, server_ip) {
   exec('scp -r src %s@%s:./MonitorService/', server_user, server_ip);
   exec('scp -r resources %s@%s:./MonitorService/', server_user, server_ip);
   exec('scp -r views %s@%s:./MonitorService/', server_user, server_ip);
+  exec('scp -r private %s@%s:./MonitorService/', server_user, server_ip);
 
 
   console.log("starting MonitorApp....");

@@ -8,12 +8,11 @@
 //var db = require('mysql');
 
 const DBHelper = require('./DBHelper');
+const FCMHelper = require('./FCMHelper');
 const BasicUtils = require('./BasicUtils');
 
 const moment = require('moment');
 const APP_SESSION_TIMEOUT_CHECK = 1000 * 60 * 60 // One hour time
-
-
 
 class MonitorApi {
 
@@ -239,10 +238,10 @@ class MonitorApi {
       LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
       LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
-      LEFT JOIN monitor_db.screen_sensor ON monitor_db.monitor_data.sensor_id = monitor_db.screen_sensor.sensor_id \
+      RIGHT JOIN monitor_db.screen_sensor ON monitor_db.monitor_data.sensor_id = monitor_db.screen_sensor.sensor_id \
       WHERE \
         monitor_data.timestamp = (SELECT MAX(timestamp) FROM monitor_data) \
-      ORDER BY screen_sensor.screen_id";
+      ORDER BY screen_sensor.screen_id ASC";
 
     dbHelper.query(sql, [], function(result, error) {
       if (!error && result) {
@@ -339,6 +338,7 @@ class MonitorApi {
     //console.log("MonitorApi: storeDeviceData");
 
     let dbHelper = new DBHelper();
+    let fcmHelper = new FCMHelper();
 
     if (sensors){
       var writeSensorValue = (i) => {
@@ -354,6 +354,8 @@ class MonitorApi {
         var timestamp = moment().unix();
         //console.log("MonitorApi: storeDeviceData TS -> " + new Date(timestamp).toLocaleDateString());
         //console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
+
+        this.analyzeSensorsData(user_id, device_id, sensor_id, sensor_value);
 
         //var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null,'" + timestamp + "', '" + user_id + "', '" + device_id + "', '" + sensor_id + "', '" + sensor_type + "', '" + sensor_value + "');";
         var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_value) VALUES (null, ?, ?, ?, ?, ?);";
@@ -390,6 +392,36 @@ class MonitorApi {
     });
   }
 
+  //**********************************************************************************************************************
+  getUserToken(user_id, callback) {
+    app.db.query("SELECT * FROM fcm_user WHERE id = ?", [user_id], (result, error) => {
+      if (!error) {
+        if (result && result.length > 0) {
+          if (callback) {
+            callback(null, result[0].token)
+          }
+        } else {
+          if (callback) {
+            callback(ERR_CODE_NO_TOKEN_FOR_ORIGIN)
+          }
+        }
+      } else {
+        if (callback) {
+          callback(ERR_CODE_DB_GET_TOKEN_FOR_ORIGIN)
+        }
+      }
+    })
+  };
+
+  //****
+  analyzeSensorsData(user_id, device_id, sensor_id, sensor_value){
+    console.log("MonitorApi: analyzeSensorsData -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
+
+    let fcmHelper = new FCMHelper();
+    user_id = "DY001";
+    fcmHelper.pushMessage(user_id);
+
+  }
 }
 
 
