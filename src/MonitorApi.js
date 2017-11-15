@@ -383,7 +383,7 @@ class MonitorApi {
         //console.log("MonitorApi: storeDeviceData TS -> " + new Date(timestamp).toLocaleDateString());
         //console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
 
-        //if (sensor_id == 104){
+        //if (sensor_id == 101){
           this.analyzeSensorsData(user_id, device_id, sensor_id, sensor_value);
         //}
 
@@ -474,7 +474,7 @@ class MonitorApi {
             }
           });
         }else{
-          console.log("MonitorApi: analyzeSensorsData.testSensorAlarm result.status -> OK");
+          console.log("MonitorApi: analyzeSensorsData.testSensorAlarm result.status -> " + result.status);
         }
       }else{
         console.log("MonitorApi: analyzeSensorsData.testSensorAlarm -> result is NULL!");
@@ -487,66 +487,69 @@ class MonitorApi {
   //********************************************************************************************************************
   testSensorAlarm(user_id, device_id, sensor_id, sensor_value, callback){
 
-    this.getParamsForSensorID(sensor_id, (sensorParams) => {
-      //console.log("MonitorApi: getParamsForSensorID -> " + JSON.stringify(result));
+    if (sensor_value){
+      let sVALUE = parseInt(sensor_value);
 
-      let sName = "-";
-      let sID = 0;
-      var sMin = 0;
-      var sMax = 0;
+      this.getParamsForSensorID(sensor_id, (sensorParams) => {
+        //console.log("MonitorApi: getParamsForSensorID -> " + JSON.stringify(sensorParams));
 
-      var result = {
-        status: "OK",
-        msgDescription:  "all ok",
-        msgData:{
-          sensor_id: sensor_id,
-          sensor_value: sensor_value,
-          sensor_alarm_min: "",
-          sensor_alarm_max: ""
+        let sName = "-";
+        let sID = 0;
+        var sMin = 0;
+        var sMax = 0;
+
+        var result = {
+          status: "OK",
+          msgDescription:  "all ok",
+          msgData:{
+            sensor_id: sensor_id,
+            sensor_value: sVALUE,
+            sensor_alarm_min: "",
+            sensor_alarm_max: ""
+          }
         }
-      }
 
-      if (sensorParams != null){
-        //console.log("MonitorApi: getParamsForSensorID -> result: " + JSON.stringify(sensorParams));
-        sName = sensorParams.sensor_name;
-        sMin = sensorParams.alarm_min;
-        sMax = sensorParams.alarm_max;
-      }
+        if (sensorParams != null){
+          //console.log("MonitorApi: getParamsForSensorID -> result: " + JSON.stringify(sensorParams));
+          sName = sensorParams.sensor_name;
+          sMin = sensorParams.alarm_min;
+          sMax = sensorParams.alarm_max;
+        }
 
-      if (callback){
-        //console.log("testSensorAlarm -> sensor_value: " + sensor_value + ", sMin: " + sMin + ", sMax: " + sMax);
-        if (sMin && sMax && sensor_value){
-          if (sensor_value > sMax || sensor_value < sMin) {
-            //console.log("testSensorAlarm -> status -> ALARM");
-            result.status = "ALARM";
-            result.msgDescription = "critical: " + sName + " temp. -> " + sensor_value;
-            result.msgData.sensor_alarm_min = sMin.toString();
-            result.msgData.sensor_alarm_max = sMax.toString();
-            callback(result);
+        if (callback){
+          //console.log("testSensorAlarm -> sensor_value: " + sVALUE + ", sMin: " + sMin + ", sMax: " + sMax);
+          if (sMin && sMax && sensor_value){
+            if (sVALUE > sMax || sVALUE < sMin) {
+              //console.log("testSensorAlarm -> status -> ALARM");
+              result.status = "ALARM";
+              result.msgDescription = "critical: " + sName + " temp. -> " + sVALUE;
+              result.msgData.sensor_alarm_min = sMin.toString();
+              result.msgData.sensor_alarm_max = sMax.toString();
+              callback(result);
 
+            }else{
+              //console.log("testSensorAlarm -> status -> OK");
+              result.status = "OK";
+              callback(result);
+            }
           }else{
-            //console.log("testSensorAlarm -> status -> OK");
-            result.status = "OK";
+            //console.log("testSensorAlarm -> [sMin || sMax || sensor_value] -> is NULL!");
+            result.status = "UNAVAILABLE";
             callback(result);
           }
+
         }else{
-          console.log("testSensorAlarm -> [sMin || sMax || sensor_value] -> is NULL!");
-          result.status = "UNAVAILABLE";
-          callback(result);
+          console.log("testSensorAlarm -> callback is NULL!");
         }
-
-      }else{
-        console.log("testSensorAlarm -> callback is NULL!");
+      });
+    }else{
+      if (callback){
+        console.log("testSensorAlarm -> invalid sensor value!");
+        result.status = "ERROR";
+        callback(result);
       }
-    });
-
-
-
-
-
-
+    }
   }
-
 }
 
 module.exports = MonitorApi;
