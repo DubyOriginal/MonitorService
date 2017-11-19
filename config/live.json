@@ -1,18 +1,18 @@
 {
   "server": {
     "user": "duby",
-    "ip": "192.168.1.26",
+    "ip": "192.168.1.24",
     "port": 2200
   },
   "service": {
-    "version": "1.0.4",
+    "version": "1.0.5",
     "path": "/home/duby/MonitorService"
   },
   "database": {
-    "host": "192.168.1.26",
+    "host": "192.168.1.24",
     "port": 3306,
     "user": "duby",
-    "password": "dubyoriginal",
+    "password": "duby@238",
     "database": "monitor_db"
   }
 }

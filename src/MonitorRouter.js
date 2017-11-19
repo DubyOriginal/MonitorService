@@ -48,22 +48,25 @@ app.set('view engine', 'ejs');
 //**********************************************************************************************************************
 //PAGE - Home
 app.get('/', function (req, res) {
-  console.log("server: /ROOT");
+  console.log("loading page -> Home");
   res.render('./pages/index')
 });
 
 //PAGE - monitoring sensors data
 app.get('/datatable', function (req, res) {
+  console.log("loading page -> Data Table");
   res.render('./pages/datatable');
 });
 
 //PAGE - monitoring sensors data
 app.get('/monitoring', function (req, res) {
+  console.log("loading page -> Monitoring");
   res.render('./pages/monitoring');
 });
 
 //PAGE - monitoring sensors data
 app.get('/basement', function (req, res) {
+  console.log("loading page -> Basement");
   res.render('./pages/basement');
   //monitorApi.getAllSensorsData(function (allSensorData) {
   //  res.render('./pages/basement', {
@@ -74,7 +77,7 @@ app.get('/basement', function (req, res) {
 
 //PAGE - monitoring sensors data
 app.get('/house', function (req, res) {
-
+  console.log("loading page -> House");
   monitorApi.getAllSensorsData(function (allSensorData) {
     res.render('./pages/house', {
       allSensorData: allSensorData
@@ -84,26 +87,31 @@ app.get('/house', function (req, res) {
 
 //PAGE - monitoring single sensor
 app.get('/sensortest', function (req, res) {
+  console.log("loading page -> Sensor Test");
   res.render('./pages/sensortest');
 });
 
 //PAGE - device manager
 app.get('/devicemanager', function (req, res) {
+  console.log("loading page -> Device Manager");
   res.render('./pages/devicemanager');
 });
 
 //PAGE - Parts / CKP
 app.get('/parts_ckp', function (req, res) {
+  console.log("loading page -> Parts / CKP");
   res.render('./pages/parts_ckp');
 });
 
 //PAGE - Parts / Puffer
 app.get('/parts_casbs', function (req, res) {
+  console.log("loading page -> Parts / Puffer");
   res.render('./pages/parts_casbs');
 });
 
 //PAGE - About
 app.get('/about', function (req, res) {
+  console.log("loading page -> About");
   res.render('./pages/about');
 });
 

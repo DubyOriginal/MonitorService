@@ -39,7 +39,7 @@ class FCMHelper {
       }
     };
 
-    //console.log("fcm.send: message -> " + JSON.stringify(message))
+    console.log("fcm.send: message -> " + JSON.stringify(message))
 
     fcm.send(message, function (err, response) {
       if (err) {

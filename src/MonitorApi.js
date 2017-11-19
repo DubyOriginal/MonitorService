@@ -503,7 +503,7 @@ class MonitorApi {
           msgDescription:  "all ok",
           msgData:{
             sensor_id: sensor_id,
-            sensor_value: sVALUE,
+            sensor_value: sensor_value,
             sensor_alarm_min: "",
             sensor_alarm_max: ""
           }
@@ -518,13 +518,14 @@ class MonitorApi {
 
         if (callback){
           //console.log("testSensorAlarm -> sensor_value: " + sVALUE + ", sMin: " + sMin + ", sMax: " + sMax);
-          if (sMin && sMax && sensor_value){
+          if (sMin && sMax && sVALUE){
             if (sVALUE > sMax || sVALUE < sMin) {
               //console.log("testSensorAlarm -> status -> ALARM");
               result.status = "ALARM";
               result.msgDescription = "critical: " + sName + " temp. -> " + sVALUE;
               result.msgData.sensor_alarm_min = sMin.toString();
               result.msgData.sensor_alarm_max = sMax.toString();
+              result.msgData.sensor_value     = sVALUE.toString();
               callback(result);
 
             }else{
