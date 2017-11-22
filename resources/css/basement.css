@@ -34,6 +34,14 @@
     padding: 2px 10px 2px 10px;
 }
 
+.calc_power_box {
+    background-color: #ccaf44;
+    border: 2px solid #4f4f4f;
+    display: table;
+    position: absolute;
+    padding: 2px 3px 2px 3px;
+}
+
 .table_middle{
     display: table-cell;
     vertical-align: middle;

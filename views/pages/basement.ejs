@@ -21,6 +21,8 @@
     $scope.mActiveSensor = null;  // {"screen_id":11, "sensor_id":102}
     $scope.mBasementList = [];
     $scope.mCapacity = 0;
+    $scope.mPowerCKP = 0;
+    $scope.mPowerRAD = 0;
 
     $scope.getBasementList = function () {
       console.log("getBasementList!");
@@ -31,6 +33,7 @@
         console.log("getBasementList - data loaded!");
         $scope.mBasementList = response.data;
         $scope.calculateCapacity();
+        $scope.calculatePower();
         //console.log(">>>>>  mBasementList: " + JSON.stringify($scope.mBasementList));
       }, function (error) {
         console.log("getBasementList ERROR: " + error);
@@ -122,6 +125,25 @@
       $scope.mCapacity = parseInt(percVal);
     };
 
+
+    $scope.calculatePower = function () {
+      //P = Q * Cp * ro * dT;     Q[m3/s], Cp[J/kg°C], ro[kg/m3], dT[T2-T1]
+      const Q = 1.7 / 60 / 60;    //flow -> 1.7 m3/h
+      const Cp = 4200;            //heat capacity of water
+      const ro = 1000;            //water density
+      const t2_ckp = $scope.mBasementList[4].sensor_value;  //ckp_pol
+      const t1_ckp = $scope.mBasementList[5].sensor_value;  //ckp_pov
+      const t2_rad = $scope.mBasementList[7].sensor_value;  //rad_pol
+      const t1_rad = $scope.mBasementList[8].sensor_value;  //rad_pov
+      const dt_ckp = t2_ckp - t1_ckp;
+      const dt_rad = t2_rad - t1_rad;
+      $scope.mPowerCKP = parseInt(Q * Cp * ro * dt_ckp / 1000);
+      $scope.mPowerRAD = parseInt(Q * Cp * ro * dt_rad / 1000);
+
+      console.log("calculatePower: mPowerCKP -> " + $scope.mPowerCKP);
+      console.log("calculatePower: mPowerRAD -> " + $scope.mPowerRAD);
+
+    };
 
   });
 </script>
@@ -335,6 +357,19 @@
                 <div class="calculation_box" style="top: 565px; left: 622px; text-align: center">
                     <p class="dy-p-2">CAPACITY</p>
                     <p class="small">{{mCapacity}}%</p>
+                </div>
+
+
+                <!-- power boxes  -->
+                <!-- P = Q + Cp + ro + dT;    Q[m3/s], Cp[J/kg°C], ro[kg/m3], dT[T2-T1] -->
+                <div class="calc_power_box" style="top: 568px; left: 64px; text-align: center">
+                    <p class="dy-p-2">POWER - CKP</p>
+                    <p class="small">{{mPowerCKP}}kW</p>
+                </div>
+
+                <div class="calc_power_box" style="top: 430px; left: 1100px; text-align: center">
+                    <p class="dy-p-2">POWER - RAD</p>
+                    <p class="small">{{mPowerRAD}}kW</p>
                 </div>
 
             </div>
