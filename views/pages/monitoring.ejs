@@ -23,7 +23,7 @@
   //-------------------------------------------------------------------------------------
   var angularApp = angular.module('myApp', ['ui.bootstrap', 'angularSpinner']);
   angularApp.controller('getSensorCtrl', ['$scope', '$http', 'usSpinnerService', function ($scope, $http, usSpinnerService) {
-    $scope.mSensorList = [];
+    $scope.mSensorList = [];        //list of sensors: 100, 101, 102, 103,...
     $scope.loadingPeriod = 0;       //loading time range
     $scope.latestTimestamp = 0;     //latest sensor timestamp
 
@@ -232,9 +232,11 @@
       chartArea: {left: 70, right: 70, top: 50, width: "95%"},
       legend: {position: 'top', alignment: 'end'},
       interpolateNulls: false,
+      pointSize: 2,
       series: {
         1: {
           type: "line",
+          pointShape: 'circle',
           interpolateNulls: false
         }
       },

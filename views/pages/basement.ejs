@@ -30,7 +30,7 @@
         method: 'GET',
         url: 'getbasementsensordata'
       }).then(function (response) {
-        console.log("getBasementList - data loaded!");
+        console.log("getBasementList - data loaded. Cnt -> " + response.data.length);
         $scope.mBasementList = response.data;
         $scope.calculateCapacity();
         $scope.calculatePower();
@@ -114,9 +114,9 @@
         parseFloat($scope.mBasementList[1].sensor_value) +
         parseFloat($scope.mBasementList[2].sensor_value) +
         parseFloat($scope.mBasementList[3].sensor_value);
-      console.log("sumPuffTemp = " + sumPuffTemp);
+      //console.log("sumPuffTemp = " + sumPuffTemp);
       let averageTemp = sumPuffTemp / 4;
-      console.log("averageTemp = " + averageTemp);
+      //console.log("averageTemp = " + averageTemp);
 
       const rangeMin = 20;  //from 20°C as 0%
       const rangeMax = 70;  //from 60°C as 100%
