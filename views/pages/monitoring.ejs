@@ -59,7 +59,7 @@
     $scope.getSensorList();  //initial data load
 
     $scope.updateSelectBox = function () {
-      let selSensID = $scope.selSensor.id;
+      let selSensID = 0;   //$scope.selSensor.id;           //0 -> all sensors
       let selSensName = $scope.selSensor.sensor_name;
       let fromD = $scope.fromDate / 1000;
       let toD = $scope.toDate / 1000;
@@ -69,7 +69,6 @@
       console.log("selected time range: " + $scope.loadingPeriod + " h");
       loadSensorData(selSensID, selSensName, fromD, toD);
     }
-
 
     //********************************************************************************************************************
     // Datepicker Popup (ui.bootstrap.datepickerPopup)
@@ -106,7 +105,7 @@
 
     $scope.reloadData = function () {
       $scope.startSpin();
-      let selSensID = $scope.selSensor.id;
+      let selSensID = 0;  //$scope.selSensor.id;           //0 -> all sensors
       let selSensName = $scope.selSensor.sensor_name;
       let fromD = $scope.fromDate / 1000;
       let toD = $scope.toDate / 1000;
@@ -192,31 +191,171 @@
 
   function drawData(sensorName) {
     var data = new google.visualization.DataTable();
-    //data.addColumn('number', 'X');
     data.addColumn('datetime', 'Date');
-    data.addColumn('number', sensorName);
+    data.addColumn('number', 'puffer_04');
+    data.addColumn('number', 'radijator_topla');
+    data.addColumn('number', 'puffer_03');
+    data.addColumn('number', 'radijator_hladna');
+    data.addColumn('number', 'ckp_jezgra');
+    data.addColumn('number', 'ckp_pol');
+    data.addColumn('number', 'puffer_02');
+    data.addColumn('number', 'ckp_pov');
+    data.addColumn('number', 'puffer_01');
+    data.addColumn('number', 'soba');
+    data.addColumn('number', 'vani');
+    data.addColumn('number', 'power_cpk');
+    data.addColumn('number', 'power_rad');
     //data.addColumn('number', 'test soba_2');
 
-    //console.log("current TS: " + new Date().toUTCString());
     console.log("current TS locale: " + new Date().toLocaleString());
-    //console.time('Timer name');
 
     //prepare all sensors data for graph
     //---------------------------------------------------------
     var latestTS = 0;
-    for (var i = 0; i < mSensorData.length; i += 1) {
-      let sVal = parseFloat(mSensorData[i].sensor_value);
-      if (sVal < 0){ sVal = 0;}
-      //console.log("val[" + i + "] -> " + sVal);
+    var s_100 = false;
+    var s_101 = false;
+    var s_102 = false;
+    var s_103 = false;
+    var s_104 = false;
+    var s_105 = false;
+    var s_106 = false;
+    var s_107 = false;
+    var s_108 = false;
+    var s_109 = false;
+    var s_110 = false;
 
-      //extract latest timestamp
-      let sTS = parseInt(mSensorData[i].timestamp * 1000);
-      if (sTS > latestTS){
-        latestTS = sTS;
+    var sVal_100 = 0;
+    var sVal_101 = 0;
+    var sVal_102 = 0;
+    var sVal_103 = 0;
+    var sVal_104 = 0;
+    var sVal_105 = 0;
+    var sVal_106 = 0;
+    var sVal_107 = 0;
+    var sVal_108 = 0;
+    var sVal_109 = 0;
+    var sVal_110 = 0;
+
+    for (var i = 0; i < mSensorData.length; i += 1) {
+
+      if (mSensorData[i].sensor_id == "100"){
+        var sVal100 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal100 < 0){ sVal100 = 0;}
+        s_100 = true;
+        sVal_100 = sVal100;
       }
 
-      let sTSDate = new Date(sTS);
-      data.addRow([sTSDate, sVal]);
+      if (mSensorData[i].sensor_id == "101"){
+        var sVal101 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal101 < 0){ sVal101 = 0;}
+        s_101 = true;
+        sVal_101 = sVal101;
+      }
+
+      if (mSensorData[i].sensor_id == "102"){
+        var sVal102 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal102 < 0){ sVal102 = 0;}
+        s_102 = true;
+        sVal_102 = sVal102;
+      }
+
+      if (mSensorData[i].sensor_id == "103"){
+        var sVal103 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal103 < 0){ sVal103 = 0;}
+        s_103 = true;
+        sVal_103 = sVal103;
+      }
+
+      if (mSensorData[i].sensor_id == "104"){
+        var sVal104 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal104 < 0){ sVal104 = 0;}
+        s_104 = true;
+        sVal_104 = sVal104;
+      }
+
+      if (mSensorData[i].sensor_id == "105"){
+        var sVal105 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal105 < 0){ sVal105 = 0;}
+        s_105 = true;
+        sVal_105 = sVal105;
+      }
+
+      if (mSensorData[i].sensor_id == "106"){
+        var sVal106 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal106 < 0){ sVal106 = 0;}
+        s_106 = true;
+        sVal_106 = sVal106;
+      }
+
+      if (mSensorData[i].sensor_id == "107"){
+        var sVal107 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal107 < 0){ sVal107 = 0;}
+        s_107 = true;
+        sVal_107 = sVal107;
+      }
+
+      if (mSensorData[i].sensor_id == "108"){
+        var sVal108 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal108 < 0){ sVal108 = 0;}
+        s_108 = true;
+        sVal_108 = sVal108;
+      }
+
+      if (mSensorData[i].sensor_id == "109"){
+        var sVal109 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal109 < 0){ sVal109 = 0;}
+        s_109 = true;
+        sVal_109 = sVal109;
+      }
+
+      if (mSensorData[i].sensor_id == "110"){
+        var sVal110 = parseFloat(mSensorData[i].sensor_value);
+        if (sVal110 < 0){ sVal110 = 0;}
+        s_110 = true;
+        sVal_110 = sVal110;
+      }
+
+
+      // test if all done for timestamp[n]
+      if (s_100 && s_101 && s_102 && s_103 && s_104 && s_105 && s_106 && s_107 && s_108 && s_109 && s_110){
+        //----------------------------------------------------------
+        //extract latest timestamp
+        let sTS = parseInt(mSensorData[i].timestamp * 1000);
+        if (sTS > latestTS){
+          latestTS = sTS;
+        }
+        let sTSDate = new Date(sTS);
+
+        //----------------------------------------------------------
+        //calculate and add power
+        //P = Q * Cp * ro * dT;     Q[m3/s], Cp[J/kg°C], ro[kg/m3], dT[T2-T1]
+        const Q = 1.7 / 60 / 60;    //flow -> 1.7 m3/h
+        const Cp = 4200;            //heat capacity of water
+        const ro = 1000;            //water density
+        const t2_ckp = sVal_105;  //ckp_pol, sID: 105
+        const t1_ckp = sVal_107;  //ckp_pov, sID: 107
+        const t2_rad = sVal_101;  //rad_pol, sID: 101
+        const t1_rad = sVal_103;  //rad_pov, sID: 103
+        const dt_ckp = t2_ckp - t1_ckp;
+        const dt_rad = t2_rad - t1_rad;
+        let valPowerCKP = parseInt(Q * Cp * ro * dt_ckp / 1000);
+        let valPowerRAD = parseInt(Q * Cp * ro * dt_rad / 1000);
+        //----------------------------------------------------------
+
+        data.addRow([sTSDate, sVal_100, sVal_101, sVal_102, sVal_103, sVal_104, sVal_105, sVal_106, sVal_107, sVal_108, sVal_109, sVal_110, valPowerCKP, valPowerRAD]);
+
+        s_100 = false;
+        s_101 = false;
+        s_102 = false;
+        s_103 = false;
+        s_104 = false;
+        s_105 = false;
+        s_106 = false;
+        s_107 = false;
+        s_108 = false;
+        s_109 = false;
+        s_110 = false;
+      }
     }
 
     //angularApp.$scope.latestTimestamp = latestTS;
@@ -225,14 +364,14 @@
     angular.element(document.getElementById('moduleHolder')).scope().setLatestTS(latestTimestampStr);
     //angularApp.scope().latestTimestamp = latestTS;
     //angular.element(document.getElementById('moduleHolder')).scope().latestTimestamp = latestTS;
-    //---------------------------------------------------------
 
+    //---------------------------------------------------------
     var chartOptions = {
       height: 400,
       chartArea: {left: 70, right: 70, top: 50, width: "95%"},
       legend: {position: 'top', alignment: 'end'},
       interpolateNulls: false,
-      pointSize: 2,
+      pointSize: 0,
       series: {
         1: {
           type: "line",
@@ -278,7 +417,7 @@
         },
         baselineColor: '#222222'
       },
-      colors: ['#c53d47', '#31925a'],
+      colors: ['#ff4422', '#ff6644', '#ff9933', '#ccbb33', '#aacc22', '#69d025', '#22ccaa', '#12bdb9', '#4444dd', '#3b0cbd', '#442299', '#4f4f4f', '#1d1d1d'],
       backgroundColor: '#f6f6f6'
     };
 
@@ -327,6 +466,22 @@
       document.getElementById('chart_range_span').innerHTML = dateStartStr + '  to  ' + dateEndStr;
       return 0;
     });
+
+    //---------------------------------------------------------
+
+    var toggleSales = document.getElementById("toggleSales");
+    var salesHidden = false;
+    toggleSales.onclick = function() {
+      console.log("toggleSales.onclick");
+      salesHidden = !salesHidden;
+      //data = new google.visualization.DataTable();
+      if(salesHidden){
+        data.hideColumns([1]);
+      }
+      dash.draw(data);
+
+      //----------
+    }
   }
 
 </script>
@@ -348,6 +503,8 @@
                     ng-model="selSensor"
                     ng-options="sensor.sensor_name for sensor in mSensorList">
             </select>
+            Show points: <input type="checkbox" ng-model="checked" ng-init="checked=true">
+            <button type="button" id="toggleSales">Toggle Sales</button>
         </div>
 
         <div class="col-md-4">

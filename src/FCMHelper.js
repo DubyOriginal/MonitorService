@@ -12,7 +12,6 @@ const MonitorApi = require('./MonitorApi');
 
 
 var fcm = new FCM(serverKey);
-;          // = new FCM(serverKey);
 
 class FCMHelper {
 

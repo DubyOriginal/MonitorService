@@ -109,36 +109,29 @@ class MonitorApi {
   };
 
   getSensorDataWithRange(sensor_id, fromuxdate, touxdate, callback){
-    console.log("MonitorApi: getSensorDataWithRange");
+    console.log("MonitorApi: getSensorDataWithRange: ");
 
     let dbHelper = new DBHelper();
     let basicUtils = new BasicUtils();
 
+    let specSensorSQL = (sensor_id > 0) ? ("sensor_id LIKE " + sensor_id) : "true";
+
     const sql = "SELECT \
-      monitor_data.id, \
-      FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, \
         timestamp, \
-        user_id, \
-        user_name, \
-        device_id, \
-        device_name, \
         sensor_id, \
-        sensor_type, \
-        sensor_mid, \
         sensor_name, \
         sensor_value \
       FROM monitor_db.monitor_data \
-      LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
-      LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
-      WHERE sensor_id like ? \
-      AND ((timestamp >= ?) AND (timestamp < ?)) \
+      WHERE " + specSensorSQL + " AND \
+      ((timestamp >= ?) AND (timestamp < ?)) \
       ORDER BY monitor_data.timestamp DESC \
       LIMIT 100000;";
-    dbHelper.query(sql, [sensor_id, fromuxdate, touxdate], function(result, error) {
+    //console.log("MonitorApi: getSensorDataWithRange -> sql: \n" + sql);
+    dbHelper.query(sql, [fromuxdate, touxdate], function(result, error) {
       if (!error && result) {
         console.log("MonitorApi: getSensorDataWithRange DATA LOADED - cnt: " + result.length);
-        //basicUtils.printJOSNRows(result);
+        basicUtils.printJOSNRows(result);
         if (callback){
           callback(result);
         }else{
