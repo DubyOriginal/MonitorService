@@ -14,6 +14,8 @@
 <link rel="stylesheet" type="text/css" href="css/basement.css">
 
 <script>
+  const nCKP_CORE = 5;
+
   var basementApp = angular.module("basementApp", []);
   basementApp.controller("basementCtrl", function basementCtrl($scope, $http) {
 
@@ -109,6 +111,10 @@
     };
 
     $scope.calculateCapacity = function () {
+      if (!($scope.mBasementList[0] && $scope.mBasementList[1] && $scope.mBasementList[2] && $scope.mBasementList[3])){
+        console.log("calculateCapacity: no data or incomplete");
+        return;
+      }
       let sumPuffTemp =
         parseFloat($scope.mBasementList[0].sensor_value) +
         parseFloat($scope.mBasementList[1].sensor_value) +
@@ -127,8 +133,13 @@
 
 
     $scope.calculatePower = function () {
+      if (!($scope.mBasementList[4] && $scope.mBasementList[5] && $scope.mBasementList[7] && $scope.mBasementList[8])){
+        console.log("calculatePower: no data or incomplete");
+        return;
+      }
       //P = Q * Cp * ro * dT;     Q[m3/s], Cp[J/kg°C], ro[kg/m3], dT[T2-T1]
-      const Q = 1.7 / 60 / 60;    //flow -> 1.7 m3/h
+      const Q_ckp = 2.2 / 60 / 60;    //ckp flow -> 2.2 m3/h
+      const Q_rad = 1.7 / 60 / 60;    //rad flow -> 1.7 m3/h
       const Cp = 4200;            //heat capacity of water
       const ro = 1000;            //water density
       const t2_ckp = $scope.mBasementList[4].sensor_value;  //ckp_pol
@@ -137,8 +148,8 @@
       const t1_rad = $scope.mBasementList[8].sensor_value;  //rad_pov
       const dt_ckp = t2_ckp - t1_ckp;
       const dt_rad = t2_rad - t1_rad;
-      $scope.mPowerCKP = parseInt(Q * Cp * ro * dt_ckp / 1000);
-      $scope.mPowerRAD = parseInt(Q * Cp * ro * dt_rad / 1000);
+      $scope.mPowerCKP = parseInt(Q_ckp * Cp * ro * dt_ckp / 1000);
+      $scope.mPowerRAD = parseInt(Q_rad * Cp * ro * dt_rad / 1000);
 
       console.log("calculatePower: mPowerCKP -> " + $scope.mPowerCKP);
       console.log("calculatePower: mPowerRAD -> " + $scope.mPowerRAD);

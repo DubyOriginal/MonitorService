@@ -329,7 +329,8 @@
         //----------------------------------------------------------
         //calculate and add power
         //P = Q * Cp * ro * dT;     Q[m3/s], Cp[J/kg°C], ro[kg/m3], dT[T2-T1]
-        const Q = 1.7 / 60 / 60;    //flow -> 1.7 m3/h
+        const Q_ckp = 2.2 / 60 / 60;    //flow -> 1.7 m3/h
+        const Q_rad = 1.7 / 60 / 60;    //flow -> 2.2 m3/h
         const Cp = 4200;            //heat capacity of water
         const ro = 1000;            //water density
         const t2_ckp = sVal_105;  //ckp_pol, sID: 105
@@ -338,8 +339,8 @@
         const t1_rad = sVal_103;  //rad_pov, sID: 103
         const dt_ckp = t2_ckp - t1_ckp;
         const dt_rad = t2_rad - t1_rad;
-        let valPowerCKP = parseInt(Q * Cp * ro * dt_ckp / 1000);
-        let valPowerRAD = parseInt(Q * Cp * ro * dt_rad / 1000);
+        let valPowerCKP = parseInt(Q_ckp * Cp * ro * dt_ckp / 1000);
+        let valPowerRAD = parseInt(Q_rad * Cp * ro * dt_rad / 1000);
         //----------------------------------------------------------
 
         data.addRow([sTSDate, sVal_100, sVal_101, sVal_102, sVal_103, sVal_104, sVal_105, sVal_106, sVal_107, sVal_108, sVal_109, sVal_110, valPowerCKP, valPowerRAD]);

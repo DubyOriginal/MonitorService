@@ -37,7 +37,7 @@ function deployLive(server_user, server_ip) {
 
   console.log("starting MonitorApp....");
   let addLogTS = "--log-date-format \'YYYY-MM-DD HH:mm:ss\'";
-  let addPSNumber = "-i 1";
+  let addPSNumber = "-i max";
   //console.log("CMD: " + "ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s %s\"", config.server.user, config.server.ip, config.service.path, addLogTS, addPSNumber );
   exec("ssh %s@%s \"cd %s; NODE_ENV=LIVE pm2 start MonitorApp.js %s %s\"", config.server.user, config.server.ip, config.service.path, addLogTS, addPSNumber);
 

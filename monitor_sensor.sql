@@ -5,8 +5,11 @@ SELECT * FROM monitor_db.sensor_params;
 SELECT * FROM monitor_db.screen_sensor;
 SELECT * FROM monitor_db.fcm_user;
 
+SELECT COUNT(*) FROM monitor_db.monitor_data;
+
 SELECT CONVERT_TZ(NOW(), @@session.time_zone, '+02:00');
-#readAllSensors
+
+#getAllSensorsData
 SELECT 
 	monitor_data.id, 
 	FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, 
@@ -49,7 +52,7 @@ LEFT JOIN monitor_db.user_params ON monitor_db.monitor_data.user_id = monitor_db
 LEFT JOIN monitor_db.device_params ON monitor_db.monitor_data.device_id = monitor_db.device_params.id
 LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monitor_db.sensor_params.id
       WHERE sensor_id like 104
-      AND ((timestamp >= 1508583979.931) AND (timestamp < 1508905579.931)) 
+      AND ((timestamp >= 1509883979.931) AND (timestamp < 1509905579.931)) 
       ORDER BY monitor_data.timestamp DESC 
       LIMIT 100000;
 
@@ -148,5 +151,7 @@ VALUES ('3563547', 'temp', 'DS1820', 'dnevna soba');
 ######################################################################################################
 ######################################################################################################
 SELECT * FROM monitor_db.monitor_data WHERE sensor_id = 104;
+SELECT * FROM monitor_db.monitor_data WHERE timestamp > 1510607000;
+SELECT * FROM monitor_db.monitor_data ORDER BY timestamp ASC;
 
-DELETE FROM monitor_db.monitor_data WHERE sensor_id = 104 AND sensor_value IS NULL;
+#DELETE FROM monitor_db.monitor_data WHERE timestamp < 1510607000;
