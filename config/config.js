@@ -4,18 +4,26 @@
 
 var configLive = require('config.json')('./config/live.json');
 var configDevelop = require('config.json')('./config/develop.json');
+var process = require('process');
 
 //ENVIROMENT is setted in 'gulpfile.js' /
 
 module.exports = function(){
   switch(process.env.NODE_ENV){
-    case 'DEVELOP':
+    case 'DEVELOP':{
+      //console.log("ConfigJS: case -> DEVELOP");
       return {configDevelop}.configDevelop;
+    }
 
-    case 'LIVE':
+    case 'LIVE':{
+      //console.log("ConfigJS: case -> LIVE");
       return {configLive}.configLive;
+    }
 
-    default:
+    default:{
+      //console.log("ConfigJS: case -> DEFAULT");
       return {configDevelop}.configDevelop;
+    }
+
   }
 };

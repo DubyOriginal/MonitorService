@@ -5,7 +5,8 @@
     "port": 2200
   },
   "service": {
-    "version": "1.0.5",
+    "version": "1.0.6",
+    "mode": "DEVELOP",
     "path": "/home/duby/MonitorService"
   },
   "database": {
