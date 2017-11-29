@@ -24,7 +24,7 @@ class MonitorRouter {
 
 new MonitorRouter();
 
-const APP_PORT = config.server.port;
+const APP_PORT = config.service.port;
 
 //**********************************************************************************************************************
 // EXPRESS CONFIGURATION
@@ -47,6 +47,10 @@ app.set('view engine', 'ejs');
 // FRONT ROUTES - PAGE
 //**********************************************************************************************************************
 //PAGE - Home
+app.get('/monit', function (req, res) {
+  res.redirect('/')
+});
+
 app.get('/', function (req, res) {
   console.log("loading page -> Home");
   res.render('./pages/index')

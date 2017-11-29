@@ -16,13 +16,13 @@ function exec(format, params) {
 
 function deployLive(server_user, server_ip) {
   console.log("------------------------------------------------------------");
-  console.log('deploy LIVE (v%s-%s) to server: %s', config.service.version, config.service.mode, server_ip);
+  console.log('deploy (%s) v%s to server -> %s:%s', config.service.mode, config.service.version, server_ip, config.service.port);
   //console.log("######### : " + JSON.stringify(config));
   console.log("stopping MonitorApp....");
   try {
     exec('ssh %s@%s "pm2 delete MonitorApp --silent"', server_user, server_ip);
   } catch(e){
-    console.log("MonitorApp not running or some error:", e);
+    console.log("err: Unable to stop MonitorApp OR already stopped!");
   };
 
   console.log("transfer source....");
@@ -37,10 +37,11 @@ function deployLive(server_user, server_ip) {
 
 
   console.log("starting MonitorApp....");
+  let addServiceName = "MonitorApp";
   let addLogTS = "--log-date-format \'YYYY-MM-DD HH:mm:ss\'";
   let addPSNumber = "-i 2";
   //console.log("CMD: " + "ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s %s\"", config.server.user, config.server.ip, config.service.path, addLogTS, addPSNumber );
-  exec("ssh %s@%s \"cd %s; NODE_ENV=LIVE pm2 start MonitorApp.js %s %s\"", config.server.user, config.server.ip, config.service.path, addLogTS, addPSNumber);
+  exec("ssh %s@%s \"cd %s; NODE_ENV=LIVE pm2 start MonitorApp.js --name %s %s %s\"", config.server.user, config.server.ip, config.service.path, addServiceName, addLogTS, addPSNumber);
 
   console.log("------------------------------------------------------------");
 }
@@ -95,23 +96,23 @@ gulp.task('restart MonitorApp', function() {
 //--------------------------------------------------------------------------
 gulp.task('live_pm2', [], function (done) {
   var env = Object.create(process.env);
-  env.NODE_ENV = 'LIVE';
+  process.env.NODE_ENV = 'LIVE';
   config = new Config();
   deployLive(config.server.user, config.server.ip);
   done()
-})
+});
 
 gulp.task('develop_pm2', [], function (done) {
-  var env = Object.create(process.env);
-  env.NODE_ENV = 'DEVELOP';
+  process.env.NODE_ENV = 'DEVELOP';
   config = new Config();
   deployDevelop();
   done()
-})
+});
 
+/*
 gulp.task('develop_node', function() {
   var env = Object.create(process.env);
-  env.NODE_ENV = 'DEVELOP';
+  process.env.NODE_ENV = 'DEVELOP';
   config = new Config();
 
   try {exec('pm2 delete MonitorApp --silent');} catch (e) {}
@@ -119,8 +120,14 @@ gulp.task('develop_node', function() {
 
   var spawn = require('child_process').spawn;
   spawn('node', ['MonitorApp.js'], { stdio: 'inherit', env: env});
-
 });
+*/
+
+gulp.task('stop_monitor_develop', [], function (done) {
+  try {exec('pm2 delete MonitorApp --silent');} catch (e) {}
+  done()
+});
+
 
 
 

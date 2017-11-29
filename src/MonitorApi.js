@@ -131,7 +131,7 @@ class MonitorApi {
     dbHelper.query(sql, [fromuxdate, touxdate], function(result, error) {
       if (!error && result) {
         console.log("MonitorApi: getSensorDataWithRange DATA LOADED - cnt: " + result.length);
-        basicUtils.printJOSNRows(result);
+        //basicUtils.printJOSNRows(result);
         if (callback){
           callback(result);
         }else{

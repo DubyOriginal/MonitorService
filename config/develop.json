@@ -1,13 +1,14 @@
 {
   "server": {
     "user": "duby",
-    "ip": "192.168.1.24",
-    "port": 2200
+    "ip": "localhost",
+    "dns": "duby.ddns.net"
   },
   "service": {
     "version": "1.0.6",
     "mode": "DEVELOP",
-    "path": "/home/duby/MonitorService"
+    "path": "/home/duby/MonitorService",
+    "port": 2201
   },
   "database": {
     "host": "localhost",
