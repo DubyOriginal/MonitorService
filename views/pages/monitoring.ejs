@@ -25,12 +25,12 @@
   const colorCKP_CORE = "#ff194b";
   const colorCKP_POL = "#f58231";
   const colorCKP_POV = "#663e28";
-  const colorPUFF_1 = "#b4a600";
-  const colorPUFF_2 = "#b4a600";
-  const colorPUFF_3 = "#b4a600";
-  const colorPUFF_4 = "#b4a600";
+  const colorPUFF_1 = "#27a1a3";
+  const colorPUFF_2 = "#228082";
+  const colorPUFF_3 = "#1e6264";
+  const colorPUFF_4 = "#1b4c4e";
   const colorRAD_POL = "#808000";
-  const colorRAD_POV = "#008080";
+  const colorRAD_POV = "#5a73e0";
   const colorSOBA = "#3cb44b";
   const colorVANI = "#0082c8";
   const colorPOW_CKP = "#111111";
@@ -43,6 +43,9 @@
     $scope.mSensorList = [];        //list of sensors: 100, 101, 102, 103,...
     $scope.loadingPeriod = 0;       //loading time range
     $scope.latestTimestamp = 0;     //latest sensor timestamp
+    $scope.needToReloadData = true;
+    $scope.activeFromDate = 0;
+    $scope.activeToDate = 0;
 
     $scope.setLatestTS = function (latestTS) {
       console.log("setLatestTS -> " + latestTS);
@@ -60,6 +63,7 @@
 
 
     //********************************************************************************************************************
+    /*
     $scope.getSensorList = function () {
       console.log("getSensorList!");
       $http({
@@ -74,7 +78,7 @@
       });
     };
     $scope.getSensorList();  //initial data load
-
+    */
 
     //********************************************************************************************************************
     // Datepicker Popup (ui.bootstrap.datepickerPopup)
@@ -90,44 +94,74 @@
     $scope.setInitiaDate = function () {
       $scope.fromDate = f1Hour;
       $scope.toDate = fNow.getTime();  //unix timestamp
+      $scope.activeFromDate = $scope.fromDate;
+      $scope.activeToDate = $scope.toDate;
     };
     $scope.setInitiaDate();
 
+    $scope.updateTimeRange = function () {
+      console.log("updateTimeRange");
+      if (($scope.activeFromDate != $scope.fromDate) || ($scope.activeToDate != $scope.toDate)) {
+        $scope.needToReloadData = true;
+      }else{
+        $scope.needToReloadData = false;
+      }
+    };
+
     $scope.f1Hour = function () {
       $scope.fromDate = f1Hour;
-      console.log("fromDate is set to: " + $scope.fromDate)
+      console.log("fromDate is set to: " + $scope.fromDate);
+      $scope.updateTimeRange();
     };
     $scope.f6Hours = function () {
       $scope.fromDate = f6Hours;
-      console.log("fromDate is set to: " + $scope.fromDate)
+      console.log("fromDate is set to: " + $scope.fromDate);
+      $scope.updateTimeRange();
     };
     $scope.f12Hours = function () {
       $scope.fromDate = f12Hours;
-      console.log("fromDate is set to: " + $scope.fromDate)
+      console.log("fromDate is set to: " + $scope.fromDate);
+      $scope.updateTimeRange();
     };
     $scope.f24Hours = function () {
       $scope.fromDate = f24Hours;
-      console.log("fromDate is set to: " + $scope.fromDate)
+      console.log("fromDate is set to: " + $scope.fromDate);
+      $scope.updateTimeRange();
     };
     $scope.fLastWeek = function () {
       $scope.fromDate = fLastWeek;
-      console.log("fromDate is set to: " + $scope.fromDate)
+      console.log("fromDate is set to: " + $scope.fromDate);
+      $scope.updateTimeRange();
     };
     $scope.fLastMonth = function () {
       $scope.fromDate = fLastMonth;
-      console.log("fromDate is set to: " + $scope.fromDate)
+      console.log("fromDate is set to: " + $scope.fromDate);
+      $scope.updateTimeRange();
     };
 
-
+    //---------------------------------------------------
     $scope.reloadData = function () {
       $scope.startSpin();
       let fromD = Math.floor($scope.fromDate / 1000);
       let toD = Math.floor($scope.toDate / 1000);
+      $scope.activeFromDate = $scope.fromDate;
+      $scope.activeToDate = $scope.toDate;
+      $scope.updateTimeRange();
       $scope.loadingPeriod = (toD - fromD) / 60 / 60;   //in hours
       console.log("selected time range: " + $scope.loadingPeriod + " h");
       loadSensorData(fromD, toD);
     };
-    $scope.reloadData();        //initially load
+
+    $scope.refreshChart = function(){
+      if ($scope.needToReloadData){
+        console.log("refreshGraph: needToReloadData");
+        $scope.reloadData();
+      }else{
+        console.log("refreshGraph: NO needToReloadData");
+        drawData();
+      }
+    };
+    $scope.refreshChart();        //initially load
 
     $scope.clear = function () {
       $scope.fromDate = null;
@@ -197,8 +231,8 @@
         console.log("result.length -> " + result.length);
         //console.log("mSensorData -> " + JSON.stringify(result));
         mSensorData = result;
+        //extScope.needToReloadData = false;
         angular.element(document.getElementById('moduleHolder')).scope().stopSpin();
-
         google.setOnLoadCallback(drawData());
       }
     });
@@ -455,7 +489,7 @@
         }
       },
       vAxis: {
-        title: 'Temperatura',
+        title: 'Temp. / Power',
         textStyle: {
           color: '#8b5f0a',
           fontSize: 18,
@@ -466,7 +500,7 @@
           fontSize: 18,
           bold: true
         },
-        minValue: -10,
+        minValue: -20,
         viewWindow: {
           min: 0
         },
@@ -546,9 +580,9 @@
     <span us-spinner="{radius:30, width:8, length: 16}" spinner-key="spinner-1" spinner-on="showSpinner"
           spinner-start-active="stop"></span>
 
-    <div class="row-eq-height align-items-center">
+    <div class="row-eq-height align-items-center" style="display: flex;flex-wrap: wrap;">
 
-        <div class="col-md-4">
+        <div class="col-md-4 dy_group_box">
             <div class="col-md-6">
                 <h5>FROM DATE:</h5>
                 <p class="input-group">
@@ -606,48 +640,48 @@
             </div>
         </div>
 
-        <div class="col-md-2">
-            <button type="button" class="btn btn-sm btn-success" ng-click="reloadData()">RELOAD</button>
+        <div class="col-md-2 dy_group_box">
+            <button type="button" class="btn btn-md btn-success" ng-click="refreshChart()">RELOAD</button>
             <div>Show points: <input type="checkbox" ng-model="cbPoints" ng-init="checked=true"></div>
         </div>
 
-        <div class="col-md-2">
-            <div style="color: #ff194b">CKP_CORE<input type="checkbox" ng-model="cbCKP_CORE" ng-init="cbCKP_CORE=true"></div>
-            <div style="color: #f58231">CKP_POL   <input type="checkbox" ng-model="cbCKP_POL" ng-init="cbCKP_POL=false"></div>
-            <div style="color: #663e28">CKP_POV   <input type="checkbox" ng-model="cbCKP_POV" ng-init="cbCKP_POV=false"></div>
-            <div style="color: #808000">RAD_POL   <input type="checkbox" ng-model="cbRAD_POL" ng-init="cbRAD_POL=true"></div>
-            <div style="color: #008080">RAD_POV   <input type="checkbox" ng-model="cbRAD_POV" ng-init="cbRAD_POV=true"></div>
-        </div>
+        <div class="col-md-5 dy_group_box">
+            <div class="col-md-4">
+                <div style="color: #ff194b"><input type="checkbox" ng-model="cbCKP_CORE" ng-init="cbCKP_CORE=true">  CKP_CORE</div>
+                <div style="color: #f58231"><input type="checkbox" ng-model="cbCKP_POL" ng-init="cbCKP_POL=false">  CKP_POL</div>
+                <div style="color: #663e28"><input type="checkbox" ng-model="cbCKP_POV" ng-init="cbCKP_POV=false">  CKP_POV</div>
+                <div style="color: #808000"><input type="checkbox" ng-model="cbRAD_POL" ng-init="cbRAD_POL=true">  RAD_POL</div>
+                <div style="color: #5a73e0"><input type="checkbox" ng-model="cbRAD_POV" ng-init="cbRAD_POV=true">  RAD_POV</div>
+            </div>
 
-        <div class="col-md-2">
-            <div style="color: #b4a600">PUFF_01   <input type="checkbox" ng-model="cbPUFF_01" ng-init="cbPUFF_01=false"></div>
-            <div style="color: #b4a600">PUFF_02   <input type="checkbox" ng-model="cbPUFF_02" ng-init="cbPUFF_02=false"></div>
-            <div style="color: #b4a600">PUFF_03   <input type="checkbox" ng-model="cbPUFF_03" ng-init="cbPUFF_03=false"></div>
-            <div style="color: #b4a600">PUFF_04   <input type="checkbox" ng-model="cbPUFF_04" ng-init="cbPUFF_04=false"></div>
-            <div style="color: #911eb4">PUFF_AVERAGE <input type="checkbox" ng-model="cbPUFF_AVERAGE" ng-init="cbPUFF_AVERAGE=false"></div>
-        </div>
+            <div class="col-md-4">
+                <div style="color: #27a1a3"><input type="checkbox" ng-model="cbPUFF_1" ng-init="cbPUFF_1=false">  PUFF_01</div>
+                <div style="color: #228082"><input type="checkbox" ng-model="cbPUFF_2" ng-init="cbPUFF_2=false">  PUFF_02</div>
+                <div style="color: #1e6264"><input type="checkbox" ng-model="cbPUFF_3" ng-init="cbPUFF_3=false">  PUFF_03</div>
+                <div style="color: #1b4c4e"><input type="checkbox" ng-model="cbPUFF_4" ng-init="cbPUFF_4=false">  PUFF_04</div>
+                <div style="color: #911eb4"><input type="checkbox" ng-model="cbPUFF_AVERAGE" ng-init="cbPUFF_AVERAGE=false">  PUFF_AVERAGE</div>
+            </div>
 
-        <div class="col-md-2">
-            <div style="color: #3cb44b">SOBA      <input type="checkbox" ng-model="cbSOBA" ng-init="cbSOBA=true"></div>
-            <div style="color: #0082c8">VANI      <input type="checkbox" ng-model="cbVANI" ng-init="cbVANI=false"></div>
-            <div style="color: #111111">POW_CKP   <input type="checkbox" ng-model="cbPOW_CKP" ng-init="cbPOW_CKP=false"></div>
-            <div style="color: #444444">POW_RAD   <input type="checkbox" ng-model="cbPOW_RAD" ng-init="cbPOW_RAD=false"></div>
+            <div class="col-md-4">
+                <div style="color: #3cb44b"><input type="checkbox" ng-model="cbSOBA" ng-init="cbSOBA=true">  SOBA</div>
+                <div style="color: #0082c8"><input type="checkbox" ng-model="cbVANI" ng-init="cbVANI=false">  VANI</div>
+                <div style="color: #111111"><input type="checkbox" ng-model="cbPOW_CKP" ng-init="cbPOW_CKP=false">  POW_CKP</div>
+                <div style="color: #444444"><input type="checkbox" ng-model="cbPOW_RAD" ng-init="cbPOW_RAD=false">  POW_RAD</div>
+            </div>
         </div>
+    </div>
 
-        <div class="row">
-            <div class="center">
-                <div class="col-md-12">
-                    <!-- <div id="chart_div"></div> -->
-                    <div id="dashboard_div">
-                        <div id="chart_div" style="display: block;"></div>
-                        <div id="control_div"></div>
-                        <p><span id='chart_range_span'></span></p>
-                    </div>
+    <div class="row">
+        <div class="center">
+            <div class="col-md-12">
+                <!-- <div id="chart_div"></div> -->
+                <div id="dashboard_div">
+                    <div id="chart_div" style="display: block;"></div>
+                    <div id="control_div"></div>
+                    <p><span id='chart_range_span'></span></p>
                 </div>
             </div>
         </div>
-
-
     </div>
 
 
