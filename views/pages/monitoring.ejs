@@ -21,23 +21,40 @@
 
 <script type="text/javascript">
   //-------------------------------------------------------------------------------------
+  var extScope;
+  const colorCKP_CORE = "#ff194b";
+  const colorCKP_POL = "#f58231";
+  const colorCKP_POV = "#663e28";
+  const colorPUFF_1 = "#b4a600";
+  const colorPUFF_2 = "#b4a600";
+  const colorPUFF_3 = "#b4a600";
+  const colorPUFF_4 = "#b4a600";
+  const colorRAD_POL = "#808000";
+  const colorRAD_POV = "#008080";
+  const colorSOBA = "#3cb44b";
+  const colorVANI = "#0082c8";
+  const colorPOW_CKP = "#111111";
+  const colorPOW_RAD = "#444444";
+  const colorPUFF_AVERAGE = "#911eb4";
+  
   var angularApp = angular.module('myApp', ['ui.bootstrap', 'angularSpinner']);
   angularApp.controller('getSensorCtrl', ['$scope', '$http', 'usSpinnerService', function ($scope, $http, usSpinnerService) {
+    extScope = $scope;
     $scope.mSensorList = [];        //list of sensors: 100, 101, 102, 103,...
     $scope.loadingPeriod = 0;       //loading time range
     $scope.latestTimestamp = 0;     //latest sensor timestamp
 
-    $scope.setLatestTS = function(latestTS){
+    $scope.setLatestTS = function (latestTS) {
       console.log("setLatestTS -> " + latestTS);
       $scope.latestTimestamp = latestTS;
     }
 
     //spinner
     //********************************************************************************************************************
-    $scope.startSpin = function(){
+    $scope.startSpin = function () {
       usSpinnerService.spin('spinner-1');
     }
-    $scope.stopSpin = function(){
+    $scope.stopSpin = function () {
       usSpinnerService.stop('spinner-1');
     }
 
@@ -51,24 +68,13 @@
       }).then(function (response) {
         $scope.mSensorList = response.data;
         $scope.selSensor = $scope.mSensorList[4];   //set initial value
-        $scope.updateSelectBox();                   //simulate select for initial value
+        //simulate select for initial value
       }, function (error) {
         console.log("getSensorList ERROR: " + error);
       });
     };
     $scope.getSensorList();  //initial data load
 
-    $scope.updateSelectBox = function () {
-      let selSensID = 0;   //$scope.selSensor.id;           //0 -> all sensors
-      let selSensName = $scope.selSensor.sensor_name;
-      let fromD = $scope.fromDate / 1000;
-      let toD = $scope.toDate / 1000;
-      console.log("updateSelectBox: selSensor[" + selSensID + "] -> " + selSensName);
-
-      $scope.loadingPeriod = (toD - fromD) / 60 / 60;   //in hours
-      console.log("selected time range: " + $scope.loadingPeriod + " h");
-      loadSensorData(selSensID, selSensName, fromD, toD);
-    }
 
     //********************************************************************************************************************
     // Datepicker Popup (ui.bootstrap.datepickerPopup)
@@ -77,17 +83,9 @@
     var f1Hour = (new Date()).setHours(fNow.getHours() - 1);
     var f6Hours = (new Date()).setHours(fNow.getHours() - 6);
     var f12Hours = (new Date()).setHours(fNow.getHours() - 12);
-    var f24Hours = (new Date()).setDate(fNow.getDate() -1);
-    var fLastWeek = (new Date()).setDate(fNow.getDate() -7);
+    var f24Hours = (new Date()).setDate(fNow.getDate() - 1);
+    var fLastWeek = (new Date()).setDate(fNow.getDate() - 7);
     var fLastMonth = (new Date()).setMonth(fNow.getMonth() - 1);
-
-    //console.log("fNow        ------> " + fNow.getTime());
-    //console.log("f1Hour      ------> " + f1Hour);
-    //console.log("f6Hours     ------> " + f6Hours);
-    //console.log("f12Hours    ------> " + f12Hours);
-    //console.log("f24Hours    ------> " + f24Hours);
-    //console.log("fLastWeek   ------> " + fLastWeek);
-    //console.log("fLastMonth  ------> " + fLastMonth);
 
     $scope.setInitiaDate = function () {
       $scope.fromDate = f1Hour;
@@ -95,25 +93,41 @@
     };
     $scope.setInitiaDate();
 
-    $scope.f1Hour = function () {$scope.fromDate = f1Hour; console.log("fromDate is set to: " + $scope.fromDate)};
-    $scope.f6Hours = function () {$scope.fromDate = f6Hours; console.log("fromDate is set to: " + $scope.fromDate)};
-    $scope.f12Hours = function () {$scope.fromDate = f12Hours; console.log("fromDate is set to: " + $scope.fromDate)};
-    $scope.f24Hours = function () {$scope.fromDate = f24Hours; console.log("fromDate is set to: " + $scope.fromDate)};
-    $scope.fLastWeek = function () {$scope.fromDate = fLastWeek; console.log("fromDate is set to: " + $scope.fromDate)};
-    $scope.fLastMonth = function () {$scope.fromDate = fLastMonth; console.log("fromDate is set to: " + $scope.fromDate)};
+    $scope.f1Hour = function () {
+      $scope.fromDate = f1Hour;
+      console.log("fromDate is set to: " + $scope.fromDate)
+    };
+    $scope.f6Hours = function () {
+      $scope.fromDate = f6Hours;
+      console.log("fromDate is set to: " + $scope.fromDate)
+    };
+    $scope.f12Hours = function () {
+      $scope.fromDate = f12Hours;
+      console.log("fromDate is set to: " + $scope.fromDate)
+    };
+    $scope.f24Hours = function () {
+      $scope.fromDate = f24Hours;
+      console.log("fromDate is set to: " + $scope.fromDate)
+    };
+    $scope.fLastWeek = function () {
+      $scope.fromDate = fLastWeek;
+      console.log("fromDate is set to: " + $scope.fromDate)
+    };
+    $scope.fLastMonth = function () {
+      $scope.fromDate = fLastMonth;
+      console.log("fromDate is set to: " + $scope.fromDate)
+    };
 
 
     $scope.reloadData = function () {
       $scope.startSpin();
-      let selSensID = 0;  //$scope.selSensor.id;           //0 -> all sensors
-      let selSensName = $scope.selSensor.sensor_name;
-      let fromD = $scope.fromDate / 1000;
-      let toD = $scope.toDate / 1000;
+      let fromD = Math.floor($scope.fromDate / 1000);
+      let toD = Math.floor($scope.toDate / 1000);
       $scope.loadingPeriod = (toD - fromD) / 60 / 60;   //in hours
       console.log("selected time range: " + $scope.loadingPeriod + " h");
-      loadSensorData(selSensID, selSensName, fromD, toD);
-
+      loadSensorData(fromD, toD);
     };
+    $scope.reloadData();        //initially load
 
     $scope.clear = function () {
       $scope.fromDate = null;
@@ -175,153 +189,168 @@
   // CHART PART
   google.load('visualization', '1', {packages: ['controls', 'charteditor']});
 
-  function loadSensorData(sensor_id, sensorName, fromuxdate, touxdate) {
+  function loadSensorData(fromuxdate, touxdate) {
     $.ajax({
       type: 'GET',
-      url: '/getsensordatawithrange/' + sensor_id + '/' + fromuxdate + '/' + touxdate,
+      url: '/getsensordatawithrange/' + fromuxdate + '/' + touxdate,
       success: function (result) {
         console.log("result.length -> " + result.length);
+        //console.log("mSensorData -> " + JSON.stringify(result));
         mSensorData = result;
         angular.element(document.getElementById('moduleHolder')).scope().stopSpin();
 
-        google.setOnLoadCallback(drawData(sensorName));
+        google.setOnLoadCallback(drawData());
       }
     });
   };
 
-  function drawData(sensorName) {
-    var data = new google.visualization.DataTable();
-    data.addColumn('datetime', 'Date');
-    data.addColumn('number', 'puffer_04');
-    data.addColumn('number', 'radijator_topla');
-    data.addColumn('number', 'puffer_03');
-    data.addColumn('number', 'radijator_hladna');
-    data.addColumn('number', 'ckp_jezgra');
-    data.addColumn('number', 'ckp_pol');
-    data.addColumn('number', 'puffer_02');
-    data.addColumn('number', 'ckp_pov');
-    data.addColumn('number', 'puffer_01');
-    data.addColumn('number', 'soba');
-    data.addColumn('number', 'vani');
-    data.addColumn('number', 'power_cpk');
-    data.addColumn('number', 'power_rad');
-    //data.addColumn('number', 'test soba_2');
-
+  function drawData() {
     console.log("current TS locale: " + new Date().toLocaleString());
 
     //prepare all sensors data for graph
     //---------------------------------------------------------
     var latestTS = 0;
-    var s_100 = false;
-    var s_101 = false;
-    var s_102 = false;
-    var s_103 = false;
-    var s_104 = false;
-    var s_105 = false;
-    var s_106 = false;
-    var s_107 = false;
-    var s_108 = false;
-    var s_109 = false;
-    var s_110 = false;
+    var hasValPUFF_4, hasValRAD_POL, hasValPUFF_3, hasValRAD_POV, hasValCKP_CORE, hasValCKP_POL, hasValPUFF_2, hasValCKP_POV, hasValPUFF_1, hasValSOBA, hasValVANI = false;
+    var hasValPOW_CKP, hasValPOW_RAD, hasValPUFF_AVERAGE = false;
+    var sValPUFF_4, sValRAD_POL, sValPUFF_3, sValRAD_POV, sValCKP_CORE, sValCKP_POL, sValPUFF_2, sValCKP_POV, sValPUFF_1, sValSOBA, sValVANI = 0;
 
-    var sVal_100 = 0;
-    var sVal_101 = 0;
-    var sVal_102 = 0;
-    var sVal_103 = 0;
-    var sVal_104 = 0;
-    var sVal_105 = 0;
-    var sVal_106 = 0;
-    var sVal_107 = 0;
-    var sVal_108 = 0;
-    var sVal_109 = 0;
-    var sVal_110 = 0;
+    const cbCKP_CORE_B = extScope.cbCKP_CORE;
+    console.log("cbCKP_CORE_B -> " + cbCKP_CORE_B);
 
+
+    var chartDataArr = [];
+    let graphArr = [];
+    graphArr.push({label: 'Date', type: 'datetime'});
+    if (extScope.cbCKP_CORE) graphArr.push({label: 'CKP_CORE', type: 'number'});
+    if (extScope.cbCKP_POL) graphArr.push({label: 'CKP_POL', type: 'number'});
+    if (extScope.cbCKP_POV) graphArr.push({label: 'CKP_POV', type: 'number'});
+    if (extScope.cbPUFF_1) graphArr.push({label: 'PUFF_1', type: 'number'});
+    if (extScope.cbPUFF_2) graphArr.push({label: 'PUFF_2', type: 'number'});
+    if (extScope.cbPUFF_3) graphArr.push({label: 'PUFF_3', type: 'number'});
+    if (extScope.cbPUFF_4) graphArr.push({label: 'PUFF_4', type: 'number'});
+    if (extScope.cbRAD_POL) graphArr.push({label: 'RAD_POL', type: 'number'});
+    if (extScope.cbRAD_POV) graphArr.push({label: 'RAD_POV', type: 'number'});
+    if (extScope.cbSOBA) graphArr.push({label: 'SOBA', type: 'number'});
+    if (extScope.cbVANI) graphArr.push({label: 'VANI', type: 'number'});
+    if (extScope.cbPOW_CKP) graphArr.push({label: 'POW_CKP', type: 'number'});
+    if (extScope.cbPOW_RAD) graphArr.push({label: 'POW_RAD', type: 'number'});
+    if (extScope.cbPUFF_AVERAGE) graphArr.push({label: 'PUFF_AVERAGE', type: 'number'});
+    chartDataArr.push(graphArr);
+
+    //---------------------------------------------------------
     for (var i = 0; i < mSensorData.length; i += 1) {
 
-      if (mSensorData[i].sensor_id == "100"){
+      if (mSensorData[i].sensor_id == "100") {
         var sVal100 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal100 < 0){ sVal100 = 0;}
-        s_100 = true;
-        sVal_100 = sVal100;
+        if (sVal100 < 0) {
+          sVal100 = 0;
+        }
+        hasValPUFF_4 = true;
+        sValPUFF_4 = sVal100;
       }
 
-      if (mSensorData[i].sensor_id == "101"){
+      if (mSensorData[i].sensor_id == "101") {
         var sVal101 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal101 < 0){ sVal101 = 0;}
-        s_101 = true;
-        sVal_101 = sVal101;
+        if (sVal101 < 0) {
+          sVal101 = 0;
+        }
+        hasValRAD_POL = true;
+        sValRAD_POL = sVal101;
       }
 
-      if (mSensorData[i].sensor_id == "102"){
+      if (mSensorData[i].sensor_id == "102") {
         var sVal102 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal102 < 0){ sVal102 = 0;}
-        s_102 = true;
-        sVal_102 = sVal102;
+        if (sVal102 < 0) {
+          sVal102 = 0;
+        }
+        hasValPUFF_3 = true;
+        sValPUFF_3 = sVal102;
       }
 
-      if (mSensorData[i].sensor_id == "103"){
+      if (mSensorData[i].sensor_id == "103") {
         var sVal103 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal103 < 0){ sVal103 = 0;}
-        s_103 = true;
-        sVal_103 = sVal103;
+        if (sVal103 < 0) {
+          sVal103 = 0;
+        }
+        hasValRAD_POV = true;
+        sValRAD_POV = sVal103;
       }
 
-      if (mSensorData[i].sensor_id == "104"){
+      if (mSensorData[i].sensor_id == "104") {
         var sVal104 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal104 < 0){ sVal104 = 0;}
-        s_104 = true;
-        sVal_104 = sVal104;
+        if (sVal104 < 0) {
+          sVal104 = 0;
+        }
+        hasValCKP_CORE = true;
+        sValCKP_CORE = sVal104;
       }
 
-      if (mSensorData[i].sensor_id == "105"){
+      if (mSensorData[i].sensor_id == "105") {
         var sVal105 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal105 < 0){ sVal105 = 0;}
-        s_105 = true;
-        sVal_105 = sVal105;
+        if (sVal105 < 0) {
+          sVal105 = 0;
+        }
+        hasValCKP_POL = true;
+        sValCKP_POL = sVal105;
       }
 
-      if (mSensorData[i].sensor_id == "106"){
+      if (mSensorData[i].sensor_id == "106") {
         var sVal106 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal106 < 0){ sVal106 = 0;}
-        s_106 = true;
-        sVal_106 = sVal106;
+        if (sVal106 < 0) {
+          sVal106 = 0;
+        }
+        hasValPUFF_2 = true;
+        sValPUFF_2 = sVal106;
       }
 
-      if (mSensorData[i].sensor_id == "107"){
+      if (mSensorData[i].sensor_id == "107") {
         var sVal107 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal107 < 0){ sVal107 = 0;}
-        s_107 = true;
-        sVal_107 = sVal107;
+        if (sVal107 < 0) {
+          sVal107 = 0;
+        }
+        hasValCKP_POV = true;
+        sValCKP_POV = sVal107;
       }
 
-      if (mSensorData[i].sensor_id == "108"){
+      if (mSensorData[i].sensor_id == "108") {
         var sVal108 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal108 < 0){ sVal108 = 0;}
-        s_108 = true;
-        sVal_108 = sVal108;
+        if (sVal108 < 0) {
+          sVal108 = 0;
+        }
+        hasValPUFF_1 = true;
+        sValPUFF_1 = sVal108;
       }
 
-      if (mSensorData[i].sensor_id == "109"){
+      if (mSensorData[i].sensor_id == "109") {
         var sVal109 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal109 < 0){ sVal109 = 0;}
-        s_109 = true;
-        sVal_109 = sVal109;
+        if (sVal109 < 0) {
+          sVal109 = 0;
+        }
+        hasValSOBA = true;
+        sValSOBA = sVal109;
       }
 
-      if (mSensorData[i].sensor_id == "110"){
+      if (mSensorData[i].sensor_id == "110") {
         var sVal110 = parseFloat(mSensorData[i].sensor_value);
-        if (sVal110 < 0){ sVal110 = 0;}
-        s_110 = true;
-        sVal_110 = sVal110;
+        if (sVal110 < 0) {
+          sVal110 = 0;
+        }
+        hasValVANI = true;
+        sValVANI = sVal110;
       }
 
 
       // test if all done for timestamp[n]
-      if (s_100 && s_101 && s_102 && s_103 && s_104 && s_105 && s_106 && s_107 && s_108 && s_109 && s_110){
+      if (hasValPUFF_4 && hasValRAD_POL && hasValPUFF_3 && hasValRAD_POV && hasValCKP_CORE && hasValCKP_POL && hasValPUFF_2 && hasValCKP_POV && hasValPUFF_1 && hasValSOBA && hasValVANI) {
+
+        //----------------------------------------------------------
+        //calculate puffer average value
+        sValPUFF_AVERAGE = ((sVal100 + sVal102 + sVal106 + sVal108) / 4);
+
         //----------------------------------------------------------
         //extract latest timestamp
         let sTS = parseInt(mSensorData[i].timestamp * 1000);
-        if (sTS > latestTS){
+        if (sTS > latestTS) {
           latestTS = sTS;
         }
         let sTSDate = new Date(sTS);
@@ -333,38 +362,67 @@
         const Q_rad = 1.7 / 60 / 60;    //flow -> 2.2 m3/h
         const Cp = 4200;            //heat capacity of water
         const ro = 1000;            //water density
-        const t2_ckp = sVal_105;  //ckp_pol, sID: 105
-        const t1_ckp = sVal_107;  //ckp_pov, sID: 107
-        const t2_rad = sVal_101;  //rad_pol, sID: 101
-        const t1_rad = sVal_103;  //rad_pov, sID: 103
+        const t2_ckp = sValCKP_POL;  //ckp_pol, sID: 105
+        const t1_ckp = sValCKP_POV;  //ckp_pov, sID: 107
+        const t2_rad = sValRAD_POL;  //rad_pol, sID: 101
+        const t1_rad = sValRAD_POV;  //rad_pov, sID: 103
         const dt_ckp = t2_ckp - t1_ckp;
         const dt_rad = t2_rad - t1_rad;
-        let valPowerCKP = parseInt(Q_ckp * Cp * ro * dt_ckp / 1000);
-        let valPowerRAD = parseInt(Q_rad * Cp * ro * dt_rad / 1000);
+        sValPOW_CKP = Q_ckp * Cp * ro * dt_ckp / 1000;
+        sValPOW_RAD = Q_rad * Cp * ro * dt_rad / 1000;
         //----------------------------------------------------------
 
-        data.addRow([sTSDate, sVal_100, sVal_101, sVal_102, sVal_103, sVal_104, sVal_105, sVal_106, sVal_107, sVal_108, sVal_109, sVal_110, valPowerCKP, valPowerRAD]);
 
-        s_100 = false;
-        s_101 = false;
-        s_102 = false;
-        s_103 = false;
-        s_104 = false;
-        s_105 = false;
-        s_106 = false;
-        s_107 = false;
-        s_108 = false;
-        s_109 = false;
-        s_110 = false;
+        //SENSOR       CKP_CORE   CKP_POL   CKP_POV   PUFF_1   PUFF_2   PUFF_3   PUFF_4   RAD_POL   RAD_POV   SOBA   VANI   POW_CKP   POW_RAD   PUFF_AVERAGE
+        //SENSOR_ID    104        105       107       108      106      102      100      101       103       109    110    -         -         -
+        //SCREEN_ID    16         14        15        10       11       12       13       17        18        19     20     -         -         -
+
+        var graphValueArr = [];
+        graphValueArr.push(sTSDate);
+        if (extScope.cbCKP_CORE) graphValueArr.push(sValCKP_CORE);
+        if (extScope.cbCKP_POL) graphValueArr.push(sValCKP_POL);
+        if (extScope.cbCKP_POV) graphValueArr.push(sValCKP_POV);
+        if (extScope.cbPUFF_1) graphValueArr.push(sValPUFF_1);
+        if (extScope.cbPUFF_2) graphValueArr.push(sValPUFF_2);
+        if (extScope.cbPUFF_3) graphValueArr.push(sValPUFF_3);
+        if (extScope.cbPUFF_4) graphValueArr.push(sValPUFF_4);
+        if (extScope.cbRAD_POL) graphValueArr.push(sValRAD_POL);
+        if (extScope.cbRAD_POV) graphValueArr.push(sValRAD_POV);
+        if (extScope.cbSOBA) graphValueArr.push(sValSOBA);
+        if (extScope.cbVANI) graphValueArr.push(sValVANI);
+        if (extScope.cbPOW_CKP) graphValueArr.push(sValPOW_CKP);
+        if (extScope.cbPOW_RAD) graphValueArr.push(sValPOW_RAD);
+        if (extScope.cbPUFF_AVERAGE) graphValueArr.push(sValPUFF_AVERAGE);
+        chartDataArr.push(graphValueArr);
+        //chartDataArr.push([sTSDate, sValCKP_CORE, sValCKP_POL, sValCKP_POV, sValPUFF_1, sValPUFF_2, sValPUFF_3, sValPUFF_4, sValRAD_POL, sValRAD_POV, sValSOBA, sValVANI, valPOW_CKP, valPOW_RAD, PUFF_AVRG]);
+        hasValPUFF_4, hasValRAD_POL, hasValPUFF_3, hasValRAD_POV, hasValCKP_CORE, hasValCKP_POL, hasValPUFF_2, hasValCKP_POV, hasValPUFF_1, hasValSOBA, hasValVANI = false;
       }
-    }
+    }  //END FOR
 
-    //angularApp.$scope.latestTimestamp = latestTS;
+    var data = new google.visualization.arrayToDataTable(chartDataArr);
+
+
     latestTimestampStr = new Date(latestTS).toLocaleString();
     console.log("latestTimestamp: " + latestTimestampStr);
     angular.element(document.getElementById('moduleHolder')).scope().setLatestTS(latestTimestampStr);
-    //angularApp.scope().latestTimestamp = latestTS;
-    //angular.element(document.getElementById('moduleHolder')).scope().latestTimestamp = latestTS;
+
+    //colors: [colorCKP_CORE, colorCKP_POL, colorCKP_POV, colorPUFF_1, colorPUFF_2, colorPUFF_3, colorPUFF_4, colorRAD_POL, colorRAD_POV, colorSOBA, colorVANI, colorPOW_CKP, colorPOW_RAD, colorPUFF_AVERAGE],
+    var graphColorArr = [];
+    if (extScope.cbCKP_CORE) graphColorArr.push(colorCKP_CORE);
+    if (extScope.cbCKP_POL) graphColorArr.push(colorCKP_POL);
+    if (extScope.cbCKP_POV) graphColorArr.push(colorCKP_POV);
+    if (extScope.cbPUFF_1) graphColorArr.push(colorPUFF_1);
+    if (extScope.cbPUFF_2) graphColorArr.push(colorPUFF_2);
+    if (extScope.cbPUFF_3) graphColorArr.push(colorPUFF_3);
+    if (extScope.cbPUFF_4) graphColorArr.push(colorPUFF_4);
+    if (extScope.cbRAD_POL) graphColorArr.push(colorRAD_POL);
+    if (extScope.cbRAD_POV) graphColorArr.push(colorRAD_POV);
+    if (extScope.cbSOBA) graphColorArr.push(colorSOBA);
+    if (extScope.cbVANI) graphColorArr.push(colorVANI);
+    if (extScope.cbPOW_CKP) graphColorArr.push(colorPOW_CKP);
+    if (extScope.cbPOW_RAD) graphColorArr.push(colorPOW_RAD);
+    if (extScope.cbPUFF_AVERAGE) graphColorArr.push(colorPUFF_AVERAGE);
+
 
     //---------------------------------------------------------
     var chartOptions = {
@@ -372,7 +430,7 @@
       chartArea: {left: 70, right: 70, top: 50, width: "95%"},
       legend: {position: 'top', alignment: 'end'},
       interpolateNulls: false,
-      pointSize: 0,
+      pointSize: extScope.cbPoints ? 2 : 0,
       series: {
         1: {
           type: "line",
@@ -418,9 +476,14 @@
         },
         baselineColor: '#222222'
       },
-      colors: ['#ff4422', '#ff6644', '#ff9933', '#ccbb33', '#aacc22', '#69d025', '#22ccaa', '#12bdb9', '#4444dd', '#3b0cbd', '#442299', '#4f4f4f', '#1d1d1d'],
+      colors: graphColorArr,
       backgroundColor: '#f6f6f6'
     };
+
+    //SENSOR       CKP_CORE   CKP_POL   CKP_POV   PUFF_1   PUFF_2   PUFF_3   PUFF_4   RAD_POL   RAD_POV   SOBA   VANI   POW_CKP   POW_RAD   PUFF_AVERAGE
+    //SENSOR_ID    104        105       107       108      106      102      100      101       103       109    110    -         -         -
+    //SCREEN_ID    16         14        15        10       11       12       13       17        18        19     20     -         -         -
+
 
     var dash = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
 
@@ -460,6 +523,7 @@
 
     dash.bind([control], [chart]);
     dash.draw(data);
+
     google.visualization.events.addListener(control, 'statechange', function () {
       var v = control.getState();
       let dateStartStr = v.range.start;
@@ -468,22 +532,8 @@
       return 0;
     });
 
-    //---------------------------------------------------------
+  }     // END - drawData
 
-    var toggleSales = document.getElementById("toggleSales");
-    var salesHidden = false;
-    toggleSales.onclick = function() {
-      console.log("toggleSales.onclick");
-      salesHidden = !salesHidden;
-      //data = new google.visualization.DataTable();
-      if(salesHidden){
-        data.hideColumns([1]);
-      }
-      dash.draw(data);
-
-      //----------
-    }
-  }
 
 </script>
 
@@ -493,20 +543,10 @@
 </header>
 
 <div class="main_container" style="display: block">
-    <span us-spinner="{radius:30, width:8, length: 16}" spinner-key="spinner-1" spinner-on="showSpinner" spinner-start-active="stop"></span>
+    <span us-spinner="{radius:30, width:8, length: 16}" spinner-key="spinner-1" spinner-on="showSpinner"
+          spinner-start-active="stop"></span>
 
     <div class="row-eq-height align-items-center">
-
-        <div class="col-md-2">
-            <h5>Select sensor to monitor</h5>
-            <select class="selectpicker"
-                    ng-change="updateSelectBox()"
-                    ng-model="selSensor"
-                    ng-options="sensor.sensor_name for sensor in mSensorList">
-            </select>
-            Show points: <input type="checkbox" ng-model="checked" ng-init="checked=true">
-            <button type="button" id="toggleSales">Toggle Sales</button>
-        </div>
 
         <div class="col-md-4">
             <div class="col-md-6">
@@ -566,30 +606,54 @@
             </div>
         </div>
 
-        <div class="col-md-2" style="background-color: #f8f8f8; vertical-align: middle">
+        <div class="col-md-2">
             <button type="button" class="btn btn-sm btn-success" ng-click="reloadData()">RELOAD</button>
+            <div>Show points: <input type="checkbox" ng-model="cbPoints" ng-init="checked=true"></div>
         </div>
-    </div>
-    <div class="row">
-        <div class="center">
-            <div class="col-md-12">
-                <!-- <div id="chart_div"></div> -->
-                <div id="dashboard_div">
-                    <div id="chart_div" style="display: block;"></div>
-                    <div id="control_div"></div>
-                    <p><span id='chart_range_span'></span></p>
+
+        <div class="col-md-2">
+            <div style="color: #ff194b">CKP_CORE<input type="checkbox" ng-model="cbCKP_CORE" ng-init="cbCKP_CORE=true"></div>
+            <div style="color: #f58231">CKP_POL   <input type="checkbox" ng-model="cbCKP_POL" ng-init="cbCKP_POL=false"></div>
+            <div style="color: #663e28">CKP_POV   <input type="checkbox" ng-model="cbCKP_POV" ng-init="cbCKP_POV=false"></div>
+            <div style="color: #808000">RAD_POL   <input type="checkbox" ng-model="cbRAD_POL" ng-init="cbRAD_POL=true"></div>
+            <div style="color: #008080">RAD_POV   <input type="checkbox" ng-model="cbRAD_POV" ng-init="cbRAD_POV=true"></div>
+        </div>
+
+        <div class="col-md-2">
+            <div style="color: #b4a600">PUFF_01   <input type="checkbox" ng-model="cbPUFF_01" ng-init="cbPUFF_01=false"></div>
+            <div style="color: #b4a600">PUFF_02   <input type="checkbox" ng-model="cbPUFF_02" ng-init="cbPUFF_02=false"></div>
+            <div style="color: #b4a600">PUFF_03   <input type="checkbox" ng-model="cbPUFF_03" ng-init="cbPUFF_03=false"></div>
+            <div style="color: #b4a600">PUFF_04   <input type="checkbox" ng-model="cbPUFF_04" ng-init="cbPUFF_04=false"></div>
+            <div style="color: #911eb4">PUFF_AVERAGE <input type="checkbox" ng-model="cbPUFF_AVERAGE" ng-init="cbPUFF_AVERAGE=false"></div>
+        </div>
+
+        <div class="col-md-2">
+            <div style="color: #3cb44b">SOBA      <input type="checkbox" ng-model="cbSOBA" ng-init="cbSOBA=true"></div>
+            <div style="color: #0082c8">VANI      <input type="checkbox" ng-model="cbVANI" ng-init="cbVANI=false"></div>
+            <div style="color: #111111">POW_CKP   <input type="checkbox" ng-model="cbPOW_CKP" ng-init="cbPOW_CKP=false"></div>
+            <div style="color: #444444">POW_RAD   <input type="checkbox" ng-model="cbPOW_RAD" ng-init="cbPOW_RAD=false"></div>
+        </div>
+
+        <div class="row">
+            <div class="center">
+                <div class="col-md-12">
+                    <!-- <div id="chart_div"></div> -->
+                    <div id="dashboard_div">
+                        <div id="chart_div" style="display: block;"></div>
+                        <div id="control_div"></div>
+                        <p><span id='chart_range_span'></span></p>
+                    </div>
                 </div>
             </div>
         </div>
+
+
     </div>
 
 
-</div>
-
-
-<footer class="container-fluid text-center">
-    <% include ../partials/footer %>
-</footer>
+    <footer class="container-fluid text-center">
+        <% include ../partials/footer %>
+    </footer>
 
 </body>
 </html>

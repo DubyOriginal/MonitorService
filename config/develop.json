@@ -11,10 +11,10 @@
     "port": 2201
   },
   "database": {
-    "host": "localhost",
+    "host": "192.168.1.24",
     "port": 3306,
-    "user": "root",
-    "password": "root",
+    "user": "duby",
+    "password": "duby@238",
     "database": "monitor_db"
   }
 }

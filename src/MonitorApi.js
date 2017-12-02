@@ -126,7 +126,7 @@ class MonitorApi {
       WHERE " + specSensorSQL + " AND \
       ((timestamp >= ?) AND (timestamp < ?)) \
       ORDER BY monitor_data.timestamp DESC \
-      LIMIT 100000;";
+      LIMIT 150000;";
     //console.log("MonitorApi: getSensorDataWithRange -> sql: \n" + sql);
     dbHelper.query(sql, [fromuxdate, touxdate], function(result, error) {
       if (!error && result) {

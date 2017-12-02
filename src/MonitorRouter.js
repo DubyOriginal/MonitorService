@@ -162,14 +162,13 @@ app.get('/getsensordata/:sensor_id', function (req, res) {
 });
 
 //http://localhost:2200/getsensordatawithrange/101/1509757428000/1509757429000
-app.get('/getsensordatawithrange/:sensor_id/:fromuxdate/:touxdate', function (req, res) {
-  let sensor_id = req.params.sensor_id;
+app.get('/getsensordatawithrange/:fromuxdate/:touxdate', function (req, res) {
   let fromuxdate = req.params.fromuxdate;
   let touxdate = req.params.touxdate;
-  console.log("server: GET /getsensordatawithrange/" + sensor_id + ", tsRange[" + fromuxdate + " - " + touxdate + "]");
+  console.log("server: GET /getsensordatawithrange/  tsRange[" + fromuxdate + " - " + touxdate + "]");
 
   res.set('Content-Type', 'application/json')
-  monitorApi.getSensorDataWithRange(sensor_id, fromuxdate, touxdate, result => {
+  monitorApi.getSensorDataWithRange(0, fromuxdate, touxdate, result => {
     if (res != null){
       if (result != null){
         res.send(result);

@@ -19,6 +19,7 @@
 
     //-----------------------------------------------
     $scope.mSensorList = [];
+    $scope.mBasementList = [];
     $scope.selSensorData = {};
 
     $scope.getSensorList = function () {
@@ -46,7 +47,7 @@
         console.log("getLatestMeasurementForSensorID - DONE");
         $scope.selSensorData = response.data[0];
         console.log("selSensorData: " + JSON.stringify($scope.selSensorData));
-        drawChart();
+        drawSingleChart();
       }, function (error) {
         console.log("getlatestsensormeasurement ERROR: " + error);
       });
@@ -59,19 +60,41 @@
       $scope.getLatestMeasurementForSensorID();
     }
 
+    //-----------------------------------------------------------------------
+    //ALL SENSORS
+    $scope.getBasementList = function () {
+      console.log("getBasementList!");
+      $http({
+        method: 'GET',
+        url: 'getbasementsensordata'
+      }).then(function (response) {
+        console.log("getBasementList - data loaded. Cnt -> " + response.data.length);
+        $scope.mBasementList = response.data;
+        drawCharts();
+        //$scope.calculateCapacity();
+        //$scope.calculatePower();
+        //console.log(">>>>>  mBasementList: " + JSON.stringify($scope.mBasementList));
+      }, function (error) {
+        console.log("getBasementList ERROR: " + error);
+      });
+    };
+    $scope.getBasementList();   //call initially
+
 
     <!-- ........ GAUGE VIEW........ -->
     //-----------------------------------------------------------------------
     google.charts.load('current', {'packages': ['gauge']});
-    google.charts.setOnLoadCallback(drawChart);
+    google.charts.setOnLoadCallback(drawSingleChart);
 
-    function drawChart() {
-      var data = google.visualization.arrayToDataTable([
+    function drawSingleChart() {
+      //----------------------------------------
+      // SINGLE SENSOR
+      var data_single = google.visualization.arrayToDataTable([
         ['Label', 'Value'],
         ['sensor 1', 80]
       ]);
 
-      var options = {
+      var options_single = {
         width: 400, height: 120,
         greenFrom: 50, greenTo: 80,
         yellowFrom: 80, yellowTo: 90,
@@ -79,7 +102,7 @@
         minorTicks: 5
       };
 
-      var chart = new google.visualization.Gauge(document.getElementById('gauge_div'));
+      var chart = new google.visualization.Gauge(document.getElementById('gauge_div_single'));
       var sen1val = 0;
       if ($scope.selSensorData) {
         sen1val = $scope.selSensorData.sensor_value;
@@ -87,8 +110,115 @@
         sen1val = 0;
       }
 
-      data.setValue(0, 1, sen1val);
-      chart.draw(data, options);
+      data_single.setValue(0, 1, sen1val);
+      chart.draw(data_single, options_single);
+    }
+
+    function drawCharts() {
+
+      const sVal_CKP_CORE  = $scope.mBasementList[6] ? $scope.mBasementList[6].sensor_value : 0;
+      const sVal_CKP_POL   = $scope.mBasementList[4] ? $scope.mBasementList[4].sensor_value : 0;
+      const sVal_CKP_POV   = $scope.mBasementList[5] ? $scope.mBasementList[5].sensor_value : 0;
+      const sVal_RAD_POL   = $scope.mBasementList[7] ? $scope.mBasementList[7].sensor_value : 0;
+      const sVal_RAD_POV   = $scope.mBasementList[8] ? $scope.mBasementList[8].sensor_value : 0;
+      const sVal_PUFF_1    = $scope.mBasementList[0] ? $scope.mBasementList[0].sensor_value : 0;
+      const sVal_PUFF_2    = $scope.mBasementList[1] ? $scope.mBasementList[1].sensor_value : 0;
+      const sVal_PUFF_3    = $scope.mBasementList[2] ? $scope.mBasementList[2].sensor_value : 0;
+      const sVal_PUFF_4    = $scope.mBasementList[3] ? $scope.mBasementList[3].sensor_value : 0;
+
+      console.log("drawCharts: [sVal_CKP_CORE: "+ sVal_CKP_CORE + "] | " + "[sVal_CKP_POL: "+ sVal_CKP_POL+ "] | " + "[sVal_RAD_POL: "+ sVal_RAD_POL+ "] | " + "[sVal_PUFF_1: "+ sVal_PUFF_1)
+
+      //----------------------------------------
+      // CKP_CORE
+      var chartData_1 = google.visualization.arrayToDataTable([['Label', 'Value'], ['CKP_CORE', 100]]);
+
+      var options_1 = {
+        width: 500,
+        height: 120,
+        redFrom: 75,
+        redTo: 100,
+        yellowFrom: 25,
+        yellowTo: 75,
+        greenFrom: 0,
+        greenTo: 25,
+        minorTicks: 5,
+        greenColor: '#CCFFCC',
+        yellowColor: '#FFFFCC',
+        redColor: '#F78181'
+      };
+
+      var chart_1 = new google.visualization.Gauge(document.getElementById('gauge_div_ckp_core'));
+      chartData_1.setValue(0, 1, sVal_CKP_CORE);
+      chart_1.draw(chartData_1, options_1);
+
+      //----------------------------------------
+      // PUFFER_1
+      var chartData_2 = google.visualization.arrayToDataTable([['Label', 'Value'], ['PUFFER_1', 100]]);
+
+      var options_2 = {
+        width: 500,
+        height: 120,
+        redFrom: 75,
+        redTo: 100,
+        yellowFrom: 25,
+        yellowTo: 75,
+        greenFrom: 0,
+        greenTo: 25,
+        minorTicks: 5,
+        greenColor: '#CCFFCC',
+        yellowColor: '#FFFFCC',
+        redColor: '#F78181'
+      };
+
+      var chart_2 = new google.visualization.Gauge(document.getElementById('gauge_div_puffer1'));
+      chartData_2.setValue(0, 1, sVal_PUFF_1);
+      chart_2.draw(chartData_2, options_2);
+
+      //----------------------------------------
+      // CKP_POL
+      var chartData_3 = google.visualization.arrayToDataTable([['Label', 'Value'], ['CKP_POL', 100]]);
+
+      var options_3 = {
+        width: 500,
+        height: 120,
+        redFrom: 75,
+        redTo: 100,
+        yellowFrom: 25,
+        yellowTo: 75,
+        greenFrom: 0,
+        greenTo: 25,
+        minorTicks: 5,
+        greenColor: '#CCFFCC',
+        yellowColor: '#FFFFCC',
+        redColor: '#F78181'
+      };
+
+      var chart_3 = new google.visualization.Gauge(document.getElementById('gauge_div_ckp_pol'));
+      chartData_3.setValue(0, 1, sVal_CKP_POL);
+      chart_3.draw(chartData_3, options_3);
+
+      //----------------------------------------
+      // RAD_POL
+      var chartData_4 = google.visualization.arrayToDataTable([['Label', 'Value'], ['RAD_POL', 100]]);
+
+      var options_4 = {
+        width: 500,
+        height: 120,
+        redFrom: 75,
+        redTo: 100,
+        yellowFrom: 25,
+        yellowTo: 75,
+        greenFrom: 0,
+        greenTo: 25,
+        minorTicks: 5,
+        greenColor: '#CCFFCC',
+        yellowColor: '#FFFFCC',
+        redColor: '#F78181'
+      };
+
+      var chart_4 = new google.visualization.Gauge(document.getElementById('gauge_div_rad_pol'));
+      chartData_4.setValue(0, 1, sVal_RAD_POL);
+      chart_4.draw(chartData_4, options_4);
     }
 
 
@@ -128,7 +258,7 @@
 
                             <div class="col-sm-8">
                                 <h4>Analog temp.</h4>
-                                <div id="gauge_div" style="width: 400px; height: 120px;"></div>
+                                <div id="gauge_div_single" style="width: 400px; height: 120px;"></div>
                             </div>
                         </div>
 
@@ -148,6 +278,32 @@
                                 <td>{{selSensorData.sensor_value}}</td>
                             </tr>
                         </table>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-info class">
+                <div class="panel-heading">LATEST SENSORS MEASUREMENTS</div>
+                <div class="panel-body">
+                    <div>
+                        <div class="row" style="margin-bottom: 20px">
+                            <div class="col-sm-3">
+                                <h5>CKP_CORE</h5>
+                                <div id="gauge_div_ckp_core"></div>
+                            </div>
+                            <div class="col-sm-3">
+                                <h5>PUFFER_4</h5>
+                                <div id="gauge_div_puffer1"></div>
+                            </div>
+                            <div class="col-sm-3">
+                                <h5>CKP_POL</h5>
+                                <div id="gauge_div_ckp_pol"></div>
+                            </div>
+
+                            <div class="col-sm-3">
+                                <h5>RAD_POL</h5>
+                                <div id="gauge_div_rad_pol"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

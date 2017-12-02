@@ -102,6 +102,11 @@ gulp.task('live_pm2', [], function (done) {
   done()
 });
 
+gulp.task('stop_monitor_develop', [], function (done) {
+  try {exec('pm2 delete MonitorApp --silent');} catch (e) {}
+  done()
+});
+
 gulp.task('develop_pm2', [], function (done) {
   process.env.NODE_ENV = 'DEVELOP';
   config = new Config();
@@ -123,10 +128,7 @@ gulp.task('develop_node', function() {
 });
 */
 
-gulp.task('stop_monitor_develop', [], function (done) {
-  try {exec('pm2 delete MonitorApp --silent');} catch (e) {}
-  done()
-});
+
 
 
 
