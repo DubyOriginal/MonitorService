@@ -48,6 +48,7 @@ app.set('view engine', 'ejs');
 //**********************************************************************************************************************
 //PAGE - Home
 app.get('/monit', function (req, res) {
+  console.log("redirect to /");
   res.redirect('/')
 });
 

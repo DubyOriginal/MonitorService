@@ -511,7 +511,7 @@ class MonitorApi {
 
         if (callback){
           //console.log("testSensorAlarm -> sensor_value: " + sVALUE + ", sMin: " + sMin + ", sMax: " + sMax);
-          if (sMin && sMax && sVALUE){
+          if (sMin !== null && sMax !== null && sVALUE !== null){
             if (sVALUE > sMax || sVALUE < sMin) {
               //console.log("testSensorAlarm -> status -> ALARM");
               result.status = "ALARM";
@@ -527,7 +527,7 @@ class MonitorApi {
               callback(result);
             }
           }else{
-            //console.log("testSensorAlarm -> [sMin || sMax || sensor_value] -> is NULL!");
+            console.log("testSensorAlarm -> [sMin: %s || sMax:%s || sensor_value:%s] -> is NULL!", sMin, sMax, sVALUE);
             result.status = "UNAVAILABLE";
             callback(result);
           }
