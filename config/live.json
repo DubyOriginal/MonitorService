@@ -16,5 +16,8 @@
     "user": "duby",
     "password": "duby@238",
     "database": "monitor_db"
+  },
+  "action": {
+    "critical_temp": "CRITICAL_TEMP"
   }
 }

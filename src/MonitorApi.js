@@ -10,6 +10,7 @@
 const DBHelper = require('./DBHelper');
 const FCMHelper = require('./FCMHelper');
 const BasicUtils = require('./BasicUtils');
+var Config = require('../config/Config.js'), config = new Config();
 
 const moment = require('moment');
 const APP_SESSION_TIMEOUT_CHECK = 1000 * 60 * 60 // One hour time
@@ -361,10 +362,18 @@ class MonitorApi {
     let dbHelper = new DBHelper();
     //let fcmHelper = new FCMHelper();
 
+    var alarmedSensorArr = [];
+
     if (sensors){
       var writeSensorValue = (i) => {
         if (i >= sensors.length) {
-          return
+          //console.log("MonitorApi: alarmedSensorArr -> " + JSON.stringify(alarmedSensorArr));
+          if (alarmedSensorArr.length > 0){
+            this.sendPushNotification();
+          }else{
+            console.log("MonitorApi: there is no triggered alarms!");
+          }
+          return;
         }
 
         var sensor_id = sensors[i].sensor_id;
@@ -376,9 +385,18 @@ class MonitorApi {
         //console.log("MonitorApi: storeDeviceData TS -> " + new Date(timestamp).toLocaleDateString());
         //console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
 
-        //if (sensor_id == 101){
-          this.analyzeSensorsData(user_id, device_id, sensor_id, sensor_value);
-        //}
+
+        this.analyzeSensorsData(user_id, device_id, sensor_id, sensor_value, result => {
+          if (result){
+            if (result.status == "ALARM"){
+              alarmedSensorArr.push(result);
+              console.log("MonitorApi: analyzeSensorsData.testSensorAlarm result.status -> ALARM");
+            }
+          }else{
+            console.log("MonitorApi: analyzeSensorsData.testSensorAlarm -> result is NULL!");
+          }
+        });
+
 
 
         //var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null,'" + timestamp + "', '" + user_id + "', '" + device_id + "', '" + sensor_id + "', '" + sensor_type + "', '" + sensor_value + "');";
@@ -440,7 +458,30 @@ class MonitorApi {
     })
   };
 
+  sendPushNotification(){
+    console.log("MonitorApi: sendPushNotification");
+
+    let msgTitle = "MONITOR INFO"
+    let msgDescription = "ALARM: critical temperature !!!";
+    let requestAction = config.action.critical_temp.toString();
+    let user_id = "DY001";
+
+    this.getUserToken(user_id, (error, mobToken) => {
+      if (!error) {
+        if (mobToken && mobToken.length > 0){
+          fcmHelper.pushMessage(mobToken, msgTitle, msgDescription, requestAction);
+        }else{
+          console.log("MonitorApi: Invalid mobToken for userID: " + user_id + ", token: " + mobToken);
+        }
+
+      } else {
+        console.log("MonitorApi: analyzeSensorsData.getUserToken ERROR -> " + JSON.stringify(error))
+      }
+    });
+  }
+
   //********************************************************************************************************************
+  /*
   analyzeSensorsData(user_id, device_id, sensor_id, sensor_value){
     console.log("MonitorApi: analyzeSensorsData -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
 
@@ -474,11 +515,11 @@ class MonitorApi {
       }
 
     });
-  }
+  }*/
 
 
   //********************************************************************************************************************
-  testSensorAlarm(user_id, device_id, sensor_id, sensor_value, callback){
+  analyzeSensorsData(user_id, device_id, sensor_id, sensor_value, callback){
 
     if (sensor_value){
       let sVALUE = parseInt(sensor_value);
@@ -493,7 +534,6 @@ class MonitorApi {
 
         var result = {
           status: "OK",
-          msgDescription:  "all ok",
           msgData:{
             sensor_id: sensor_id,
             sensor_value: sensor_value,
@@ -515,7 +555,7 @@ class MonitorApi {
             if (sVALUE > sMax || sVALUE < sMin) {
               //console.log("testSensorAlarm -> status -> ALARM");
               result.status = "ALARM";
-              result.msgDescription = "critical: " + sName + " temp. -> " + sVALUE;
+              //result.msgDescription = "critical: " + sName + " temp. -> " + sVALUE;
               result.msgData.sensor_alarm_min = sMin.toString();
               result.msgData.sensor_alarm_max = sMax.toString();
               result.msgData.sensor_value     = sVALUE.toString();

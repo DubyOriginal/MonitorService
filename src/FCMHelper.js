@@ -20,7 +20,7 @@ class FCMHelper {
 
   }
 
-  pushMessage(mobToken, msgTitle, msgDescription, msgData) {
+  pushMessage(mobToken, msgTitle, msgDescription, requestAction) {
     console.log(">>>>>>>> pushMessage: [msgTitle: " + msgTitle + ", msgDescription: " + msgDescription + "]")
 
     var message = {
@@ -31,14 +31,12 @@ class FCMHelper {
         sound: "default"
       },
       data: {
-        sensor_id: msgData.sensor_id,
-        sensor_value: msgData.sensor_value,
-        sensor_alarm_min: msgData.sensor_alarm_min,
-        sensor_alarm_max: msgData.sensor_alarm_max
+        action: requestAction
       }
     };
 
-    console.log("fcm.send: message -> " + JSON.stringify(message))
+
+    console.log("fcm.send: MESSAGE -> \n\t to: " + message.to + "\n\t notification: " + JSON.stringify(message.notification) + "\n\t data: " + JSON.stringify(message.data));
 
     fcm.send(message, function (err, response) {
       if (err) {
