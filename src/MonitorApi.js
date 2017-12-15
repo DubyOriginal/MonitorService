@@ -91,7 +91,7 @@ class MonitorApi {
       LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
       LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
-      WHERE sensor_id like ? \
+      WHERE sensor_id = ? \
       ORDER BY monitor_data.timestamp DESC \
       LIMIT 4000;";
     dbHelper.query(sql, [sensor_id], function(result, error) {
@@ -115,7 +115,7 @@ class MonitorApi {
     let dbHelper = new DBHelper();
     let basicUtils = new BasicUtils();
 
-    let specSensorSQL = (sensor_id > 0) ? ("sensor_id LIKE " + sensor_id) : "true";
+    let specSensorSQL = (sensor_id > 0) ? ("sensor_id = " + sensor_id) : "true";
 
     const sql = "SELECT \
         timestamp, \
@@ -227,8 +227,8 @@ class MonitorApi {
       LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
       WHERE \
-        monitor_data.timestamp = (SELECT MAX(timestamp) FROM monitor_data WHERE sensor_id like ?) \
-        AND sensor_id like ?;";
+        monitor_data.timestamp = (SELECT MAX(timestamp) FROM monitor_data WHERE sensor_id = ?) \
+        AND sensor_id = ?;";
     dbHelper.query(sql, [sensor_id, sensor_id], function(result, error) {
       if (!error && result) {
         console.log("MonitorApi: getLatestSensorValue:");
@@ -283,7 +283,7 @@ class MonitorApi {
 
     let dbHelper = new DBHelper();
 
-    const sql = "SELECT * FROM screen_sensor WHERE screen_id like ?;";
+    const sql = "SELECT * FROM screen_sensor WHERE screen_id = ?;";
     dbHelper.query(sql, [screen_id], function(result, error) {
       if (!error && result) {
         console.log("MonitorApi: getSensorByScreenID: " + JSON.stringify(result));
@@ -318,7 +318,7 @@ class MonitorApi {
       LEFT JOIN user_params ON monitor_data.user_id = user_params.id \
       LEFT JOIN device_params ON monitor_data.device_id = device_params.id \
       LEFT JOIN sensor_params ON monitor_data.sensor_id = sensor_params.id \
-      WHERE user_id like ? \
+      WHERE user_id = ? \
       ORDER BY monitor_data.timestamp DESC \
       LIMIT 20;";
     dbHelper.query(sql, [user_id], function(result, error) {
@@ -397,8 +397,6 @@ class MonitorApi {
           }
         });
 
-
-
         //var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_type, sensor_value) VALUES (null,'" + timestamp + "', '" + user_id + "', '" + device_id + "', '" + sensor_id + "', '" + sensor_type + "', '" + sensor_value + "');";
         var sql = "INSERT INTO monitor_data (id, timestamp, user_id, device_id, sensor_id, sensor_value) VALUES (null, ?, ?, ?, ?, ?);";
         dbHelper.query(sql, [timestamp, user_id, device_id, sensor_id, sensor_value], function(result, error) {
@@ -464,7 +462,7 @@ class MonitorApi {
     let msgTitle = "MONITOR INFO"
     let msgDescription = "ALARM: critical temperature !!!";
     let requestAction = config.action.critical_temp.toString();
-    let user_id = "DY001";
+    let user_id = "1001";
 
     this.getUserToken(user_id, (error, mobToken) => {
       if (!error) {

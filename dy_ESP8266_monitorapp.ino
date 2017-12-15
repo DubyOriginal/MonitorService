@@ -28,13 +28,15 @@
 #include "BasicUtils.h"
 
 //CONST
-const char* ssid     = "SkyNet";
-const char* password = "adidasneo";
-const char* serverUrl   = "192.168.1.37";
-const char* USER_ID     = "DY001";
-const char* DEVICE_ID   = "123456";
+const char* ssid       = "SkyNet";
+const char* password   = "adidasneo";
+const char* SRV_URL    = "192.168.1.24";
+const int SRV_PORT     = 2201;
+const char* USER_ID    = "1001";
+const char* DEVICE_ID  = "123456";
+const int DELAY_UPLOAD = 60000;
 const unsigned long HTTP_TIMEOUT = 10000;  // max respone time from server
-const int sensorNum = 10;
+const int sensorNum = 11;
 
 //STRUCT  {"sensor_address":"3563547","sensor_type":"temp","sensor_value":"22.22"}
 //------------------------------------------------------------------------------------------------------------------
@@ -78,6 +80,7 @@ void setup() {
   //init WiFi
   //----------------------------------------------------------
   WiFi.begin (ssid, password);
+  WiFi.mode(WIFI_STA);
   while ( WiFi.status() != WL_CONNECTED ) {
     delay ( 500 );
     serial.print ( "." );
@@ -107,6 +110,7 @@ void setup() {
   107 -> 28 ff b7 b8 30 17 04 e6  - S3  - ckp pov
   108 -> 28 ff 2f 15 31 17 03 73  - S9  - puffer 1
   109 -> 28 ff b8 1c 31 17 04 85  - S10 - soba
+  110 -> 28 ff 67 b6 30 17 04 ad  - S11 - vani
 
   109 -> 28 ff 67 b6 30 17 04 ad  - nema
   107 -> 28 ff 75 1f 31 17 03 40  - nema
@@ -116,16 +120,17 @@ void setup() {
 void defineDeviceSensors(){
     //DeviceAddress -> typedef uint8_t DeviceAddress[8];
     // add values to sensor:    sensor_id  |  sensor_address  |  sensor_value;
-    sensorsArr[0]  = (TSensor) {"100", {0x28, 0x06, 0xfe, 0x5b, 0x05, 0x00, 0x00, 0xd1}, ""};
-    sensorsArr[1]  = (TSensor) {"101", {0x28, 0x29, 0xa0, 0x5b, 0x05, 0x00, 0x00, 0x74}, ""};
-    sensorsArr[2]  = (TSensor) {"102", {0x28, 0xff, 0x88, 0xf1, 0x30, 0x17, 0x04, 0x7e}, ""};
-    sensorsArr[3]  = (TSensor) {"103", {0x28, 0xff, 0x8a, 0x22, 0x31, 0x17, 0x04, 0xdf}, ""};
-    sensorsArr[4]  = (TSensor) {"104", {0x28, 0xff, 0x4e, 0x6c, 0x31, 0x17, 0x03, 0x94}, ""};
-    sensorsArr[5]  = (TSensor) {"105", {0x28, 0xff, 0x95, 0x1a, 0x31, 0x17, 0x04, 0x98}, ""};
-    sensorsArr[6]  = (TSensor) {"106", {0x28, 0xff, 0xc7, 0x0c, 0x31, 0x17, 0x03, 0x3c}, ""};
-    sensorsArr[7]  = (TSensor) {"107", {0x28, 0xff, 0xb7, 0xb8, 0x30, 0x17, 0x04, 0xe6}, ""};
-    sensorsArr[8]  = (TSensor) {"108", {0x28, 0xff, 0x2f, 0x15, 0x31, 0x17, 0x03, 0x73}, ""};
-    sensorsArr[9]  = (TSensor) {"109", {0x28, 0xff, 0xb8, 0x1c, 0x31, 0x17, 0x04, 0x85}, ""};
+    sensorsArr[0]   = (TSensor) {"100", {0x28, 0x06, 0xfe, 0x5b, 0x05, 0x00, 0x00, 0xd1}, ""};
+    sensorsArr[1]   = (TSensor) {"101", {0x28, 0x29, 0xa0, 0x5b, 0x05, 0x00, 0x00, 0x74}, ""};
+    sensorsArr[2]   = (TSensor) {"102", {0x28, 0xff, 0x88, 0xf1, 0x30, 0x17, 0x04, 0x7e}, ""};
+    sensorsArr[3]   = (TSensor) {"103", {0x28, 0xff, 0x8a, 0x22, 0x31, 0x17, 0x04, 0xdf}, ""};
+    sensorsArr[4]   = (TSensor) {"104", {0x28, 0xff, 0x4e, 0x6c, 0x31, 0x17, 0x03, 0x94}, ""};
+    sensorsArr[5]   = (TSensor) {"105", {0x28, 0xff, 0x95, 0x1a, 0x31, 0x17, 0x04, 0x98}, ""};
+    sensorsArr[6]   = (TSensor) {"106", {0x28, 0xff, 0xc7, 0x0c, 0x31, 0x17, 0x03, 0x3c}, ""};
+    sensorsArr[7]   = (TSensor) {"107", {0x28, 0xff, 0xb7, 0xb8, 0x30, 0x17, 0x04, 0xe6}, ""};
+    sensorsArr[8]   = (TSensor) {"108", {0x28, 0xff, 0x2f, 0x15, 0x31, 0x17, 0x03, 0x73}, ""};
+    sensorsArr[9]   = (TSensor) {"109", {0x28, 0xff, 0xb8, 0x1c, 0x31, 0x17, 0x04, 0x85}, ""};
+    sensorsArr[10]  = (TSensor) {"110", {0x28, 0xff, 0x67, 0xb6, 0x30, 0x17, 0x04, 0xad}, ""};
 
 }
 
@@ -226,7 +231,7 @@ bool connect(const char* hostName, unsigned port) {
 // Send the HTTP GET request to the server
 bool sendRequest(const char* host, const char* route) {
   serial.println("POST " + String(route));
-  //String postData = "{\"user_id\" : \"DY001\", \"device_id\" : \"123456\", \"sensor_id\" : \"3563547\", \"sensor_value\" : \"6666\"}";
+  //String postData = "{\"user_id\" : \"1001\", \"device_id\" : \"123456\", \"sensor_id\" : \"3563547\", \"sensor_value\" : \"6666\"}";
   //serial.println("postData " + String(postData));
 
   String postData = prepareJOSNStringFromSensorsArr();
@@ -298,8 +303,8 @@ void disconnect() {
 
 // Pause for a 1 minute
 void wait() {
-  Serial.println("Wait 10 seconds");
-  delay(10000);
+  Serial.println("Wait 1 minute");
+  delay(DELAY_UPLOAD);
 }
 
 //******************************************************************************************************************************
@@ -307,8 +312,8 @@ void loop() {
 
   readSensors();  //after readings is complete value is stored in sensorsArr[TSensor]
 
-  if (connect(serverUrl, 2200)) {
-    if (sendRequest(serverUrl, "/storedevicedata") && skipResponseHeaders()) {
+  if (connect(SRV_URL, SRV_PORT)) {
+    if (sendRequest(SRV_URL, "/storedevicedata") && skipResponseHeaders()) {
       readReponseContent();
     }
   }
@@ -320,7 +325,7 @@ void loop() {
 
 /*
 {
-  "user_id" : "DY001",
+  "user_id" : "1001",
   "device_id" : "123456",
   "sensors" :
   [

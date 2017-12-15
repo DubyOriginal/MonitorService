@@ -284,7 +284,7 @@ app.post('/updatesensorparams', function (req, res) {
   });
 });
 
-//http://localhost:2200/getuseridsensordata/DY001
+//http://localhost:2200/getuseridsensordata/1001
 app.get('/getuseridsensordata/:user_id', function (req, res) {
   let user_id = req.params.user_id;
   console.log("server: GET /getuseridsensordata/" + user_id);
@@ -322,7 +322,7 @@ app.get('/savescreensensor/:screen_id/:sensor_id', function (req, res) {
 app.post('/storedevicedata', function (req, res) {
   /*{
    "sensors":[{"sensor_id":"101","sensor_value":"11.33"},{"sensor_id":"102","sensor_type":"hum","sensor_value":"22.33"}],
-   "user_id":"DY001",
+   "user_id":"1001",
    "device_id":"123456"}
    */
   const data = req.body;
@@ -358,7 +358,7 @@ app.get('/requestcommand', function (req, res) {
 //**********************************************************************************************************************
 // CLIENT ROUTES - (from mobile)
 //**********************************************************************************************************************
-//http://localhost:2200/updatemobilefcmtoken  {id: "DY001", msisdn: "0989088414", token: "xxx..", platform: "android"}
+//http://localhost:2200/updatemobilefcmtoken  {id: "1001", msisdn: "0989088414", token: "xxx..", platform: "android"}
 app.post('/updatepushtoken', function (req, res) {
   console.log("server: POST /updatepushtoken");
 

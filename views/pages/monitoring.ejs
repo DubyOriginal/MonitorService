@@ -21,6 +21,7 @@
 
 <script type="text/javascript">
   //-------------------------------------------------------------------------------------
+
   var extScope;
   const colorCKP_CORE = "#ff194b";
   const colorCKP_POL = "#f58231";
@@ -46,6 +47,7 @@
     $scope.needToReloadData = true;
     $scope.activeFromDate = 0;
     $scope.activeToDate = 0;
+    $scope.ckpEnergy = 0;
 
     $scope.setLatestTS = function (latestTS) {
       console.log("setLatestTS -> " + latestTS);
@@ -238,6 +240,8 @@
     });
   };
 
+
+
   function drawData() {
     console.log("current TS locale: " + new Date().toLocaleString());
 
@@ -271,6 +275,7 @@
     if (extScope.cbPUFF_AVERAGE) graphArr.push({label: 'PUFF_AVERAGE', type: 'number'});
     chartDataArr.push(graphArr);
 
+    var powerCKPArr = [];
     //---------------------------------------------------------
     for (var i = 0; i < mSensorData.length; i += 1) {
 
@@ -404,6 +409,8 @@
         const dt_rad = t2_rad - t1_rad;
         sValPOW_CKP = Q_ckp * Cp * ro * dt_ckp / 1000;
         sValPOW_RAD = Q_rad * Cp * ro * dt_rad / 1000;
+
+        powerCKPArr.push({ts:mSensorData[i].timestamp, pow: sValPOW_CKP});
         //----------------------------------------------------------
 
 
@@ -432,6 +439,50 @@
         hasValPUFF_4, hasValRAD_POL, hasValPUFF_3, hasValRAD_POV, hasValCKP_CORE, hasValCKP_POL, hasValPUFF_2, hasValCKP_POV, hasValPUFF_1, hasValSOBA, hasValVANI = false;
       }
     }  //END FOR
+
+    //calculate integral of POWER -> energy
+    //---------------------------------------------------------
+    function f(x) {
+      //return Math.cos(1 / x) / x;
+      for (var i = 0; i < powerCKPArr.length; i += 1){
+        if (x == powerCKPArr.ts){
+          console.log("integrate: powerCKPArr.ts = " + powerCKPArr.ts);
+          console.log("integrate: powerCKPArr.pow = " + powerCKPArr.pow);
+          return powerCKPArr.pow;
+        }
+      }
+    }
+
+    function numerically_integrate(a, b, dx, f) {
+      // calculate the number of trapezoids
+      n = (b - a) / dx;
+      console.log("integrate: n = " + n);
+
+      // define the variable for area
+      Area = 0;
+
+      //loop to calculate the area of each trapezoid and sum.
+      for (i = 1; i <= n; i++) {
+        //the x locations of the left and right side of each trapezpoid
+        x0 = a + (i-1)*dx;
+        x1 = a + i*dx;
+
+        // the area of each trapezoid
+        Ai = dx * (f(x0) + f(x1))/ 2.;
+
+        // cumulatively sum the areas
+        Area = Area + Ai
+
+      }
+      return Area;
+    }
+
+    function calculateEnergy(fromTS, toTS) {
+      extScope.ckpEnergy = numerically_integrate(fromTS, toTS, 61, f);
+      console.log("calculateEnergy [cnt: " + powerCKPArr.length + "]" + " -> E = " + extScope.ckpEnergy);
+    }
+    calculateEnergy(extScope.fromDate, extScope.toDate);
+    //---------------------------------------------------------
 
     var data = new google.visualization.arrayToDataTable(chartDataArr);
 
@@ -631,6 +682,7 @@
                 <button type="button" class="btn btn-sm btn-info" ng-click="fLastMonth()">1 month</button>
                 <h5>time range: {{loadingPeriod}} h</h5>
                 <h5>latest timestamp: {{latestTimestamp}}</h5>
+                <h5>ckp energy: {{ckpEnergy}}</h5>
 
                 <!--
                 <input type="button" ng-click="startSpin()" value="Start spinner" />
