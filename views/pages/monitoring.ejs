@@ -478,15 +478,16 @@
         //console.log("dArea[" + i + "] = " + dArea);
         sumArea += dArea;
       }
-
-      sumArea = nFormatter(sumArea, 2) + "J";
       return sumArea;
     }
 
     //var tmpArr = [];
     //tmpArr.push({ts:10, pow: 15});
     //tmpArr.push({ts:20, pow: 40});
-    extScope.ckpEnergy = calculateEnergy(powerCKPArr);
+    let energy = calculateEnergy(powerCKPArr);
+    let energyJ = nFormatter(energy, 2) + "J";
+    let energyKWH = nFormatter(energy / 3600, 2) + "Wh";
+    extScope.ckpEnergy = "E1 = " + energyJ + ",   E2 = " + energyKWH;
     console.log("extScope.ckpEnergy -> " + extScope.ckpEnergy);
     //---------------------------------------------------------
 
