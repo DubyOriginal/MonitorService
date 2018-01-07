@@ -25,6 +25,8 @@
     $scope.mCapacity = 0;
     $scope.mPowerCKP = 0;
     $scope.mPowerRAD = 0;
+    $scope.pumpStatus_CKP = "x";
+    $scope.pumpStatus_RAD = "x";
 
     $scope.getBasementList = function () {
       console.log("getBasementList!");
@@ -34,14 +36,42 @@
       }).then(function (response) {
         console.log("getBasementList - data loaded. Cnt -> " + response.data.length);
         $scope.mBasementList = response.data;
+        $scope.preparePumpStatus();
         $scope.calculateCapacity();
         $scope.calculatePower();
-        //console.log(">>>>>  mBasementList: " + JSON.stringify($scope.mBasementList));
+        console.log(">>>>>  mBasementList: " + JSON.stringify($scope.mBasementList));
       }, function (error) {
         console.log("getBasementList ERROR: " + error);
       });
     };
     $scope.getBasementList();   //call initially
+
+    $scope.preparePumpStatus = function(){
+      if (isEmptyObject($scope.mBasementList[11]) || isEmptyObject($scope.mBasementList[12])) {
+        console.log("INVALID VALUE: pumpStatus_CKP OR pumpStatus_RAD");
+        $scope.pumpStatus_CKP = "x";
+        $scope.pumpStatus_RAD = "x";
+        return;
+      }
+      var tmp_CKP = $scope.mBasementList[11].sensor_value;
+      var tmp_RAD = $scope.mBasementList[12].sensor_value;
+
+      if (tmp_CKP === "0"){
+        $scope.pumpStatus_CKP = "OFF";
+      }else if (tmp_CKP === "1"){
+        $scope.pumpStatus_CKP = "ON";
+      }else{
+        $scope.pumpStatus_CKP = "x";
+      }
+
+      if (tmp_RAD === "0"){
+        $scope.pumpStatus_RAD = "OFF";
+      }else if (tmp_RAD === "1"){
+        $scope.pumpStatus_RAD = "ON";
+      }else{
+        $scope.pumpStatus_RAD = "x";
+      }
+    }
 
     $scope.toggleDetailBox = function (screen_id) {
       console.log("toggleDetailBox for: " + screen_id);
@@ -362,6 +392,16 @@
                         <p class="small">ID: {{mBasementList[10].screen_id}}</p>
                         <p class="small">{{mBasementList[10].sensor_value}}°C</p>
                     </div>
+                </div>
+
+                <!-- status pump CKP box -->
+                <div class="pump_status_box" style="top:603px; left: 255px">
+                    <p style="margin: 0;">{{pumpStatus_CKP}}</p>
+                </div>
+
+                <!-- status pump RAD box -->
+                <div class="pump_status_box" style="top:595px; left: 995px">
+                    <p style="margin: 0;">{{pumpStatus_RAD}}</p>
                 </div>
 
                 <!-- calculation -->

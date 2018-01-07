@@ -48,6 +48,8 @@
     $scope.activeFromDate = 0;
     $scope.activeToDate = 0;
     $scope.ckpEnergy = 0;
+    $scope.pumpStatus_CKP = "x";
+    $scope.pumpStatus_RAD = "x";
 
     $scope.setLatestTS = function (latestTS) {
       console.log("setLatestTS -> " + latestTS);
@@ -94,7 +96,7 @@
     var fLastMonth = (new Date()).setMonth(fNow.getMonth() - 1);
 
     $scope.setInitiaDate = function () {
-      $scope.fromDate = f1Hour;
+      $scope.fromDate = f24Hours;
       $scope.toDate = fNow.getTime();  //unix timestamp
       $scope.activeFromDate = $scope.fromDate;
       $scope.activeToDate = $scope.toDate;
@@ -378,6 +380,13 @@
         sValVANI = sVal110;
       }
 
+      if (mSensorData[i].sensor_id == "200") {
+        extScope.pumpStatus_CKP = mSensorData[i].sensor_value;
+      }
+
+      if (mSensorData[i].sensor_id == "201") {
+        extScope.pumpStatus_RAD = mSensorData[i].sensor_value;
+      }
 
       // test if all done for timestamp[n]
       if (hasValPUFF_4 && hasValRAD_POL && hasValPUFF_3 && hasValRAD_POV && hasValCKP_CORE && hasValCKP_POL && hasValPUFF_2 && hasValCKP_POV && hasValPUFF_1 && hasValSOBA && hasValVANI) {

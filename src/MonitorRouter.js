@@ -322,6 +322,7 @@ app.get('/savescreensensor/:screen_id/:sensor_id', function (req, res) {
 app.post('/storedevicedata', function (req, res) {
   /*{
    "sensors":[{"sensor_id":"101","sensor_value":"11.33"},{"sensor_id":"102","sensor_type":"hum","sensor_value":"22.33"}],
+   "status":{"REL_CKP":"1","REL_RAD":"0"},  //not used yet
    "user_id":"1001",
    "device_id":"123456"}
    */
@@ -329,12 +330,15 @@ app.post('/storedevicedata', function (req, res) {
   const user_id = data.user_id;
   const device_id = data.device_id;
   const sensors = data.sensors;
+  //const status = data.status;
 
   res.set('Content-Type', 'application/json');
-  res.send("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
+  res.send("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + "}");
+  //res.send("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
 
   console.log("server: POST /storedevicedata");
-  //console.log("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
+  console.log("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
+  //console.log("RECEIVED POST {status: " + JSON.stringify(status) + "}");
 
   if (user_id != null && device_id != null && sensors != null) {
     monitorApi.storeDeviceData(user_id, device_id, sensors);

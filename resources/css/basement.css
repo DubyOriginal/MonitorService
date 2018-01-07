@@ -57,6 +57,14 @@
     vertical-align: middle;
     background-color: #1abc9c;
 }
+.pump_status_box {
+    background-color: #ccac86;
+    border: 2px solid #4f4f4f;
+    position: absolute;
+    padding: 0px 5px;
+    line-height: 18px;
+    text-align: center;
+}
 
 .vertical {
     display:block;
