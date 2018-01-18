@@ -23,7 +23,7 @@ footer {
     background-color: #222222;
 }
 
-.main_container{
+.main_container {
     padding: 20px;
     background-color: #f8f8f8;
     display: block;
@@ -48,12 +48,12 @@ footer {
     padding-bottom: 7px;
 }
 
-.row{
+.row {
     margin-right: 0px;
     margin-left: 0px;
 }
 
-.dy-container{
+.dy-container {
     background-color: #d0fae9;
     padding: 25px;
 }
@@ -61,7 +61,7 @@ footer {
 .dy_group_box {
     padding: 10px 10px;
     margin: 5px;
-    border-radius:5px;
+    border-radius: 5px;
     border: 1px solid #d5d5d5;
     background: #f6f6f6;
 }

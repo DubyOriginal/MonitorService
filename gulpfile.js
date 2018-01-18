@@ -21,9 +21,10 @@ function deployLive(server_user, server_ip) {
   console.log("stopping MonitorApp....");
   try {
     exec('ssh %s@%s "pm2 delete MonitorApp --silent"', server_user, server_ip);
-  } catch(e){
+  } catch (e) {
     console.log("err: Unable to stop MonitorApp OR already stopped!");
-  };
+  }
+  ;
 
   console.log("transfer source....");
   exec('scp package.json %s@%s:./MonitorService/', server_user, server_ip);
@@ -49,7 +50,10 @@ function deployLive(server_user, server_ip) {
 function deployDevelop() {
   console.log("------------------------------------------------------------");
   console.log('deploy DEVELOP - (locally)');
-  try {exec('pm2 delete MonitorApp --silent');} catch (e) {}
+  try {
+    exec('pm2 delete MonitorApp --silent');
+  } catch (e) {
+  }
   exec('NODE_ENV=DEVELOP pm2 start MonitorApp.js');
   //exec('pm2 start MonitorApp.js --log-date-format \"YYYY-MM-DD HH:mm:ss\"');
 
@@ -60,24 +64,26 @@ function restartMonitorApp() {
   var status = "SUCCESS";
   try {
     exec('ssh %s@%s "pm2 delete --silent MonitorApp"', config.server.user, config.server.ip);
-  } catch(e){
+  } catch (e) {
     //console.log("error:", e);
     status = "FAILED";
-  };
+  }
+  ;
   try {
     //exec("ssh %s@%s 'cd %s; pm2 start MonitorApp.js'", config.server.user, config.server.ip, config.service.path);
     let addLogTS = "--log-date-format \'YYYY-MM-DD HH:mm:ss\'";
     exec("ssh %s@%s \"cd %s; pm2 start MonitorApp.js %s\"", config.server.user, config.server.ip, config.service.path, addLogTS);
-  } catch(e){
+  } catch (e) {
     //console.log("error:", e);
     status = "FAILED";
-  };
+  }
+  ;
   return status;
 }
 
 //gulp tasks
 //--------------------------------------------------------------------------
-gulp.task('restart MonitorApp', function() {
+gulp.task('restart MonitorApp', function () {
   var status = restartMonitorApp();
   return gutil.log('restarting MonitorApp service: ', status)
 });
@@ -88,7 +94,7 @@ gulp.task('restart MonitorApp', function() {
 
 // copy files locally
 //gulp.task('copyHtml', function() {
-  // copy any html files in source/ to public/
+// copy any html files in source/ to public/
 //  gulp.src('source/*.html').pipe(gulp.dest('public'));
 //});
 
@@ -103,7 +109,10 @@ gulp.task('live_pm2', [], function (done) {
 });
 
 gulp.task('stop_monitor_develop', [], function (done) {
-  try {exec('pm2 delete MonitorApp --silent');} catch (e) {}
+  try {
+    exec('pm2 delete MonitorApp --silent');
+  } catch (e) {
+  }
   done()
 });
 

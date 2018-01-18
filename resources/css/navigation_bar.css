@@ -10,7 +10,7 @@
     padding-top: 15px;
 }
 
-.navbar-nav li a:hover{
+.navbar-nav li a:hover {
     color: #d0d1df !important;
     background-color: #333333 !important;
     background-image: none !important;
@@ -21,7 +21,6 @@
     background-color: #3a4141 !important;
     background-image: none !important;
 }
-
 
 /*------------------------------------------------------*/
 

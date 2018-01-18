@@ -15,7 +15,7 @@
     overflow: hidden;
     height: auto;
     margin-top: -1px;
-    float:right;
+    float: right;
 }
 
 .measure_point_box {
@@ -42,7 +42,7 @@
     padding: 2px 3px 2px 3px;
 }
 
-.table_middle{
+.table_middle {
     display: table-cell;
     vertical-align: middle;
 }
@@ -57,6 +57,7 @@
     vertical-align: middle;
     background-color: #1abc9c;
 }
+
 .pump_status_box {
     background-color: #ccac86;
     border: 2px solid #4f4f4f;
@@ -67,7 +68,7 @@
 }
 
 .vertical {
-    display:block;
+    display: block;
     text-align: center;
 }
 
@@ -83,11 +84,11 @@ p.small {
 }
 
 p.dy-p-2 {
-  margin-bottom: 1px;
+    margin-bottom: 1px;
 }
 
-.my_table{
-    width:100%;
+.my_table {
+    width: 100%;
     color: #3c3c3c;
     margin-left: 0px;
 }

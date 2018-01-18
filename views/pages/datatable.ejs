@@ -11,40 +11,42 @@
 </head>
 
 <style>
-    table, th , td  {
+    table, th, td {
         border: 1px solid grey;
         border-collapse: collapse;
         padding: 5px;
     }
+
     table tr:nth-child(odd) {
         background-color: #f1f1f1;
     }
+
     table tr:nth-child(even) {
         background-color: #ffffff;
     }
 </style>
 
 <script type="text/javascript">
-  var liveApp = angular.module("liveApp", []);
-  liveApp.controller("livectrl", function livectrl($scope, $http) {
+    var liveApp = angular.module("liveApp", []);
+    liveApp.controller("livectrl", function livectrl($scope, $http) {
 
-    $scope.mDataList = [];
+        $scope.mDataList = [];
 
-    $scope.getData = function () {
-      console.log("getData!");
-      $http({
-        method: 'GET',
-        url: 'getallsensorsdata'
-      }).then(function (response) {
-        console.log("getData - LOADED!");
-        $scope.mDataList = response.data;
-      }, function (error) {
-        console.log("getallsensorsdata ERROR: " + error);
-      });
-    };
-    $scope.getData();  //initial data load
+        $scope.getData = function () {
+            console.log("getData!");
+            $http({
+                method: 'GET',
+                url: 'getallsensorsdata'
+            }).then(function (response) {
+                console.log("getData - LOADED!");
+                $scope.mDataList = response.data;
+            }, function (error) {
+                console.log("getallsensorsdata ERROR: " + error);
+            });
+        };
+        $scope.getData();  //initial data load
 
-  });
+    });
 
 </script>
 

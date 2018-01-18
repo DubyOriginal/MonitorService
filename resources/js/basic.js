@@ -19,8 +19,8 @@ function isEmptyObject(obj) {
 
   // Assume if it has a length property with a non-zero value
   // that that property is correct.
-  if (obj.length > 0)    return false;
-  if (obj.length === 0)  return true;
+  if (obj.length > 0) return false;
+  if (obj.length === 0) return true;
 
   // If it isn't an object at this point
   // it is empty, but it can't be anything *but* empty

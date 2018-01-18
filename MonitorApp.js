@@ -31,7 +31,7 @@ class MonitorApp {
   }
 }
 
-var logStartingInfo = function() {
+var logStartingInfo = function () {
   console.log("------------------------------------------------------------");
   console.log("starting MonitorService - %s (v%s)...", enviroment, config.service.version);
   //

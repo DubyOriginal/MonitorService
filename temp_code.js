@@ -8,7 +8,7 @@ function drawChart() {
   data.addColumn('number', 'Y2');
 
   for (var i = 0; i < 12; i++) {
-    data.addRow([new Date(2016, i,1), Math.floor(Math.random() * 200), Math.floor(Math.random() * 200)]);
+    data.addRow([new Date(2016, i, 1), Math.floor(Math.random() * 200), Math.floor(Math.random() * 200)]);
   }
 
   var dash = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
@@ -37,7 +37,8 @@ function drawChart() {
     chartType: 'LineChart',
     containerId: 'chart_div'
   });
-  function setOptions (wrapper) {
+
+  function setOptions(wrapper) {
     wrapper.setOption('width', 620);
     wrapper.setOption('chartArea.width', '80%');
   }
@@ -48,7 +49,7 @@ function drawChart() {
   dash.draw(data);
   google.visualization.events.addListener(control, 'statechange', function () {
     var v = control.getState();
-    document.getElementById('dbgchart').innerHTML = v.range.start+ ' to ' +v.range.end;
+    document.getElementById('dbgchart').innerHTML = v.range.start + ' to ' + v.range.end;
     return 0;
   });
 }

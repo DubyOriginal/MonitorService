@@ -15,38 +15,39 @@ var fcm = new FCM(serverKey);
 
 class FCMHelper {
 
-  constructor() {
-    console.log("FCMHelper initialized");
+    constructor() {
+        console.log("FCMHelper initialized");
 
-  }
+    }
 
-  pushMessage(mobToken, msgTitle, msgDescription, requestAction) {
-    console.log(">>>>>>>> pushMessage: [msgTitle: " + msgTitle + ", msgDescription: " + msgDescription + "]")
+    pushMessage(mobToken, msgTitle, msgDescription, requestAction) {
+        console.log(">>>>>>>> pushMessage: [msgTitle: " + msgTitle + ", msgDescription: " + msgDescription + "]")
 
-    var message = {
-      to: mobToken,
-      notification: {
-        title: msgTitle,
-        body: msgDescription,
-        sound: "default"
-      },
-      data: {
-        action: requestAction
-      }
+        var message = {
+            to: mobToken,
+            notification: {
+                title: msgTitle,
+                body: msgDescription,
+                sound: "default"
+            },
+            data: {
+                action: requestAction
+            }
+        };
+
+
+        console.log("fcm.send: MESSAGE -> \n\t to: " + message.to + "\n\t notification: " + JSON.stringify(message.notification) + "\n\t data: " + JSON.stringify(message.data));
+
+        fcm.send(message, function (err, response) {
+            if (err) {
+                console.log("fcm.send: ERROR -> " + JSON.stringify(err))
+            } else {
+                console.log("fcm.send: SUCCESS");  // -> ", JSON.stringify(response))
+            }
+        })
     };
-
-
-    console.log("fcm.send: MESSAGE -> \n\t to: " + message.to + "\n\t notification: " + JSON.stringify(message.notification) + "\n\t data: " + JSON.stringify(message.data));
-
-    fcm.send(message, function (err, response) {
-      if (err) {
-        console.log("fcm.send: ERROR -> " + JSON.stringify(err))
-      } else {
-        console.log("fcm.send: SUCCESS");  // -> ", JSON.stringify(response))
-      }
-    })
-  };
 }
+
 //new FCMHelper();
 
 module.exports = FCMHelper;

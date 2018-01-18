@@ -28,17 +28,17 @@
 
 <script>
 
-  $(document).ready(function() {
+    $(document).ready(function () {
 
-    var pathname = window.location.pathname;
-    $('.nav > li > a[href="'+pathname+'"]').parent().addClass('active');
+        var pathname = window.location.pathname;
+        $('.nav > li > a[href="' + pathname + '"]').parent().addClass('active');
 
-    var selector = '.nav li';
-    $(selector).on('click', function () {
-      //console.log(selector + " - clicked");
-      $(selector).removeClass('active');
-      $(this).addClass('active');  //no effect because reloading page
+        var selector = '.nav li';
+        $(selector).on('click', function () {
+            //console.log(selector + " - clicked");
+            $(selector).removeClass('active');
+            $(this).addClass('active');  //no effect because reloading page
+        });
     });
-  });
 
 </script>

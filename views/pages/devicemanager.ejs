@@ -11,57 +11,57 @@
 </head>
 
 <script type="text/javascript">
-  var liveApp = angular.module("liveApp", []);
-  liveApp.controller("livectrl", function livectrl($scope, $http) {
-    $scope.model = {
-      sensorList: [],
-      sensorSelected: {}
-    };
+    var liveApp = angular.module("liveApp", []);
+    liveApp.controller("livectrl", function livectrl($scope, $http) {
+        $scope.model = {
+            sensorList: [],
+            sensorSelected: {}
+        };
 
-    $scope.getData = function () {
-      console.log("getData!");
-      $http({
-        method: 'GET',
-        url: 'getallsensorparams'
-      }).then(function (response) {
-        $scope.model.sensorList = response.data;
-      }, function (error) {
-        console.log("getallsensorparams ERROR: " + error);
-      });
-    };
-    $scope.getData();  //initial data load
+        $scope.getData = function () {
+            console.log("getData!");
+            $http({
+                method: 'GET',
+                url: 'getallsensorparams'
+            }).then(function (response) {
+                $scope.model.sensorList = response.data;
+            }, function (error) {
+                console.log("getallsensorparams ERROR: " + error);
+            });
+        };
+        $scope.getData();  //initial data load
 
-    $scope.updateSensorParams = function (newSensor) {
-      console.log("getData!");
-      $http({
-        method: 'POST',
-        url: 'updatesensorparams',
-        data: JSON.stringify(newSensor)
-      }).then(function (response) {
-      }, function (error) {
-        console.log("getallsensorparams ERROR: " + error);
-      });
-    };
+        $scope.updateSensorParams = function (newSensor) {
+            console.log("getData!");
+            $http({
+                method: 'POST',
+                url: 'updatesensorparams',
+                data: JSON.stringify(newSensor)
+            }).then(function (response) {
+            }, function (error) {
+                console.log("getallsensorparams ERROR: " + error);
+            });
+        };
 
-    $scope.getstudList = function (sensor) {
-      if (sensor.id === $scope.model.sensorSelected.id) return 'edit';
-      else return 'display';
-    };
-    $scope.sensorEdit = function (sensor) {
-      $scope.model.sensorSelected = angular.copy(sensor);
-    };
-    $scope.sensorSave = function (idx) {
-      console.log("Saving sensor - " + idx);
-      let newSensor = angular.copy($scope.model.sensorSelected);
-      $scope.model.sensorList[idx] = newSensor;
+        $scope.getstudList = function (sensor) {
+            if (sensor.id === $scope.model.sensorSelected.id) return 'edit';
+            else return 'display';
+        };
+        $scope.sensorEdit = function (sensor) {
+            $scope.model.sensorSelected = angular.copy(sensor);
+        };
+        $scope.sensorSave = function (idx) {
+            console.log("Saving sensor - " + idx);
+            let newSensor = angular.copy($scope.model.sensorSelected);
+            $scope.model.sensorList[idx] = newSensor;
 
-      $scope.updateSensorParams(newSensor);
-      $scope.reset();
-    };
-    $scope.reset = function () {
-      $scope.model.sensorSelected = {};
-    };
-  });
+            $scope.updateSensorParams(newSensor);
+            $scope.reset();
+        };
+        $scope.reset = function () {
+            $scope.model.sensorSelected = {};
+        };
+    });
 
 </script>
 
