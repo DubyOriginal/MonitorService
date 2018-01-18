@@ -50,8 +50,6 @@
         $scope.activeFromDate = 0;
         $scope.activeToDate = 0;
         $scope.ckpEnergy = 0;
-        $scope.pumpStatus_CKP = "x";
-        $scope.pumpStatus_RAD = "x";
 
         $scope.setLatestTS = function (latestTS) {
             console.log("setLatestTS -> " + latestTS);
@@ -253,7 +251,7 @@
         var latestTS = 0;
         var hasValPUFF_4, hasValRAD_POL, hasValPUFF_3, hasValRAD_POV, hasValCKP_CORE, hasValCKP_POL, hasValPUFF_2,
             hasValCKP_POV, hasValPUFF_1, hasValSOBA, hasValVANI = false;
-        var hasValPOW_CKP, hasValPOW_RAD, hasValPUFF_AVERAGE = false;
+        var hasValPOW_CKP, hasValPOW_RAD, hasValPUFF_AVERAGE, hasValPump_CKP, hasValPump_RAD = false;
         var sValPUFF_4, sValRAD_POL, sValPUFF_3, sValRAD_POV, sValCKP_CORE, sValCKP_POL, sValPUFF_2, sValCKP_POV,
             sValPUFF_1, sValSOBA, sValVANI = 0;
         var sValPump_CKP, sValPump_RAD = 0;
@@ -285,6 +283,7 @@
         chartDataArr.push(graphArr);
 
         var powerCKPArr = [];
+        var pumpStatus_CKP, pumpStatus_RAD = 0;
         //---------------------------------------------------------
         for (var i = 0; i < mSensorData.length; i += 1) {
 
@@ -387,26 +386,34 @@
                 sValVANI = sVal110;
             }
 
+            //----------------------------------------------------------
+            // PUMP STATUS
+
+
             if (mSensorData[i].sensor_id == "200") {
                 let tmpVal1 = mSensorData[i].sensor_value;
-                extScope.pumpStatus_CKP = tmpVal1;
-                if (tmpVal1 == "1") {
-                    tmpVal1 = 10;
-                }
+                if (tmpVal1 == "0") {tmpVal1 = 10;          // 10 -> pump on
+                }else if (tmpVal1 == "1") {tmpVal1 = 0;     // 00 -> pump off
+                }else {tmpVal1 = 20}                        // 20 -> error
                 sValPump_CKP = tmpVal1;
+                hasValPump_CKP = true;
+                pumpStatus_CKP = mSensorData[i].sensor_value;
             }
 
             if (mSensorData[i].sensor_id == "201") {
                 let tmpVal2 = mSensorData[i].sensor_value;
-                extScope.pumpStatus_RAD = tmpVal2;
-                if (tmpVal2 == "1") {
-                    tmpVal2 = 11;
-                }
+                if (tmpVal2 == "0") {tmpVal2 = 11;          // 11 -> pump on
+                }else if (tmpVal2 == "1") {tmpVal2 = 1;     // 01 -> pump off
+                }else {tmpVal2 = 21}                        // 21 -> error
                 sValPump_RAD = tmpVal2;
+                hasValPump_RAD = true;
+                pumpStatus_RAD = mSensorData[i].sensor_value;
             }
+            //----------------------------------------------------------
 
             // test if all done for timestamp[n]
-            if (hasValPUFF_4 && hasValRAD_POL && hasValPUFF_3 && hasValRAD_POV && hasValCKP_CORE && hasValCKP_POL && hasValPUFF_2 && hasValCKP_POV && hasValPUFF_1 && hasValSOBA && hasValVANI) {
+            if (hasValPUFF_4 && hasValRAD_POL && hasValPUFF_3 && hasValRAD_POV && hasValCKP_CORE && hasValCKP_POL && hasValPUFF_2 && hasValCKP_POV && hasValPUFF_1 &&
+                hasValSOBA && hasValVANI && hasValPump_CKP && hasValPump_RAD) {
 
                 //----------------------------------------------------------
                 //calculate puffer average value
@@ -435,6 +442,9 @@
                 const dt_rad = t2_rad - t1_rad;
                 sValPOW_CKP = Q_ckp * Cp * ro * dt_ckp / 1000;
                 sValPOW_RAD = Q_rad * Cp * ro * dt_rad / 1000;
+
+                if (pumpStatus_CKP == "1"){sValPOW_CKP = 0;}
+                if (pumpStatus_RAD == "1"){sValPOW_RAD = 0;}
 
                 powerCKPArr.push({ts: mSensorData[i].timestamp, pow: sValPOW_CKP});
                 //----------------------------------------------------------
@@ -465,8 +475,9 @@
                 chartDataArr.push(graphValueArr);
                 //chartDataArr.push([sTSDate, sValCKP_CORE, sValCKP_POL, sValCKP_POV, sValPUFF_1, sValPUFF_2, sValPUFF_3, sValPUFF_4, sValRAD_POL, sValRAD_POV, sValSOBA, sValVANI, valPOW_CKP, valPOW_RAD, PUFF_AVRG]);
                 hasValPUFF_4, hasValRAD_POL, hasValPUFF_3, hasValRAD_POV, hasValCKP_CORE, hasValCKP_POL, hasValPUFF_2, hasValCKP_POV, hasValPUFF_1, hasValSOBA, hasValVANI = false;
+                hasValPump_CKP, hasValPump_RAD = false;
             }
-        }  //END FOR
+        }  //END FOR LOOP
 
         //num: input number; digits: number of decimal places
         //console.log("nFormatter(96316, 3) -> " + nFormatter(96316, 3));
