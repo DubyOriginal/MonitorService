@@ -37,6 +37,8 @@
   const colorPOW_CKP = "#111111";
   const colorPOW_RAD = "#515151";
   const colorPUFF_AVERAGE = "#911eb4";
+  const colorPump_CKP = "#4554f3";
+  const colorPump_RAD = "#a54367";
   
   var angularApp = angular.module('myApp', ['ui.bootstrap', 'angularSpinner']);
   angularApp.controller('getSensorCtrl', ['$scope', '$http', 'usSpinnerService', function ($scope, $http, usSpinnerService) {
@@ -253,6 +255,7 @@
     var hasValPUFF_4, hasValRAD_POL, hasValPUFF_3, hasValRAD_POV, hasValCKP_CORE, hasValCKP_POL, hasValPUFF_2, hasValCKP_POV, hasValPUFF_1, hasValSOBA, hasValVANI = false;
     var hasValPOW_CKP, hasValPOW_RAD, hasValPUFF_AVERAGE = false;
     var sValPUFF_4, sValRAD_POL, sValPUFF_3, sValRAD_POV, sValCKP_CORE, sValCKP_POL, sValPUFF_2, sValCKP_POV, sValPUFF_1, sValSOBA, sValVANI = 0;
+    var sValPump_CKP, sValPump_RAD = 0;
 
     const cbCKP_CORE_B = extScope.cbCKP_CORE;
     console.log("cbCKP_CORE_B -> " + cbCKP_CORE_B);
@@ -275,6 +278,9 @@
     if (extScope.cbPOW_CKP) graphArr.push({label: 'POW_CKP', type: 'number'});
     if (extScope.cbPOW_RAD) graphArr.push({label: 'POW_RAD', type: 'number'});
     if (extScope.cbPUFF_AVERAGE) graphArr.push({label: 'PUFF_AVERAGE', type: 'number'});
+    if (extScope.cbPump_CKP) graphArr.push({label: 'Pump_CKP', type: 'number'});
+    if (extScope.cbPump_RAD) graphArr.push({label: 'Pump_RAD', type: 'number'});
+
     chartDataArr.push(graphArr);
 
     var powerCKPArr = [];
@@ -381,11 +387,21 @@
       }
 
       if (mSensorData[i].sensor_id == "200") {
-        extScope.pumpStatus_CKP = mSensorData[i].sensor_value;
+        let tmpVal1 = mSensorData[i].sensor_value;
+          extScope.pumpStatus_CKP = tmpVal1;
+          if (tmpVal1 == "1"){
+              tmpVal1 = 10;
+          }
+          sValPump_CKP = tmpVal1;
       }
 
       if (mSensorData[i].sensor_id == "201") {
-        extScope.pumpStatus_RAD = mSensorData[i].sensor_value;
+          let tmpVal2 =  mSensorData[i].sensor_value;
+          extScope.pumpStatus_RAD = tmpVal2;
+          if (tmpVal2 == "1"){
+              tmpVal2 = 11;
+          }
+          sValPump_RAD = tmpVal2;
       }
 
       // test if all done for timestamp[n]
@@ -443,6 +459,8 @@
         if (extScope.cbPOW_CKP) graphValueArr.push(sValPOW_CKP);
         if (extScope.cbPOW_RAD) graphValueArr.push(sValPOW_RAD);
         if (extScope.cbPUFF_AVERAGE) graphValueArr.push(sValPUFF_AVERAGE);
+          if (extScope.cbPump_CKP) graphValueArr.push(sValPump_CKP);
+          if (extScope.cbPump_RAD) graphValueArr.push(sValPump_RAD);
         chartDataArr.push(graphValueArr);
         //chartDataArr.push([sTSDate, sValCKP_CORE, sValCKP_POL, sValCKP_POV, sValPUFF_1, sValPUFF_2, sValPUFF_3, sValPUFF_4, sValRAD_POL, sValRAD_POV, sValSOBA, sValVANI, valPOW_CKP, valPOW_RAD, PUFF_AVRG]);
         hasValPUFF_4, hasValRAD_POL, hasValPUFF_3, hasValRAD_POV, hasValCKP_CORE, hasValCKP_POL, hasValPUFF_2, hasValCKP_POV, hasValPUFF_1, hasValSOBA, hasValVANI = false;
@@ -523,6 +541,8 @@
     if (extScope.cbPOW_CKP) graphColorArr.push(colorPOW_CKP);
     if (extScope.cbPOW_RAD) graphColorArr.push(colorPOW_RAD);
     if (extScope.cbPUFF_AVERAGE) graphColorArr.push(colorPUFF_AVERAGE);
+      if (extScope.cbPump_CKP) graphColorArr.push(colorPump_CKP);
+      if (extScope.cbPump_RAD) graphColorArr.push(colorPump_RAD);
 
 
     //---------------------------------------------------------
@@ -581,9 +601,9 @@
       backgroundColor: '#f6f6f6'
     };
 
-    //SENSOR       CKP_CORE   CKP_POL   CKP_POV   PUFF_1   PUFF_2   PUFF_3   PUFF_4   RAD_POL   RAD_POV   SOBA   VANI   POW_CKP   POW_RAD   PUFF_AVERAGE
-    //SENSOR_ID    104        105       107       108      106      102      100      101       103       109    110    -         -         -
-    //SCREEN_ID    16         14        15        10       11       12       13       17        18        19     20     -         -         -
+    //SENSOR       CKP_CORE   CKP_POL   CKP_POV   PUFF_1   PUFF_2   PUFF_3   PUFF_4   RAD_POL   RAD_POV   SOBA   VANI   POW_CKP   POW_RAD   PUFF_AVERAGE    PUMP_CKP    PUMP_RAD
+    //SENSOR_ID    104        105       107       108      106      102      100      101       103       109    110    -         -         -               -           -
+    //SCREEN_ID    16         14        15        10       11       12       13       17        18        19     20     -         -         -               -           -
 
 
     var dash = new google.visualization.Dashboard(document.getElementById('dashboard_div'));
@@ -735,6 +755,8 @@
                 <div style="color: #0082c8"><input type="checkbox" ng-model="cbVANI" ng-init="cbVANI=true">  VANI</div>
                 <div style="color: #111111"><input type="checkbox" ng-model="cbPOW_CKP" ng-init="cbPOW_CKP=false">  POW_CKP</div>
                 <div style="color: #444444"><input type="checkbox" ng-model="cbPOW_RAD" ng-init="cbPOW_RAD=false">  POW_RAD</div>
+                <div style="color: #4554f3"><input type="checkbox" ng-model="cbPump_CKP" ng-init="cbPump_CKP=false">  PUMP_CKP</div>
+                <div style="color: #a54367"><input type="checkbox" ng-model="cbPump_RAD" ng-init="cbPump_RAD=false">  PUMP_RAD</div>
             </div>
         </div>
     </div>
