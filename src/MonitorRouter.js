@@ -58,26 +58,32 @@ app.get('/', function (req, res) {
 });
 
 //PAGE - monitoring sensors data
-app.get('/datatable', function (req, res) {
-    console.log("loading page -> Data Table");
-    res.render('./pages/datatable');
-});
-
-//PAGE - monitoring sensors data
 app.get('/monitoring', function (req, res) {
     console.log("loading page -> Monitoring");
     res.render('./pages/monitoring');
 });
 
-//PAGE - monitoring sensors data
-app.get('/basement', function (req, res) {
-    console.log("loading page -> Basement");
-    res.render('./pages/basement');
+//PAGE - Schematic
+app.get('/schematic', function (req, res) {
+    console.log("loading page -> Schematic");
+    res.render('./pages/schematic');
     //monitorApi.getAllSensorsData(function (allSensorData) {
-    //  res.render('./pages/basement', {
+    //  res.render('./pages/schematic', {
     //    allSensorData: allSensorData
     //  });
     //});
+});
+
+//PAGE - consumption
+app.get('/consumption', function (req, res) {
+    console.log("loading page -> Consumption");
+    res.render('./pages/consumption');
+});
+
+//PAGE - monitoring sensors data
+app.get('/datatable', function (req, res) {
+    console.log("loading page -> Data Table");
+    res.render('./pages/datatable');
 });
 
 //PAGE - monitoring sensors data
@@ -182,6 +188,27 @@ app.get('/getsensordatawithrange/:fromuxdate/:touxdate', function (req, res) {
     });
 });
 
+
+//http://localhost:2200/getconsumptionforrange/1509757428000/1509757429000
+app.get('/getconsumptionforrange/:fromuxdate/:touxdate', function (req, res) {
+    let fromuxdate = req.params.fromuxdate;
+    let touxdate = req.params.touxdate;
+    console.log("server: GET /getconsumptionforrange/  tsRange[" + fromuxdate + " - " + touxdate + "]");
+
+    res.set('Content-Type', 'application/json')
+    monitorApi.getConsumptionDataWithRange(fromuxdate, touxdate, result => {
+        if (res != null) {
+            if (result != null) {
+                res.send(result);
+            } else {
+                res.send(null);
+            }
+        } else {
+            console.log("/getsensordatawithrange res in NULL");
+        }
+    });
+});
+
 //http://localhost:2200/getlatestsensormeasurement/101
 app.get('/getlatestsensormeasurement/:sensor_id', function (req, res) {
     let sensor_id = req.params.sensor_id;
@@ -238,11 +265,11 @@ app.get('/getallsensorparams', function (req, res) {
     });
 });
 
-//http://localhost:2200/getbasementsensordata
-app.get('/getbasementsensordata', function (req, res) {
-    console.log("server: GET /getbasementsensordata");
+//http://localhost:2200/getschematicsensordata
+app.get('/getschematicsensordata', function (req, res) {
+    console.log("server: GET /getschematicsensordata");
 
-    monitorApi.getBasementSensorData((result) => {
+    monitorApi.getSchematicSensorData((result) => {
         if (res != null) {
             if (result != null) {
                 res.set('Content-Type', 'application/json')
@@ -251,7 +278,7 @@ app.get('/getbasementsensordata', function (req, res) {
                 res.send(null);
             }
         } else {
-            console.log("/getbasementsensordata res in NULL");
+            console.log("/getschematicsensordata res in NULL");
         }
     });
 });
@@ -337,7 +364,7 @@ app.post('/storedevicedata', function (req, res) {
     //res.send("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
 
     console.log("server: POST /storedevicedata");
-    console.log("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
+    //console.log("RECEIVED POST {user_id: " + JSON.stringify(user_id) + ", device_id: " + JSON.stringify(device_id) + ", sensors: " + JSON.stringify(sensors) + "}");
     //console.log("RECEIVED POST {status: " + JSON.stringify(status) + "}");
 
     if (user_id != null && device_id != null && sensors != null) {

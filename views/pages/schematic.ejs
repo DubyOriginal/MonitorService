@@ -1,9 +1,9 @@
-<!-- views/pamonitoring.ejs.ejs -->
+<!-- views/schematic.ejs -->
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Basement</title>
+    <title>Schematic</title>
     <% include ../partials/head %>
 
     <script src="angular/angular.js"></script>
@@ -11,50 +11,52 @@
 </head>
 
 <link rel="stylesheet" type="text/css" href="css/basic.css">
-<link rel="stylesheet" type="text/css" href="css/basement.css">
+<link rel="stylesheet" type="text/css" href="css/schematic.css">
 
 <script>
     const nCKP_CORE = 5;
 
-    var basementApp = angular.module("basementApp", []);
-    basementApp.controller("basementCtrl", function basementCtrl($scope, $http) {
+    console.log("schematic - INPUT");
+
+    var schematicApp = angular.module("schematicApp", []);
+    schematicApp.controller("schematicCtrl", function schematicCtrl($scope, $http) {
 
         $scope.showDetailBox = false;
         $scope.mActiveSensor = null;  // {"screen_id":11, "sensor_id":102}
-        $scope.mBasementList = [];
+        $scope.mSchematicList = [];
         $scope.mCapacity = 0;
         $scope.mPowerCKP = 0;
         $scope.mPowerRAD = 0;
         $scope.pumpStatus_CKP = "x";
         $scope.pumpStatus_RAD = "x";
 
-        $scope.getBasementList = function () {
-            console.log("getBasementList!");
+        $scope.getSchematicList = function () {
+            console.log("getSchematicList!");
             $http({
                 method: 'GET',
-                url: 'getbasementsensordata'
+                url: 'getschematicsensordata'
             }).then(function (response) {
-                console.log("getBasementList - data loaded. Cnt -> " + response.data.length);
-                $scope.mBasementList = response.data;
+                console.log("getSchematicList - data loaded. Cnt -> " + response.data.length);
+                $scope.mSchematicList = response.data;
                 $scope.preparePumpStatus();
                 $scope.calculateCapacity();
                 $scope.calculatePower();
-                console.log(">>>>>  mBasementList: " + JSON.stringify($scope.mBasementList));
+                console.log(">>>>>  mSchematicList: " + JSON.stringify($scope.mSchematicList));
             }, function (error) {
-                console.log("getBasementList ERROR: " + error);
+                console.log("getSchematicList ERROR: " + error);
             });
         };
-        $scope.getBasementList();   //call initially
+        $scope.getSchematicList();   //call initially
 
         $scope.preparePumpStatus = function () {
-            if (isEmptyObject($scope.mBasementList[11]) || isEmptyObject($scope.mBasementList[12])) {
+            if (isEmptyObject($scope.mSchematicList[11]) || isEmptyObject($scope.mSchematicList[12])) {
                 console.log("INVALID VALUE: pumpStatus_CKP OR pumpStatus_RAD");
                 $scope.pumpStatus_CKP = "x";
                 $scope.pumpStatus_RAD = "x";
                 return;
             }
-            var tmp_CKP = $scope.mBasementList[11].sensor_value;
-            var tmp_RAD = $scope.mBasementList[12].sensor_value;
+            var tmp_CKP = $scope.mSchematicList[11].sensor_value;
+            var tmp_RAD = $scope.mSchematicList[12].sensor_value;
 
             if (tmp_CKP === "0") {
                 $scope.pumpStatus_CKP = "OFF";
@@ -93,7 +95,7 @@
 
         $scope.getSensorByScreenID = function (screen_id, callback) {
             console.log("getSensorByScreenID -> " + screen_id);
-            let filterArr = $scope.mBasementList.filter(function (item) {
+            let filterArr = $scope.mSchematicList.filter(function (item) {
                 return item.screen_id === screen_id
             })
             console.log("filterArr -> " + JSON.stringify(filterArr));
@@ -141,15 +143,15 @@
         };
 
         $scope.calculateCapacity = function () {
-            if (!($scope.mBasementList[0] && $scope.mBasementList[1] && $scope.mBasementList[2] && $scope.mBasementList[3])) {
+            if (!($scope.mSchematicList[0] && $scope.mSchematicList[1] && $scope.mSchematicList[2] && $scope.mSchematicList[3])) {
                 console.log("calculateCapacity: no data or incomplete");
                 return;
             }
             let sumPuffTemp =
-                parseFloat($scope.mBasementList[0].sensor_value) +
-                parseFloat($scope.mBasementList[1].sensor_value) +
-                parseFloat($scope.mBasementList[2].sensor_value) +
-                parseFloat($scope.mBasementList[3].sensor_value);
+                parseFloat($scope.mSchematicList[0].sensor_value) +
+                parseFloat($scope.mSchematicList[1].sensor_value) +
+                parseFloat($scope.mSchematicList[2].sensor_value) +
+                parseFloat($scope.mSchematicList[3].sensor_value);
             //console.log("sumPuffTemp = " + sumPuffTemp);
             let averageTemp = sumPuffTemp / 4;
             //console.log("averageTemp = " + averageTemp);
@@ -163,7 +165,7 @@
 
 
         $scope.calculatePower = function () {
-            if (!($scope.mBasementList[4] && $scope.mBasementList[5] && $scope.mBasementList[7] && $scope.mBasementList[8])) {
+            if (!($scope.mSchematicList[4] && $scope.mSchematicList[5] && $scope.mSchematicList[7] && $scope.mSchematicList[8])) {
                 console.log("calculatePower: no data or incomplete");
                 return;
             }
@@ -172,10 +174,10 @@
             const Q_rad = 1.7 / 60 / 60;    //rad flow -> 1.7 m3/h
             const Cp = 4200;            //heat capacity of water
             const ro = 1000;            //water density
-            const t2_ckp = $scope.mBasementList[4].sensor_value;  //ckp_pol
-            const t1_ckp = $scope.mBasementList[5].sensor_value;  //ckp_pov
-            const t2_rad = $scope.mBasementList[7].sensor_value;  //rad_pol
-            const t1_rad = $scope.mBasementList[8].sensor_value;  //rad_pov
+            const t2_ckp = $scope.mSchematicList[4].sensor_value;  //ckp_pol
+            const t1_ckp = $scope.mSchematicList[5].sensor_value;  //ckp_pov
+            const t2_rad = $scope.mSchematicList[7].sensor_value;  //rad_pol
+            const t1_rad = $scope.mSchematicList[8].sensor_value;  //rad_pov
             const dt_ckp = t2_ckp - t1_ckp;
             const dt_rad = t2_rad - t1_rad;
             $scope.mPowerCKP = parseInt(Q_ckp * Cp * ro * dt_ckp / 1000);
@@ -189,7 +191,7 @@
     });
 </script>
 
-<body ng-app="basementApp" ng-controller="basementCtrl">
+<body ng-app="schematicApp" ng-controller="schematicCtrl">
 <header>
     <% include ../partials/header %>
 </header>
@@ -240,7 +242,7 @@
                             <select class="selectpicker inline"
                                     ng-change="updateSelectBox()"
                                     ng-model="mPickerSensor"
-                                    ng-options="sensor.sensor_id for sensor in mBasementList">
+                                    ng-options="sensor.sensor_id for sensor in mSchematicList">
                             </select>
                         </div>
 
@@ -255,12 +257,12 @@
                 <div class="measure_point_box" style="top: 365px; left: 725px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(10)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                     <div class="box_b">
-                        <p class="small">ID: {{mBasementList[0].screen_id}}</p>
-                        <p class="small">{{mBasementList[0].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[0].screen_id}}</p>
+                        <p class="small">{{mSchematicList[0].sensor_value}}°C</p>
                     </div>
                 </div>
 
@@ -268,12 +270,12 @@
                 <div class="measure_point_box" style="top: 445px; left: 725px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(11)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                     <div class="box_b">
-                        <p class="small">ID: {{mBasementList[1].screen_id}}</p>
-                        <p class="small">{{mBasementList[1].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[1].screen_id}}</p>
+                        <p class="small">{{mSchematicList[1].sensor_value}}°C</p>
                     </div>
                 </div>
 
@@ -281,12 +283,12 @@
                 <div class="measure_point_box" style="top: 525px; left: 725px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(12)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                     <div class="box_b">
-                        <p class="small">ID: {{mBasementList[2].screen_id}}</p>
-                        <p class="small">{{mBasementList[2].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[2].screen_id}}</p>
+                        <p class="small">{{mSchematicList[2].sensor_value}}°C</p>
                     </div>
                 </div>
 
@@ -294,12 +296,12 @@
                 <div class="measure_point_box" style="top: 605px; left: 725px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(13)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                     <div class="box_b">
-                        <p class="small">ID: {{mBasementList[3].screen_id}}</p>
-                        <p class="small">{{mBasementList[3].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[3].screen_id}}</p>
+                        <p class="small">{{mSchematicList[3].sensor_value}}°C</p>
                     </div>
                 </div>
 
@@ -307,12 +309,12 @@
                 <div class="measure_point_box" style="top: 417px; left: 204px">
                     <div class="box_a vertical">
                         <a href="#" ng-click='toggleDetailBox(14)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                     <div class="box_b vertical">
-                        <p class="small">ID: {{mBasementList[4].screen_id}}</p>
-                        <p class="small">{{mBasementList[4].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[4].screen_id}}</p>
+                        <p class="small">{{mSchematicList[4].sensor_value}}°C</p>
                     </div>
                 </div>
 
@@ -320,24 +322,24 @@
                 <div class="measure_point_box" style="top: 650px; left: 196px">
                     <div class="box_a vertical">
                         <a href="#" ng-click='toggleDetailBox(15)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                     <div class="box_b vertical">
-                        <p class="small">ID: {{mBasementList[5].screen_id}}</p>
-                        <p class="small">{{mBasementList[5].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[5].screen_id}}</p>
+                        <p class="small">{{mSchematicList[5].sensor_value}}°C</p>
                     </div>
                 </div>
 
                 <!-- screenID: 16, sensorID: 104, name: CKP_JEZGRA -->
                 <div class="measure_point_box" style="top: 425px; left: 10px">
                     <div class="box_b">
-                        <p class="small">ID: {{mBasementList[6].screen_id}}</p>
-                        <p class="small">{{mBasementList[6].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[6].screen_id}}</p>
+                        <p class="small">{{mSchematicList[6].sensor_value}}°C</p>
                     </div>
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(16)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                 </div>
@@ -345,12 +347,12 @@
                 <!-- screenID: 17, sensorID: 101, name: RADI_TOPLA -->
                 <div class="measure_point_box" style="top: 312px; left: 990px">
                     <div class="box_b vertical">
-                        <p class="small">ID: {{mBasementList[7].screen_id}}</p>
-                        <p class="small">{{mBasementList[7].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[7].screen_id}}</p>
+                        <p class="small">{{mSchematicList[7].sensor_value}}°C</p>
                     </div>
                     <div class="box_a vertical">
                         <a href="#" ng-click='toggleDetailBox(17)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                 </div>
@@ -359,12 +361,12 @@
                 <div class="measure_point_box" style="top: 624px; left: 1027px">
                     <div class="box_a vertical left">
                         <a href="#" ng-click='toggleDetailBox(18)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                     <div class="box_b vertical">
-                        <p class="small">ID: {{mBasementList[8].screen_id}}</p>
-                        <p class="small">{{mBasementList[8].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[8].screen_id}}</p>
+                        <p class="small">{{mSchematicList[8].sensor_value}}°C</p>
                     </div>
                 </div>
 
@@ -372,12 +374,12 @@
                 <div class="measure_point_box" style="top: 150px; left: 150px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(19)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                     <div class="box_b">
-                        <p class="small">ID: {{mBasementList[9].screen_id}}</p>
-                        <p class="small">{{mBasementList[9].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[9].screen_id}}</p>
+                        <p class="small">{{mSchematicList[9].sensor_value}}°C</p>
                     </div>
                 </div>
 
@@ -385,12 +387,12 @@
                 <div class="measure_point_box" style="top: 100px; left: 100px">
                     <div class="box_a">
                         <a href="#" ng-click='toggleDetailBox(20)'>
-                            <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                            <img src="images/img_measure_point_small.png" alt="image"/>
                         </a>
                     </div>
                     <div class="box_b">
-                        <p class="small">ID: {{mBasementList[10].screen_id}}</p>
-                        <p class="small">{{mBasementList[10].sensor_value}}°C</p>
+                        <p class="small">ID: {{mSchematicList[10].screen_id}}</p>
+                        <p class="small">{{mSchematicList[10].sensor_value}}°C</p>
                     </div>
                 </div>
 

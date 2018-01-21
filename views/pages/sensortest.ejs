@@ -19,7 +19,7 @@
 
         //-----------------------------------------------
         $scope.mSensorList = [];
-        $scope.mBasementList = [];
+        $scope.mSchematicList = [];
         $scope.selSensorData = {};
 
         $scope.getSensorList = function () {
@@ -62,23 +62,23 @@
 
         //-----------------------------------------------------------------------
         //ALL SENSORS
-        $scope.getBasementList = function () {
-            console.log("getBasementList!");
+        $scope.getSchematicList = function () {
+            console.log("getSchematicList!");
             $http({
                 method: 'GET',
-                url: 'getbasementsensordata'
+                url: 'getschematicsensordata'
             }).then(function (response) {
-                console.log("getBasementList - data loaded. Cnt -> " + response.data.length);
-                $scope.mBasementList = response.data;
+                console.log("getSchematicList - data loaded. Cnt -> " + response.data.length);
+                $scope.mSchematicList = response.data;
                 drawCharts();
                 //$scope.calculateCapacity();
                 //$scope.calculatePower();
-                //console.log(">>>>>  mBasementList: " + JSON.stringify($scope.mBasementList));
+                //console.log(">>>>>  mSchematicList: " + JSON.stringify($scope.mSchematicList));
             }, function (error) {
-                console.log("getBasementList ERROR: " + error);
+                console.log("getSchematicList ERROR: " + error);
             });
         };
-        $scope.getBasementList();   //call initially
+        $scope.getSchematicList();   //call initially
 
 
         <!-- ........ GAUGE VIEW........ -->
@@ -116,15 +116,15 @@
 
         function drawCharts() {
 
-            const sVal_CKP_CORE = $scope.mBasementList[6] ? $scope.mBasementList[6].sensor_value : 0;
-            const sVal_CKP_POL = $scope.mBasementList[4] ? $scope.mBasementList[4].sensor_value : 0;
-            const sVal_CKP_POV = $scope.mBasementList[5] ? $scope.mBasementList[5].sensor_value : 0;
-            const sVal_RAD_POL = $scope.mBasementList[7] ? $scope.mBasementList[7].sensor_value : 0;
-            const sVal_RAD_POV = $scope.mBasementList[8] ? $scope.mBasementList[8].sensor_value : 0;
-            const sVal_PUFF_1 = $scope.mBasementList[0] ? $scope.mBasementList[0].sensor_value : 0;
-            const sVal_PUFF_2 = $scope.mBasementList[1] ? $scope.mBasementList[1].sensor_value : 0;
-            const sVal_PUFF_3 = $scope.mBasementList[2] ? $scope.mBasementList[2].sensor_value : 0;
-            const sVal_PUFF_4 = $scope.mBasementList[3] ? $scope.mBasementList[3].sensor_value : 0;
+            const sVal_CKP_CORE = $scope.mSchematicList[6] ? $scope.mSchematicList[6].sensor_value : 0;
+            const sVal_CKP_POL = $scope.mSchematicList[4] ? $scope.mSchematicList[4].sensor_value : 0;
+            const sVal_CKP_POV = $scope.mSchematicList[5] ? $scope.mSchematicList[5].sensor_value : 0;
+            const sVal_RAD_POL = $scope.mSchematicList[7] ? $scope.mSchematicList[7].sensor_value : 0;
+            const sVal_RAD_POV = $scope.mSchematicList[8] ? $scope.mSchematicList[8].sensor_value : 0;
+            const sVal_PUFF_1 = $scope.mSchematicList[0] ? $scope.mSchematicList[0].sensor_value : 0;
+            const sVal_PUFF_2 = $scope.mSchematicList[1] ? $scope.mSchematicList[1].sensor_value : 0;
+            const sVal_PUFF_3 = $scope.mSchematicList[2] ? $scope.mSchematicList[2].sensor_value : 0;
+            const sVal_PUFF_4 = $scope.mSchematicList[3] ? $scope.mSchematicList[3].sensor_value : 0;
 
             console.log("drawCharts: [sVal_CKP_CORE: " + sVal_CKP_CORE + "] | " + "[sVal_CKP_POL: " + sVal_CKP_POL + "] | " + "[sVal_RAD_POL: " + sVal_RAD_POL + "] | " + "[sVal_PUFF_1: " + sVal_PUFF_1)
 

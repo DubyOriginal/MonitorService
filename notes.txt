@@ -177,12 +177,12 @@
 
 //----------------------------------------------------------------------------------------------------------------------
 
-<img class="img-responsive center-block" src="images/img_basement_scheme.png" alt="basement scheme"/>
+<img class="img-responsive center-block" src="images/img_schematic_scheme.png" alt="schematic scheme"/>
 //----------------------------------------------------------------------------------------------------------------------
             <!-- popover - measure point detail -->
             <div class="popover_box" style="top: 5px; left: 630px">
                 <div>
-                    <img src="images/img_measure_point_small.png" alt="basement scheme"/>
+                    <img src="images/img_measure_point_small.png" alt="image"/>
                 </div>
                 <div class="table_middle popover_content">
                     <p style="margin-bottom: 0px;">WEB TAG: 01</p>

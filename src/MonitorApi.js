@@ -144,6 +144,23 @@ class MonitorApi {
         });
     };
 
+    getConsumptionDataWithRange(fromuxdate, touxdate, callback) {
+        console.log("MonitorApi: getConsumptionDataWithRange: ");
+
+        let result = [];
+        result.push({"1":10});
+        result.push({"2":13});
+        result.push({"3":11});
+        result.push({"4":15});
+        result.push({"5":11});
+
+        if (callback) {
+            callback(result);
+        } else {
+            console.log("MonitorApi: getConsumptionDataWithRange - callback is NULL!");
+        }
+    }
+
     getAllSensorParams(callback) {
         console.log("MonitorApi: getAllSensorParams");
 
@@ -242,8 +259,8 @@ class MonitorApi {
         });
     };
 
-    getBasementSensorData(callback) {
-        console.log("MonitorApi: getBasementSensorData");
+    getSchematicSensorData(callback) {
+        console.log("MonitorApi: getSchematicSensorData");
 
         let dbHelper = new DBHelper();
         let basicUtils = new BasicUtils();
@@ -267,13 +284,13 @@ class MonitorApi {
 
         dbHelper.query(sql, [], function (result, error) {
             if (!error && result) {
-                console.log("MonitorApi: getBasementSensorData:");
+                console.log("MonitorApi: getSchematicSensorData:");
                 basicUtils.printJOSNRows(result);
                 if (callback) {
                     callback(result);
                 }
             } else {
-                console.log("MonitorApi: getBasementSensorData - ERR: " + JSON.stringify(error));
+                console.log("MonitorApi: getSchematicSensorData - ERR: " + JSON.stringify(error));
             }
         });
     };

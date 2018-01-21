@@ -1,7 +1,7 @@
 .my_container {
     height: 730px;
     width: 1183px;
-    background: url("../images/img_basement_scheme.png") bottom no-repeat;
+    background: url("../images/img_schematic.png") bottom no-repeat;
     background-color: #f6f6f6;
     display: block;
 }

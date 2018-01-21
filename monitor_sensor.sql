@@ -54,7 +54,7 @@ LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monito
       LIMIT 55;
 
 
-# C. get Basement Screen Sensor Data
+# C. get schematic Screen Sensor Data
 SELECT 
 	monitor_data.sensor_id,
 	FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, 

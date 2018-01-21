@@ -16,7 +16,6 @@
     <script src="/angular-google-chart/ng-google-chart.js"></script>
     <script type="text/javascript" src="//www.google.com/jsapi"></script>
 
-
 </head>
 
 <script type="text/javascript">
@@ -517,6 +516,7 @@
                 //console.log("dArea[" + i + "] = " + dArea);
                 sumArea += dArea;
             }
+            sumArea = sumArea * 1000;  //to kW
             return sumArea;
         }
 
