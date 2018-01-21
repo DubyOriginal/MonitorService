@@ -526,7 +526,10 @@
         let energy = calculateEnergy(powerCKPArr);
         let energyJ = nFormatter(energy, 2) + "J";
         let energyKWH = nFormatter(energy / 3600, 2) + "Wh";
-        extScope.ckpEnergy = "E1 = " + energyJ + ",   E2 = " + energyKWH;
+        let energyMassFactor = 4;
+        let logsWeight = Math.floor((energy / (3600 * 1000)) / energyMassFactor);
+        //extScope.ckpEnergy = "E1 = " + energyJ + ",   E2 = " + energyKWH;
+        extScope.ckpEnergy = "E1 = " + energyKWH + ",   mass = " + logsWeight + "kg";
         console.log("extScope.ckpEnergy -> " + extScope.ckpEnergy);
         //---------------------------------------------------------
 
