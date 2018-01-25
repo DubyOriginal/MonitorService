@@ -145,7 +145,16 @@ class MonitorApi {
     };
 
     getConsumptionDataWithRange(loadingPeriod, callback) {
-        console.log("MonitorApi: getConsumptionDataWithRange: ");
+        console.log("MonitorApi: getConsumptionDataWithRange / " + loadingPeriod);
+
+        /*
+        let fNow = new Date();
+        console.log("MonitorApi: fNow -> " + fNow);
+        let latestDate = (new Date()).setDate(fNow.getDate() - loadingPeriod);
+        console.log("MonitorApi: latestDate -> " + latestDate);
+        let latestUnixTS = latestDate.getTime();  //unix timestamp
+        console.log("MonitorApi: latestUnixTS -> " + latestUnixTS);
+        */
 
         let result = [];
         result.push({"ts":1515542400, "value":34});
@@ -154,7 +163,7 @@ class MonitorApi {
         result.push({"ts":1515801600, "value":37});
         result.push({"ts":1515888000, "value":26});
         result.push({"ts":1515974400, "value":30});
-        result.push({"ts":1516060800, "value":36});
+        result.push({"ts":1516060800, "value":52});
 
         if (callback) {
             callback(result);
