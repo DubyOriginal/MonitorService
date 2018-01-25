@@ -144,15 +144,17 @@ class MonitorApi {
         });
     };
 
-    getConsumptionDataWithRange(fromuxdate, touxdate, callback) {
+    getConsumptionDataWithRange(loadingPeriod, callback) {
         console.log("MonitorApi: getConsumptionDataWithRange: ");
 
         let result = [];
-        result.push({"1":10});
-        result.push({"2":13});
-        result.push({"3":11});
-        result.push({"4":15});
-        result.push({"5":11});
+        result.push({"ts":1515542400, "value":34});
+        result.push({"ts":1515628800, "value":40});
+        result.push({"ts":1515715200, "value":44});
+        result.push({"ts":1515801600, "value":37});
+        result.push({"ts":1515888000, "value":26});
+        result.push({"ts":1515974400, "value":30});
+        result.push({"ts":1516060800, "value":36});
 
         if (callback) {
             callback(result);

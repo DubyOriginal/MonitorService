@@ -190,13 +190,12 @@ app.get('/getsensordatawithrange/:fromuxdate/:touxdate', function (req, res) {
 
 
 //http://localhost:2200/getconsumptionforrange/1509757428000/1509757429000
-app.get('/getconsumptionforrange/:fromuxdate/:touxdate', function (req, res) {
-    let fromuxdate = req.params.fromuxdate;
-    let touxdate = req.params.touxdate;
-    console.log("server: GET /getconsumptionforrange/  tsRange[" + fromuxdate + " - " + touxdate + "]");
+app.get('/getconsumptionforrange/:loadingPeriod/', function (req, res) {
+    let loadingPeriod = req.params.loadingPeriod;
+    console.log("server: GET /getconsumptionforrange/  loadingPeriod[" + loadingPeriod + "]");
 
     res.set('Content-Type', 'application/json')
-    monitorApi.getConsumptionDataWithRange(fromuxdate, touxdate, result => {
+    monitorApi.getConsumptionDataWithRange(loadingPeriod, result => {
         if (res != null) {
             if (result != null) {
                 res.send(result);

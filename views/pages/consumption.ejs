@@ -27,9 +27,8 @@
     angularApp.controller('getConsumptionCtrl', ['$scope', '$http', 'usSpinnerService', function ($scope, $http, usSpinnerService) {
         extScope = $scope;
         $scope.mConsumptionArr = [];
-        $scope.loadingPeriod = 0;       //loading time range
-        $scope.activeFromDate = 0;
-        $scope.activeToDate = 0;
+        $scope.loadingPeriod = 1;       //loading day range, 4 days
+        $scope.activePeriod = 0;
         $scope.needToReloadData = true;
 
         //spinner
@@ -41,25 +40,9 @@
             usSpinnerService.stop('spinner-1');
         }
 
-        var fNow = new Date();
-        var f1Day = (new Date()).setDate(fNow.getDate() - 1);
-        var f7Day = (new Date()).setDate(fNow.getDate() - 1);
-        var f14Day = (new Date()).setDate(fNow.getDate() - 1);
-        var f1Month = (new Date()).setMonth(fNow.getMonth() - 1);
-        var f2Month = (new Date()).setMonth(fNow.getMonth() - 2);
-        var f3Month = (new Date()).setMonth(fNow.getMonth() - 3);
-
-        $scope.setInitiaDate = function () {
-            $scope.fromDate = f1Day;
-            $scope.toDate = fNow.getTime();  //unix timestamp
-            $scope.activeFromDate = $scope.fromDate;
-            $scope.activeToDate = $scope.toDate;
-        };
-        $scope.setInitiaDate();
-
         $scope.updateTimeRange = function () {
             console.log("updateTimeRange");
-            if (($scope.activeFromDate != $scope.fromDate) || ($scope.activeToDate != $scope.toDate)) {
+            if (($scope.activePeriod != $scope.loadingPeriod)) {
                 $scope.needToReloadData = true;
             } else {
                 $scope.needToReloadData = false;
@@ -67,52 +50,48 @@
         };
 
         $scope.f1Day = function () {
-            $scope.fromDate = f1Day;
-            console.log("fromDate is set to: " + $scope.fromDate);
+            $scope.loadingPeriod = 1;
+            console.log("loadingPeriod -> " + $scope.loadingPeriod);
             $scope.updateTimeRange();
         };
 
-        $scope.f7Day = function () {
-            $scope.fromDate = f7Day;
-            console.log("fromDate is set to: " + $scope.fromDate);
-            $scope.updateTimeRange();
-        };
-
-        $scope.f14Day = function () {
-            $scope.fromDate = f14Day;
-            console.log("fromDate is set to: " + $scope.fromDate);
+        $scope.f1Week = function () {
+            $scope.loadingPeriod = 7;
+            console.log("loadingPeriod -> " + $scope.loadingPeriod);
             $scope.updateTimeRange();
         };
 
         $scope.f1Month = function () {
-            $scope.fromDate = f1Month;
-            console.log("fromDate is set to: " + $scope.fromDate);
+            $scope.loadingPeriod = 30;
+            console.log("loadingPeriod -> " + $scope.loadingPeriod);
             $scope.updateTimeRange();
         };
 
-        $scope.f2Month = function () {
-            $scope.fromDate = f2Month;
-            console.log("fromDate is set to: " + $scope.fromDate);
+        $scope.f6Month = function () {
+            $scope.loadingPeriod = 180;
+            console.log("loadingPeriod -> " + $scope.loadingPeriod);
             $scope.updateTimeRange();
         };
 
-        $scope.f3Month = function () {
-            $scope.fromDate = f3Month;
-            console.log("fromDate is set to: " + $scope.fromDate);
+        $scope.f1Year = function () {
+            $scope.loadingPeriod = 365;
+            console.log("loadingPeriod -> " + $scope.loadingPeriod);
+            $scope.updateTimeRange();
+        };
+
+        $scope.f2Year = function () {
+            $scope.loadingPeriod = 630;
+            console.log("loadingPeriod -> " + $scope.loadingPeriod);
             $scope.updateTimeRange();
         };
 
         //---------------------------------------------------
         $scope.reloadData = function () {
             $scope.startSpin();
-            let fromD = Math.floor($scope.fromDate / 1000);
-            let toD = Math.floor($scope.toDate / 1000);
-            $scope.activeFromDate = $scope.fromDate;
-            $scope.activeToDate = $scope.toDate;
+
             $scope.updateTimeRange();
-            $scope.loadingPeriod = (toD - fromD);   //in days
-            console.log("selected time range: " + $scope.loadingPeriod + " day/s");
-            loadConsumptionForRange(fromD, toD);
+            console.log("selected loadingPeriod: " + $scope.loadingPeriod + " day/s");
+            loadConsumptionForRange($scope.loadingPeriod);
         };
 
         $scope.refreshChart = function () {
@@ -138,10 +117,10 @@
     google.charts.load('current', {'packages':['bar']});
 
 
-    function loadConsumptionForRange(fromuxdate, touxdate) {
+    function loadConsumptionForRange(loadingPeriod) {
         $.ajax({
             type: 'GET',
-            url: '/getconsumptionforrange/' + fromuxdate + '/' + touxdate,
+            url: '/getconsumptionforrange/' + loadingPeriod,
             success: function (result) {
                 console.log("result.length -> " + result.length);
                 //console.log("mSensorData -> " + JSON.stringify(result));
@@ -156,7 +135,7 @@
 
 
     function drawChart() {
-        var data = google.visualization.arrayToDataTable([
+        /*var data = google.visualization.arrayToDataTable([
             ['Day', 'Consumption'],
             ['1', 1000],
             ['2', 1170],
@@ -165,7 +144,35 @@
             ['5', 820],
             ['6', 700],
             ['7', 840]
-        ]);
+        ]);*/
+
+        var chartDataArr = [];
+        let graphParamArr = [];
+        graphParamArr.push({label: 'Date', type: 'datetime'});
+        graphParamArr.push({label: 'mass', type: 'number'});
+        chartDataArr.push(graphParamArr);
+
+        /*
+        chartDataArr.push([new Date(1515542400000), 34]);
+        chartDataArr.push([new Date(1515628800000), 40]);
+        chartDataArr.push([new Date(1515715200000), 44]);
+        chartDataArr.push([new Date(1515801600000), 37]);
+        chartDataArr.push([new Date(1515888000000), 26]);
+        chartDataArr.push([new Date(1515974400000), 30]);
+        chartDataArr.push([new Date(1516060800000), 36]);
+        */
+
+
+        for (var i = 0; i < mConsumptionArr.length; i += 1) {
+            let tsStr = mConsumptionArr[i].ts;
+            let value = mConsumptionArr[i].value;
+            let tsInt = parseInt(tsStr * 1000);
+            chartDataArr.push([new Date(tsInt), value]);
+        }
+
+        console.log("chartDataArr -> " + JSON.stringify(chartDataArr));
+
+        var data = google.visualization.arrayToDataTable(chartDataArr);
 
         var options = {
             chart: {
@@ -173,9 +180,19 @@
                 subtitle: 'annual consumption by day',
             },
             bars: 'vertical',
-            vAxis: {format: 'decimal'},
+            bar: { groupWidth: '20%' },
+            legend: {position: 'none'},
+            vAxis: {
+                title: 'weight',
+                format: 'decimal'
+            },
+            hAxis: {
+                title: 'day',
+                format: 'dd.MM'
+            },
             height: 400,
-            colors: ['#93a7fb', '#d95f02', '#7570b3']
+            colors: ['#93a7fb', '#d95f02'],
+            backgroundColor: '#f6f6f6'
         };
 
         var chart = new google.charts.Bar(document.getElementById('chart_div'));
@@ -189,6 +206,9 @@
                 chart.draw(data, google.charts.Bar.convertOptions(options));
             }
         }*/
+
+
+
     }
 
 </script>
@@ -208,11 +228,11 @@
 
             <div class="col-md-12">
                 <button type="button" class="btn btn-sm btn-info" ng-click="f1Day()">1 day</button>
-                <button type="button" class="btn btn-sm btn-info" ng-click="f7Day()">7 day</button>
-                <button type="button" class="btn btn-sm btn-info" ng-click="f14Day()">14 day</button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="f1Week()">1 week</button>
                 <button type="button" class="btn btn-sm btn-info" ng-click="f1Month()">1 month</button>
-                <button type="button" class="btn btn-sm btn-info" ng-click="f2Month()">2 month</button>
-                <button type="button" class="btn btn-sm btn-info" ng-click="f3Month()">3 month</button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="f6Month()">6 month</button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="f1Year()">1 year</button>
+                <button type="button" class="btn btn-sm btn-info" ng-click="f2Year()">2 year</button>
                 <h5>time range: {{loadingPeriod}} h</h5>
 
             </div>
@@ -221,8 +241,8 @@
         <div class="col-md-5 dy_group_box">
             <button type="button" class="btn btn-md btn-success" ng-click="refreshChart()">REFRESH</button>
             <div>kWh: <input type="checkbox" ng-model="cbUnit_kwh" ng-init="checked=true"></div>
-            <div>kg: <input type="checkbox" ng-model="cbUnit_kg" ng-init="checked=true"></div>
-            <div>logs: <input type="checkbox" ng-model="cbUnit_logs" ng-init="checked=true"></div>
+            <div>kg: <input type="checkbox" ng-model="cbUnit_kg" ng-init="checked=false"></div>
+            <div>m3: <input type="checkbox" ng-model="cbUnit_m3" ng-init="checked=false"></div>
         </div>
 
     </div>

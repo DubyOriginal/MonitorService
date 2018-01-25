@@ -454,7 +454,7 @@
                 //SCREEN_ID    16         14        15        10       11       12       13       17        18        19     20     -         -         -
 
                 var graphValueArr = [];
-                graphValueArr.push(sTSDate);
+                graphValueArr.push(sTSDate);                                //graphValueArr -> ['1515542400']
                 if (extScope.cbCKP_CORE) graphValueArr.push(sValCKP_CORE);
                 if (extScope.cbCKP_POL) graphValueArr.push(sValCKP_POL);
                 if (extScope.cbCKP_POV) graphValueArr.push(sValCKP_POV);
@@ -471,6 +471,7 @@
                 if (extScope.cbPUFF_AVERAGE) graphValueArr.push(sValPUFF_AVERAGE);
                 if (extScope.cbPump_CKP) graphValueArr.push(sValPump_CKP);
                 if (extScope.cbPump_RAD) graphValueArr.push(sValPump_RAD);
+                //graphValueArr -> ['1515542400', 50, 55, 50,...]
                 chartDataArr.push(graphValueArr);
                 //chartDataArr.push([sTSDate, sValCKP_CORE, sValCKP_POL, sValCKP_POV, sValPUFF_1, sValPUFF_2, sValPUFF_3, sValPUFF_4, sValRAD_POL, sValRAD_POV, sValSOBA, sValVANI, valPOW_CKP, valPOW_RAD, PUFF_AVRG]);
                 hasValPUFF_4, hasValRAD_POL, hasValPUFF_3, hasValRAD_POV, hasValCKP_CORE, hasValCKP_POL, hasValPUFF_2, hasValCKP_POV, hasValPUFF_1, hasValSOBA, hasValVANI = false;
@@ -533,6 +534,7 @@
         console.log("extScope.ckpEnergy -> " + extScope.ckpEnergy);
         //---------------------------------------------------------
 
+        //console.log("chartDataArr -> " + JSON.stringify(chartDataArr));
         var data = new google.visualization.arrayToDataTable(chartDataArr);
 
 
@@ -576,7 +578,7 @@
             },
             hAxis: {
                 title: '',
-                format: 'HH:mm:ss',
+                format: 'dd.MM \nHH:mm',
                 gridlines: {
                     count: 8,
                     color: "#8c8c8c"
@@ -584,7 +586,7 @@
                 baselineColor: '#40cc34',
                 textStyle: {
                     color: '#01579b',
-                    fontSize: 18,
+                    fontSize: 16,
                     fontName: 'Arial',
                     bold: false,
                     italic: false
