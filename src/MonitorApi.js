@@ -10,6 +10,7 @@
 const DBHelper = require('./DBHelper');
 const FCMHelper = require('./FCMHelper');
 const BasicUtils = require('./BasicUtils');
+const PhysicsCalc = require('./PhysicsCalc');
 var Config = require('../config/Config.js'), config = new Config();
 
 const moment = require('moment');
@@ -180,10 +181,12 @@ class MonitorApi {
     getCalculatedConsumptionDataForRange(dateRange, callback) {
         console.log("MonitorApi: getConsumptionDataWithRange / " + dateRange);
 
+        let physicsCalc = new PhysicsCalc();
 
         //let fNow = new Date();
         var fNow = new Date("January 17, 2018 11:30:22");
         console.log("MonitorApi: fNow -> " + fNow + "  unixTS -> " + fNow.getTime()/1000);
+
 
         var tempDate = new Date();
 
@@ -198,9 +201,9 @@ class MonitorApi {
             console.log("MonitorApi: tempDate[" + i + "]  -> " + tempDate + "  unixTS -> " + unixTS);
         }
 
-        let arrCnt = dateRangeArr.length-1;
+        let arrRangeCnt = dateRangeArr.length-1;
         let fromUxTS = dateRangeArr[0];
-        let toUxTS = dateRangeArr[arrCnt];
+        let toUxTS = dateRangeArr[arrRangeCnt];
 
         //get data for RANGE
         //-------------------------------------------------
@@ -217,27 +220,58 @@ class MonitorApi {
                     row.ckp_pov = consumptionData[i+1].sensor_value;
 
                     //P = Q * Cp * ro * dT;     Q[m3/s], Cp[J/kg°C], ro[kg/m3], dT[T2-T1]
-                    const dt_ckp = row.ckp_pol - row.ckp_pov;
+                    /*const dt_ckp = row.ckp_pol - row.ckp_pov;
                     const Q_ckp = 2.2 / 60 / 60;    //flow -> 1.7 m3/h
-                    const Q_rad = 1.7 / 60 / 60;    //flow -> 2.2 m3/h
                     const Cp = 4200;            //heat capacity of water
                     const ro = 1000;            //water density
                     row.pow = Q_ckp * Cp * ro * dt_ckp / 1000;
+                    row.pow = row.pow.toFixed(3);
+                    */
+
+                    let valCKP_POL = consumptionData[i].sensor_value;
+                    let valCKP_POV = consumptionData[i+1].sensor_value;
+                    row.pow = physicsCalc.calcupatePower(valCKP_POL, valCKP_POV);
                     parsedData.push(row);
                 }
 
                 console.log("MonitorApi: getConsumptionDataWithRange.parsedData -> ");
                 console.log("MonitorApi:  " + JSON.stringify(parsedData[0]));
-                console.log("MonitorApi:  " + JSON.stringify(parsedData[1]));
-                console.log("MonitorApi:  " + JSON.stringify(parsedData[2]));
-                console.log("MonitorApi:  " + JSON.stringify(parsedData[3]));
-                console.log("MonitorApi:  " + JSON.stringify(parsedData[4]));
-                console.log("MonitorApi:  " + JSON.stringify(parsedData[5]));
 
-                for (var i = 0; i < parsedData.length-1; i += 1) {
-                    let tmpTS = parsedData[i].ts;
-                    //dateRangeArr
+                var rowArr = new Array(arrRangeCnt);    //range 7 days
+                var colArr = [];    //values
+
+
+                //dateRangeArr
+                for (var j = 0; j < dateRangeArr.length-2; j += 1) {
+                    var rangeFrom = dateRangeArr[j];
+                    var rangeTo = dateRangeArr[j + 1];
+
+                    rowArr[j] = [];
+                    for (var i = 0; i < parsedData.length-1; i += 1) {
+                        let tmpTS = parsedData[i].ts;
+                        let tmpPow = parsedData[i].pow;
+                        if ((tmpTS > rangeFrom) && (tmpTS < rangeTo)){
+                            var obj = {ts:tmpTS, pow:tmpPow};
+                            rowArr[j].push(obj);
+                        }
+                    }
                 }
+
+                console.log("MonitorApi: -----------------------------------------------");
+                //console.log("MonitorApi:  FINAL ARR: " + JSON.stringify(rowArr));
+
+                //console.log("MonitorApi:  rowArr[0] -> " + JSON.stringify(rowArr[0]));
+                //console.log("MonitorApi: ----");
+
+
+                var energyX = physicsCalc.calculateEnergy(rowArr[0]);
+                console.log("MonitorApi:  energyX[" + 0 + "] -> " + energyX);
+
+                //for (var i = 0; i < rowArr.length-1; i += 1) {
+                //    var energyX = physicsCalc.calculateEnergy(rowArr[i]);
+                //    console.log("MonitorApi:  energyX[" + i + "] -> " + energyX);
+                //}
+
 
             } else {
                 console.log("MonitorApi: getCalculatedConsumptionDataForRange - consumptionData is NULL!");
