@@ -27,7 +27,7 @@
     angularApp.controller('getConsumptionCtrl', ['$scope', '$http', 'usSpinnerService', function ($scope, $http, usSpinnerService) {
         extScope = $scope;
         $scope.mConsumptionArr = [];
-        $scope.loadingPeriod = 1;       //loading day range, 4 days
+        $scope.loadingPeriod = 7;       //loading day range, eq. 7 days
         $scope.activePeriod = 0;
         $scope.needToReloadData = true;
 
@@ -233,7 +233,7 @@
                 <button type="button" class="btn btn-sm btn-info" ng-click="f6Month()">6 month</button>
                 <button type="button" class="btn btn-sm btn-info" ng-click="f1Year()">1 year</button>
                 <button type="button" class="btn btn-sm btn-info" ng-click="f2Year()">2 year</button>
-                <h5>time range: {{loadingPeriod}} h</h5>
+                <h5>time range: {{loadingPeriod}} days</h5>
 
             </div>
         </div>

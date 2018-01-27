@@ -195,7 +195,7 @@ app.get('/getconsumptionforrange/:loadingPeriod/', function (req, res) {
     console.log("server: GET /getconsumptionforrange/  loadingPeriod[" + loadingPeriod + "]");
 
     res.set('Content-Type', 'application/json')
-    monitorApi.getConsumptionDataWithRange(loadingPeriod, result => {
+    monitorApi.getCalculatedConsumptionDataForRange(loadingPeriod, result => {
         if (res != null) {
             if (result != null) {
                 res.send(result);

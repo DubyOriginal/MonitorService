@@ -144,26 +144,110 @@ class MonitorApi {
         });
     };
 
-    getConsumptionDataWithRange(loadingPeriod, callback) {
-        console.log("MonitorApi: getConsumptionDataWithRange / " + loadingPeriod);
+    getConsumptionDataWithRange(fromUxTS, toUxTS, callback) {
+        console.log("MonitorApi: getConsumptionDataWithRange: ");
 
-        /*
-        let fNow = new Date();
-        console.log("MonitorApi: fNow -> " + fNow);
-        let latestDate = (new Date()).setDate(fNow.getDate() - loadingPeriod);
-        console.log("MonitorApi: latestDate -> " + latestDate);
-        let latestUnixTS = latestDate.getTime();  //unix timestamp
-        console.log("MonitorApi: latestUnixTS -> " + latestUnixTS);
-        */
+        let dbHelper = new DBHelper();
+        let basicUtils = new BasicUtils();
+
+        let sID_CKP_POL = 105;
+        let sID_CKP_POV = 107;
+
+        const sql = "SELECT \
+        timestamp, \
+        sensor_id, \
+        sensor_value \
+          FROM monitor_db.monitor_data \
+          WHERE sensor_id IN(" + sID_CKP_POL + "," + sID_CKP_POV + ") AND \
+          ((timestamp >= ?) AND (timestamp < ?)) \
+          ORDER BY monitor_data.timestamp DESC;";
+        //console.log("MonitorApi: getSensorDataWithRange -> sql: \n" + sql);
+        dbHelper.query(sql, [fromUxTS, toUxTS], function (consumptionData, error) {
+            if (!error && consumptionData) {
+                console.log("MonitorApi: getConsumptionDataWithRange DATA LOADED - cnt: " + consumptionData.length);
+                //basicUtils.printJOSNRows(result);
+                if (callback) {
+                    callback(consumptionData);
+                } else {
+                    console.log("MonitorApi: getConsumptionDataWithRange - callback is NULL!");
+                }
+            } else {
+                console.log("MonitorApi: getConsumptionDataWithRange - SOME ERROR!");
+            }
+        });
+    };
+
+    getCalculatedConsumptionDataForRange(dateRange, callback) {
+        console.log("MonitorApi: getConsumptionDataWithRange / " + dateRange);
+
+
+        //let fNow = new Date();
+        var fNow = new Date("January 17, 2018 11:30:22");
+        console.log("MonitorApi: fNow -> " + fNow + "  unixTS -> " + fNow.getTime()/1000);
+
+        var tempDate = new Date();
+
+        //generate date range (10.01 - 16.01 + now)
+        var dateRangeArr = [];
+        for (var i = dateRange; i >= 0; i -= 1) {
+            tempDate.setDate(fNow.getDate() - i);
+            tempDate.setHours(0, 0, 0);
+            tempDate.setMilliseconds(0);
+            let unixTS = tempDate.getTime()/1000;
+            dateRangeArr.push(unixTS);
+            console.log("MonitorApi: tempDate[" + i + "]  -> " + tempDate + "  unixTS -> " + unixTS);
+        }
+
+        let arrCnt = dateRangeArr.length-1;
+        let fromUxTS = dateRangeArr[0];
+        let toUxTS = dateRangeArr[arrCnt];
+
+        //get data for RANGE
+        //-------------------------------------------------
+        var parsedData = [];
+        this.getConsumptionDataWithRange(fromUxTS, toUxTS, consumptionData => {
+            if (consumptionData != null) {
+                let cdCnt = consumptionData.length;
+                console.log("MonitorApi: getCalculatedConsumptionDataForRange - consumptionData: \n   0:  " + JSON.stringify(consumptionData[0]));
+
+                for (var i = 0; i < cdCnt-1; i += 2) {
+                    var row = {ts: 0, ckp_pol:0, ckp_pov:0};
+                    row.ts = consumptionData[i].timestamp;
+                    row.ckp_pol = consumptionData[i].sensor_value;
+                    row.ckp_pov = consumptionData[i+1].sensor_value;
+                    parsedData.push(row);
+                }
+
+                console.log("MonitorApi: getConsumptionDataWithRange.parsedData -> ");
+                console.log("MonitorApi:  " + JSON.stringify(parsedData[0]));
+                console.log("MonitorApi:  " + JSON.stringify(parsedData[1]));
+                console.log("MonitorApi:  " + JSON.stringify(parsedData[2]));
+                console.log("MonitorApi:  " + JSON.stringify(parsedData[3]));
+                console.log("MonitorApi:  " + JSON.stringify(parsedData[4]));
+                console.log("MonitorApi:  " + JSON.stringify(parsedData[5]));
+
+                for (var i = 0; i < parsedData.length-1; i += 1) {
+                    let tmpTS = parsedData[i].ts;
+                    //dateRangeArr
+                }
+
+            } else {
+                console.log("MonitorApi: getCalculatedConsumptionDataForRange - consumptionData is NULL!");
+            }
+        });
+
+
+
 
         let result = [];
-        result.push({"ts":1515542400, "value":34});
-        result.push({"ts":1515628800, "value":40});
-        result.push({"ts":1515715200, "value":44});
-        result.push({"ts":1515801600, "value":37});
-        result.push({"ts":1515888000, "value":26});
-        result.push({"ts":1515974400, "value":30});
-        result.push({"ts":1516060800, "value":52});
+        result.push({"ts":1515538800, "value":34});    //10.01 00:00 wen (sri)
+        result.push({"ts":1515625200, "value":40});    //11.01 00:00
+        result.push({"ts":1515711600, "value":44});    //12.01 00:00
+        result.push({"ts":1515798000, "value":37});    //13.01 00:00
+        result.push({"ts":1515884400, "value":26});    //14.01 00:00
+        result.push({"ts":1515970800, "value":30});    //15.01 00:00
+        result.push({"ts":1516057200, "value":52});    //16.01 11:30:22 (now')  (1516060800 -> 0:00)
+
 
         if (callback) {
             callback(result);
