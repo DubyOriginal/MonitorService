@@ -211,10 +211,18 @@ class MonitorApi {
                 console.log("MonitorApi: getCalculatedConsumptionDataForRange - consumptionData: \n   0:  " + JSON.stringify(consumptionData[0]));
 
                 for (var i = 0; i < cdCnt-1; i += 2) {
-                    var row = {ts: 0, ckp_pol:0, ckp_pov:0};
+                    var row = {ts: 0, ckp_pol:0, ckp_pov:0, pow:0};
                     row.ts = consumptionData[i].timestamp;
                     row.ckp_pol = consumptionData[i].sensor_value;
                     row.ckp_pov = consumptionData[i+1].sensor_value;
+
+                    //P = Q * Cp * ro * dT;     Q[m3/s], Cp[J/kg°C], ro[kg/m3], dT[T2-T1]
+                    const dt_ckp = row.ckp_pol - row.ckp_pov;
+                    const Q_ckp = 2.2 / 60 / 60;    //flow -> 1.7 m3/h
+                    const Q_rad = 1.7 / 60 / 60;    //flow -> 2.2 m3/h
+                    const Cp = 4200;            //heat capacity of water
+                    const ro = 1000;            //water density
+                    row.pow = Q_ckp * Cp * ro * dt_ckp / 1000;
                     parsedData.push(row);
                 }
 
