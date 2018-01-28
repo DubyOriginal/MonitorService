@@ -146,20 +146,22 @@ class MonitorApi {
     };
 
     getConsumptionDataWithRange(fromUxTS, toUxTS, callback) {
-        console.log("MonitorApi: getConsumptionDataWithRange: ");
+        console.log("MonitorApi: getConsumptionDataWithRange: [" + fromUxTS + " - " + toUxTS + "]");
 
         let dbHelper = new DBHelper();
         let basicUtils = new BasicUtils();
 
         let sID_CKP_POL = 105;
         let sID_CKP_POV = 107;
+        let sID_pumpStatus_CKP = 200;
+        let sID_pumpStatus_RAD = 201;
 
         const sql = "SELECT \
         timestamp, \
         sensor_id, \
         sensor_value \
           FROM monitor_db.monitor_data \
-          WHERE sensor_id IN(" + sID_CKP_POL + "," + sID_CKP_POV + ") AND \
+          WHERE sensor_id IN(" + sID_CKP_POL + "," + sID_CKP_POV + "," + sID_pumpStatus_CKP + ") AND \
           ((timestamp >= ?) AND (timestamp < ?)) \
           ORDER BY monitor_data.timestamp DESC;";
         //console.log("MonitorApi: getSensorDataWithRange -> sql: \n" + sql);
@@ -178,21 +180,19 @@ class MonitorApi {
         });
     };
 
-    getCalculatedConsumptionDataForRange(dateRange, callback) {
-        console.log("MonitorApi: getConsumptionDataWithRange / " + dateRange);
+    getCalculatedConsumptionDataForRange(daysCount, callback) {
+        console.log("MonitorApi: getCalculatedConsumptionDataForRange / " + daysCount);
 
         let physicsCalc = new PhysicsCalc();
 
         //let fNow = new Date();
-        var fNow = new Date("January 17, 2018 11:30:22");
+        const fNow = new Date("January 17, 2018 11:30:22");
         console.log("MonitorApi: fNow -> " + fNow + "  unixTS -> " + fNow.getTime()/1000);
 
-
-        var tempDate = new Date();
-
+        var tempDate = new Date(fNow);
         //generate date range (10.01 - 16.01 + now)
         var dateRangeArr = [];
-        for (var i = dateRange; i >= 0; i -= 1) {
+        for (var i = daysCount; i >= 0; i -= 1) {
             tempDate.setDate(fNow.getDate() - i);
             tempDate.setHours(0, 0, 0);
             tempDate.setMilliseconds(0);
@@ -201,9 +201,10 @@ class MonitorApi {
             console.log("MonitorApi: tempDate[" + i + "]  -> " + tempDate + "  unixTS -> " + unixTS);
         }
 
-        let arrRangeCnt = dateRangeArr.length-1;
+        console.log("MonitorApi:  dateRangeArr.cnt -> " + dateRangeArr.length);
+
         let fromUxTS = dateRangeArr[0];
-        let toUxTS = dateRangeArr[arrRangeCnt];
+        let toUxTS = dateRangeArr[daysCount];
 
         //get data for RANGE
         //-------------------------------------------------
@@ -213,36 +214,28 @@ class MonitorApi {
                 let cdCnt = consumptionData.length;
                 console.log("MonitorApi: getCalculatedConsumptionDataForRange - consumptionData: \n   0:  " + JSON.stringify(consumptionData[0]));
 
-                for (var i = 0; i < cdCnt-1; i += 2) {
+                for (var i = 0; i < cdCnt-1; i += 3) {
                     var row = {ts: 0, ckp_pol:0, ckp_pov:0, pow:0};
-                    row.ts = consumptionData[i].timestamp;
-                    row.ckp_pol = consumptionData[i].sensor_value;
-                    row.ckp_pov = consumptionData[i+1].sensor_value;
-
-                    //P = Q * Cp * ro * dT;     Q[m3/s], Cp[J/kg°C], ro[kg/m3], dT[T2-T1]
-                    /*const dt_ckp = row.ckp_pol - row.ckp_pov;
-                    const Q_ckp = 2.2 / 60 / 60;    //flow -> 1.7 m3/h
-                    const Cp = 4200;            //heat capacity of water
-                    const ro = 1000;            //water density
-                    row.pow = Q_ckp * Cp * ro * dt_ckp / 1000;
-                    row.pow = row.pow.toFixed(3);
-                    */
-
                     let valCKP_POL = consumptionData[i].sensor_value;
                     let valCKP_POV = consumptionData[i+1].sensor_value;
-                    row.pow = physicsCalc.calcupatePower(valCKP_POL, valCKP_POV);
+                    let pumpStatus_CKP = consumptionData[i+2].sensor_value;
+                    row.ckp_pol = valCKP_POL;
+                    row.ckp_pov = valCKP_POV;
+                    if (pumpStatus_CKP == "0"){     //calculatePower only if PUMP in ON!
+                        row.pow = physicsCalc.calculatePower(valCKP_POL, valCKP_POV);
+                    }
+                    row.ts = consumptionData[i].timestamp;
                     parsedData.push(row);
                 }
 
+                console.log("MonitorApi:  parsedData.cnt -> " + parsedData.length);
                 console.log("MonitorApi: getConsumptionDataWithRange.parsedData -> ");
                 console.log("MonitorApi:  " + JSON.stringify(parsedData[0]));
 
-                var rowArr = new Array(arrRangeCnt);    //range 7 days
-                var colArr = [];    //values
-
+                var rowArr = new Array(daysCount);    //range 7 days
 
                 //dateRangeArr
-                for (var j = 0; j < dateRangeArr.length-2; j += 1) {
+                for (var j = 0; j < daysCount; j += 1) {
                     var rangeFrom = dateRangeArr[j];
                     var rangeTo = dateRangeArr[j + 1];
 
@@ -257,6 +250,7 @@ class MonitorApi {
                     }
                 }
 
+                console.log("MonitorApi:  rowArr.cnt -> " + rowArr.length);
                 console.log("MonitorApi: -----------------------------------------------");
                 //console.log("MonitorApi:  FINAL ARR: " + JSON.stringify(rowArr));
 
@@ -264,38 +258,40 @@ class MonitorApi {
                 //console.log("MonitorApi: ----");
 
 
-                var energyX = physicsCalc.calculateEnergy(rowArr[0]);
-                console.log("MonitorApi:  energyX[" + 0 + "] -> " + energyX);
+                let result = [];
+                for (var i = 0; i < daysCount; i += 1) {
+                    var energyJx = physicsCalc.calculateEnergy(rowArr[i]);
+                    var energykWhx = physicsCalc.convertJ2Wh(energyJx);
+                    var massx = physicsCalc.convertJ2Mass(energyJx);
 
-                //for (var i = 0; i < rowArr.length-1; i += 1) {
-                //    var energyX = physicsCalc.calculateEnergy(rowArr[i]);
-                //    console.log("MonitorApi:  energyX[" + i + "] -> " + energyX);
-                //}
+                    var energyFWhx =  physicsCalc.nFormatter(energykWhx);
+
+                    var finalTS = dateRangeArr[i];
+                    result.push({"ts":finalTS, "value":energyJx});
+                    console.log("MonitorApi:  energyFWhx[" + i + "] -> " + energyFWhx + "Wh,  mass -> " + massx + "kg,  ts -> " + finalTS);
+                }
+
+                /*
+                result.push({"ts":1515538800, "value":34});    //10.01 00:00 wen (sri)
+                result.push({"ts":1515625200, "value":40});    //11.01 00:00
+                result.push({"ts":1515711600, "value":44});    //12.01 00:00
+                result.push({"ts":1515798000, "value":37});    //13.01 00:00
+                result.push({"ts":1515884400, "value":26});    //14.01 00:00
+                result.push({"ts":1515970800, "value":30});    //15.01 00:00
+                result.push({"ts":1516057200, "value":52});    //16.01 11:30:22 (now')  (1516060800 -> 0:00)
+                */
+
+                if (callback) {
+                    callback(result);
+                } else {
+                    console.log("MonitorApi: getConsumptionDataWithRange - callback is NULL!");
+                }
 
 
             } else {
                 console.log("MonitorApi: getCalculatedConsumptionDataForRange - consumptionData is NULL!");
             }
         });
-
-
-
-
-        let result = [];
-        result.push({"ts":1515538800, "value":34});    //10.01 00:00 wen (sri)
-        result.push({"ts":1515625200, "value":40});    //11.01 00:00
-        result.push({"ts":1515711600, "value":44});    //12.01 00:00
-        result.push({"ts":1515798000, "value":37});    //13.01 00:00
-        result.push({"ts":1515884400, "value":26});    //14.01 00:00
-        result.push({"ts":1515970800, "value":30});    //15.01 00:00
-        result.push({"ts":1516057200, "value":52});    //16.01 11:30:22 (now')  (1516060800 -> 0:00)
-
-
-        if (callback) {
-            callback(result);
-        } else {
-            console.log("MonitorApi: getConsumptionDataWithRange - callback is NULL!");
-        }
     }
 
     getAllSensorParams(callback) {

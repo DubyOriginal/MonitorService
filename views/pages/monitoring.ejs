@@ -161,7 +161,7 @@
                 $scope.reloadData();
             } else {
                 console.log("refreshGraph: NO needToReloadData");
-                drawData();
+                drawMonitoringChart();
             }
         };
         $scope.refreshChart();        //initially load
@@ -236,13 +236,13 @@
                 mSensorData = result;
                 //extScope.needToReloadData = false;
                 angular.element(document.getElementById('moduleHolder')).scope().stopSpin();
-                google.setOnLoadCallback(drawData());
+                google.setOnLoadCallback(drawMonitoringChart());
             }
         });
     };
 
 
-    function drawData() {
+    function drawMonitoringChart() {
         console.log("current TS locale: " + new Date().toLocaleString());
 
         //prepare all sensors data for graph
@@ -528,10 +528,10 @@
         let energyJ = nFormatter(energy, 2) + "J";
         let energyKWH = nFormatter(energy / 3600, 2) + "Wh";
         let energyMassFactor = 4;
-        let logsWeight = Math.floor((energy / (3600 * 1000)) / energyMassFactor);
+        let firewoodWeight = Math.floor((energy / (3600 * 1000)) / energyMassFactor);
         //extScope.ckpEnergy = "E1 = " + energyJ + ",   E2 = " + energyKWH;
-        extScope.ckpEnergy = "E1 = " + energyKWH + ",   mass = " + logsWeight + "kg";
-        console.log("extScope.ckpEnergy -> " + extScope.ckpEnergy);
+        extScope.ckpEnergy = "E1 = " + energyKWH + ",   mass = " + firewoodWeight + "kg";
+        console.log("extScope.ckpEnergy -> " + extScope.ckpEnergy + ", E2 = " + energyJ);
         //---------------------------------------------------------
 
         //console.log("chartDataArr -> " + JSON.stringify(chartDataArr));
@@ -670,7 +670,7 @@
             return 0;
         });
 
-    }     // END - drawData
+    }     // END - drawMonitoringChart
 
 
 </script>

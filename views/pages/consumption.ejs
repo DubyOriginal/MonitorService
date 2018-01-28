@@ -30,14 +30,23 @@
         $scope.loadingPeriod = 7;       //loading day range, eq. 7 days
         $scope.activePeriod = 0;
         $scope.needToReloadData = true;
+        $scope.model = {};
+        $scope.model.selectedUnit = "uMass";
 
         //spinner
         //********************************************************************************************************************
         $scope.startSpin = function () {
             usSpinnerService.spin('spinner-1');
+            console.log("@@@@@@ -> startSpin");
         }
         $scope.stopSpin = function () {
             usSpinnerService.stop('spinner-1');
+            console.log("@@@@@@ -> stopSpin");
+        }
+
+        $scope.unitChanged = function(value) {
+            console.log("unitChanged to -> " + value);
+            drawConsumptionChart();
         }
 
         $scope.updateTimeRange = function () {
@@ -100,7 +109,7 @@
                 $scope.reloadData();
             } else {
                 console.log("refreshGraph: NO needToReloadData");
-                drawData();
+                drawConsumptionChart();
             }
         };
         $scope.refreshChart();        //initially load
@@ -114,7 +123,7 @@
 
     //********************************************************************************************************************
     // CHART PART
-    google.charts.load('current', {'packages':['bar']});
+    google.charts.load('current', {'packages': ['bar']});
 
 
     function loadConsumptionForRange(loadingPeriod) {
@@ -127,24 +136,31 @@
                 mConsumptionArr = result;
                 //extScope.needToReloadData = false;
                 angular.element(document.getElementById('moduleHolder')).scope().stopSpin();
-                //google.setOnLoadCallback(drawChart());
-                google.charts.setOnLoadCallback(drawChart);
+                //google.setOnLoadCallback(drawConsumptionChart());
+                google.charts.setOnLoadCallback(drawConsumptionChart);
             }
         });
     };
 
+    function convertJ2Wh(inEnergy){
+        return inEnergy / (3600 * 1000);    //J to kWh
+    }
 
-    function drawChart() {
-        /*var data = google.visualization.arrayToDataTable([
-            ['Day', 'Consumption'],
-            ['1', 1000],
-            ['2', 1170],
-            ['3', 660],
-            ['4', 800],
-            ['5', 820],
-            ['6', 700],
-            ['7', 840]
-        ]);*/
+    function convertJ2Mass(inEnergy){
+        let energyMassFactor = 4;   //1kg -> 4kWh
+        let firewoodWeight = Math.floor(inEnergy / (3600 * 1000 * energyMassFactor), 2);
+        return firewoodWeight;
+    }
+
+    function convertJ2Volume(inEnergy){
+        let energyVolumeFactor = 300;     //1m3 -> 300kWh
+        let firewoodVolume = inEnergy / (3600 * 1000 * energyVolumeFactor);
+        let firewoodVolumeFIX = firewoodVolume.toFixed(3);
+        return firewoodVolumeFIX;
+    }
+
+
+    function drawConsumptionChart() {
 
         var chartDataArr = [];
         let graphParamArr = [];
@@ -152,25 +168,26 @@
         graphParamArr.push({label: 'mass', type: 'number'});
         chartDataArr.push(graphParamArr);
 
-        /*
-        chartDataArr.push([new Date(1515542400000), 34]);
-        chartDataArr.push([new Date(1515628800000), 40]);
-        chartDataArr.push([new Date(1515715200000), 44]);
-        chartDataArr.push([new Date(1515801600000), 37]);
-        chartDataArr.push([new Date(1515888000000), 26]);
-        chartDataArr.push([new Date(1515974400000), 30]);
-        chartDataArr.push([new Date(1516060800000), 36]);
-        */
-
-
+        let selectedUnit = extScope.model.selectedUnit;
         for (var i = 0; i < mConsumptionArr.length; i += 1) {
             let tsStr = mConsumptionArr[i].ts;
-            let value = mConsumptionArr[i].value;
-            let tsInt = parseInt(tsStr * 1000);
-            chartDataArr.push([new Date(tsInt), value]);
-        }
+            let value = mConsumptionArr[i].value;   //dafault energy value -> J
+            var valueUnit = 0;
 
-        console.log("chartDataArr -> " + JSON.stringify(chartDataArr));
+            if (selectedUnit == "uEnergy"){
+                valueUnit = this.convertJ2Wh(value);
+            }else if (selectedUnit == "uMass"){
+                valueUnit = this.convertJ2Mass(value);
+            }else if (selectedUnit == "uVolume"){
+                valueUnit = this.convertJ2Volume(value);
+            }else{
+                console.log("unknown selected unit !");
+            }
+
+            let tsInt = parseInt(tsStr * 1000);
+            chartDataArr.push([new Date(tsInt), valueUnit]);
+        }
+        //console.log("chartDataArr -> " + JSON.stringify(chartDataArr));
 
         var data = google.visualization.arrayToDataTable(chartDataArr);
 
@@ -180,10 +197,10 @@
                 subtitle: 'annual consumption by day',
             },
             bars: 'vertical',
-            bar: { groupWidth: '20%' },
+            bar: {groupWidth: '20%'},
             legend: {position: 'none'},
             vAxis: {
-                title: 'weight',
+                title: extScope.model.selectedUnit,
                 format: 'decimal'
             },
             hAxis: {
@@ -208,8 +225,7 @@
         }*/
 
 
-
-    }
+    }// END drawMonitoringChart
 
 </script>
 
@@ -240,9 +256,16 @@
 
         <div class="col-md-5 dy_group_box">
             <button type="button" class="btn btn-md btn-success" ng-click="refreshChart()">REFRESH</button>
-            <div>kWh: <input type="checkbox" ng-model="cbUnit_kwh" ng-init="checked=true"></div>
-            <div>kg: <input type="checkbox" ng-model="cbUnit_kg" ng-init="checked=false"></div>
-            <div>m3: <input type="checkbox" ng-model="cbUnit_m3" ng-init="checked=false"></div>
+
+            <button type="button" class="btn btn-md btn-primary" ng-click="startSpin()">START</button>
+            <button type="button" class="btn btn-md btn-primary" ng-click="stopSpin()">STOP</button>
+
+            <form>
+                Pick a unit:
+                <div><input style="margin: 5px" type="radio" ng-model="model.selectedUnit" value="uEnergy" ng-change='unitChanged(model.selectedUnit)'>kWh</div>
+                <div><input style="margin: 5px" type="radio" ng-model="model.selectedUnit" value="uMass" ng-change='unitChanged(model.selectedUnit)'>kg</div>
+                <div><input style="margin: 5px" type="radio" ng-model="model.selectedUnit" value="uVolume" ng-change='unitChanged(model.selectedUnit)'>m3</div>
+            </form>
         </div>
 
     </div>
@@ -255,7 +278,6 @@
         </div>
     </div>
 </div>
-
 
 
 <footer class="container-fluid text-center">
