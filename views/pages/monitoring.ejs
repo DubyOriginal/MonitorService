@@ -391,9 +391,13 @@
 
             if (mSensorData[i].sensor_id == "200") {
                 let tmpVal1 = mSensorData[i].sensor_value;
-                if (tmpVal1 == "0") {tmpVal1 = 10;          // 10 -> pump on
-                }else if (tmpVal1 == "1") {tmpVal1 = 0;     // 00 -> pump off
-                }else {tmpVal1 = 20}                        // 20 -> error
+                if (tmpVal1 == "0") {
+                    tmpVal1 = 10;          // 10 -> pump on
+                } else if (tmpVal1 == "1") {
+                    tmpVal1 = 0;     // 00 -> pump off
+                } else {
+                    tmpVal1 = 20
+                }                        // 20 -> error
                 sValPump_CKP = tmpVal1;
                 hasValPump_CKP = true;
                 pumpStatus_CKP = mSensorData[i].sensor_value;
@@ -401,9 +405,13 @@
 
             if (mSensorData[i].sensor_id == "201") {
                 let tmpVal2 = mSensorData[i].sensor_value;
-                if (tmpVal2 == "0") {tmpVal2 = 11;          // 11 -> pump on
-                }else if (tmpVal2 == "1") {tmpVal2 = 1;     // 01 -> pump off
-                }else {tmpVal2 = 21}                        // 21 -> error
+                if (tmpVal2 == "0") {
+                    tmpVal2 = 11;          // 11 -> pump on
+                } else if (tmpVal2 == "1") {
+                    tmpVal2 = 1;     // 01 -> pump off
+                } else {
+                    tmpVal2 = 21
+                }                        // 21 -> error
                 sValPump_RAD = tmpVal2;
                 hasValPump_RAD = true;
                 pumpStatus_RAD = mSensorData[i].sensor_value;
@@ -442,8 +450,12 @@
                 sValPOW_CKP = Q_ckp * Cp * ro * dt_ckp / 1000;
                 sValPOW_RAD = Q_rad * Cp * ro * dt_rad / 1000;
 
-                if (pumpStatus_CKP == "1"){sValPOW_CKP = 0;}
-                if (pumpStatus_RAD == "1"){sValPOW_RAD = 0;}
+                if (pumpStatus_CKP == "1") {
+                    sValPOW_CKP = 0;
+                }
+                if (pumpStatus_RAD == "1") {
+                    sValPOW_RAD = 0;
+                }
 
                 powerCKPArr.push({ts: mSensorData[i].timestamp, pow: sValPOW_CKP});
                 //----------------------------------------------------------
@@ -681,8 +693,7 @@
 </header>
 
 <div class="main_container" style="display: block">
-    <span us-spinner="{radius:30, width:8, length: 16}" spinner-key="spinner-1" spinner-on="showSpinner"
-          spinner-start-active="stop"></span>
+    <span us-spinner="{radius:30, width:8, length: 16}" spinner-key="spinner-1" spinner-on="showSpinner" spinner-start-active="stop"></span>
 
     <div class="row-eq-height align-items-center" style="display: flex;flex-wrap: wrap;">
 
@@ -701,10 +712,10 @@
                            close-on-date-selection="true"
                            alt-input-formats="altInputFormats"/>
                     <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="open1()">
-                <i class="glyphicon glyphicon-calendar"></i>
-            </button>
-          </span>
+                        <button type="button" class="btn btn-default" ng-click="open1()">
+                            <i class="glyphicon glyphicon-calendar"></i>
+                        </button>
+                    </span>
                 </p>
             </div>
             <div class="col-md-6">
@@ -815,10 +826,11 @@
         </div>
     </div>
 
+</div>
 
-    <footer class="container-fluid text-center">
-        <% include ../partials/footer %>
-    </footer>
+<footer class="container-fluid text-center">
+    <% include ../partials/footer %>
+</footer>
 
 </body>
 </html>

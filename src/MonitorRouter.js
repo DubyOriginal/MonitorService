@@ -57,6 +57,12 @@ app.get('/', function (req, res) {
     res.render('./pages/index')
 });
 
+//PAGE - SYSTEM - system detail information
+app.get('/system', function (req, res) {
+    console.log("loading page -> System");
+    res.render('./pages/system');
+});
+
 //PAGE - monitoring sensors data
 app.get('/monitoring', function (req, res) {
     console.log("loading page -> Monitoring");

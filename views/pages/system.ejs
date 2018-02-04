@@ -1,0 +1,65 @@
+<!-- views/pages/index.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>System</title>
+    <% include ../partials/head %>
+</head>
+
+<body>
+<header>
+    <% include ../partials/header %>
+</header>
+
+<script>
+    //var area = document.getElementsByTagName('img_system');
+    //area.onclick = function() {
+    //    console.log("area -> " + area.tagName);
+    //    return false; // returning false stops the link being followed
+    //}
+
+    $("#img_system").click( function(){
+        alert("clicked");
+
+    });
+</script>
+
+<div class="main_container" style="display: flex; flex-direction: column">
+    <div class="center">
+        <div class="row">
+            <!-- ******* CONTAINER BOX *********************** -->
+            <div style="display: block;">
+                <h3>SYSTEM INFO</h3>
+                <h6>SELECTED:<h4 style="font-style: italic; color: #b63c3c">Raspberry Pi</h4></h6>
+
+                <img id="img_system" class="img-responsive center-block" src="images/img_system_color.png" alt="img_system" usemap="#img_system_map">
+
+                <map name="img_system_map">
+                    <area tag="map_raspb" title="raspberry" href="#" shape="rect" coords="260,62,343,131" />
+                    <area tag="map_route" title="router" href="#" shape="rect" coords="492,109,582,186" />
+                    <area tag="map_ckp__" title="ckp" href="#" shape="rect" coords="45,323,111,444" />
+                    <area tag="map_ckppu" title="pump_ckp" href="#" shape="rect" coords="123,410,145,432" />
+                    <area tag="map_puffe" title="puff" href="#" shape="rect" coords="224,293,312,445" />
+                    <area tag="map_radpu" title="pump_rad" href="#" shape="rect" coords="372,409,390,426" />
+                    <area tag="map_ds182" title="ds1820" href="#" shape="rect" coords="443,361,499,422" />
+                    <area tag="map_230Vd" title="230Vdetector" href="#" shape="rect" coords="503,355,550,436" />
+                    <area tag="map_rellm" title="rellaymodule" href="#" shape="rect" coords="555,356,613,425" />
+                    <area tag="map_esp82" title="nodemcu" href="#" shape="rect" coords="469,266,587,329" />
+                </map>
+
+            </div>
+        </div>
+
+        <div class="row">
+            <% include ../details/raspberry_pi.ejs %>
+        </div>
+    </div>
+</div>
+
+<footer class="container-fluid text-center">
+    <% include ../partials/footer %>
+</footer>
+
+</body>
+</html>

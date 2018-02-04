@@ -24,6 +24,9 @@
     var extScope;
 
     var angularApp = angular.module('myApp', ['ui.bootstrap', 'angularSpinner']);
+    angularApp.config(['usSpinnerConfigProvider', function (usSpinnerConfigProvider) {
+        usSpinnerConfigProvider.setDefaults({color: 'red'});
+    }]);
     angularApp.controller('getConsumptionCtrl', ['$scope', '$http', 'usSpinnerService', function ($scope, $http, usSpinnerService) {
         extScope = $scope;
         $scope.mConsumptionArr = [];
@@ -235,8 +238,10 @@
 </header>
 
 <div class="main_container" style="display: block">
-    <span us-spinner="{radius:30, width:8, length: 16}" spinner-key="spinner-1" spinner-on="showSpinner"
-          spinner-start-active="stop"></span>
+    <span us-spinner="{radius:30, width:8, length: 16}"
+          spinner-key="spinner-1"
+          spinner-on="showSpinner"
+          spinner-start-active="true"></span>
 
     <div class="row-eq-height align-items-center" style="display: flex;flex-wrap: wrap;">
 
