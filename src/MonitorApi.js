@@ -185,14 +185,14 @@ class MonitorApi {
 
         let physicsCalc = new PhysicsCalc();
 
-        //let fNow = new Date();
-        const fNow = new Date("January 17, 2018 11:30:22");
+        const fNow = new Date();
+        //const fNow = new Date("January 17, 2018 11:30:22");
         console.log("MonitorApi: fNow -> " + fNow + "  unixTS -> " + fNow.getTime()/1000);
 
-        var tempDate = new Date(fNow);
         //generate date range (10.01 - 16.01 + now)
         var dateRangeArr = [];
         for (var i = daysCount; i >= 0; i -= 1) {
+            var tempDate = new Date(fNow);
             tempDate.setDate(fNow.getDate() - i);
             tempDate.setHours(0, 0, 0);
             tempDate.setMilliseconds(0);

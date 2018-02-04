@@ -35,6 +35,7 @@
         $scope.needToReloadData = true;
         $scope.model = {};
         $scope.model.selectedUnit = "uMass";
+        $scope.sumValue4Period = 0;
 
         //spinner
         //********************************************************************************************************************
@@ -162,6 +163,14 @@
         return firewoodVolumeFIX;
     }
 
+    //effective surface from 33cm long firewoods
+    function convertJ2Surface(inEnergy){
+        let energySurfaceFactor = 543;     //1m3 -> 300kWh
+        let firewoodSurface = inEnergy / (3600 * 1000 * energySurfaceFactor);
+        let firewoodSurfaceFIX = firewoodSurface.toFixed(3);
+        return firewoodSurfaceFIX;
+    }
+
 
     function drawConsumptionChart() {
 
@@ -171,6 +180,7 @@
         graphParamArr.push({label: 'mass', type: 'number'});
         chartDataArr.push(graphParamArr);
 
+        extScope.sumValue4Period = 0;
         let selectedUnit = extScope.model.selectedUnit;
         for (var i = 0; i < mConsumptionArr.length; i += 1) {
             let tsStr = mConsumptionArr[i].ts;
@@ -183,13 +193,18 @@
                 valueUnit = this.convertJ2Mass(value);
             }else if (selectedUnit == "uVolume"){
                 valueUnit = this.convertJ2Volume(value);
+            }else if (selectedUnit == "uSurface"){
+                valueUnit = this.convertJ2Surface(value);
             }else{
                 console.log("unknown selected unit !");
             }
 
+            extScope.sumValue4Period += parseFloat(valueUnit);
             let tsInt = parseInt(tsStr * 1000);
             chartDataArr.push([new Date(tsInt), valueUnit]);
         }
+
+        extScope.sumValue4Period= extScope.sumValue4Period.toFixed(3);
         //console.log("chartDataArr -> " + JSON.stringify(chartDataArr));
 
         var data = google.visualization.arrayToDataTable(chartDataArr);
@@ -255,7 +270,7 @@
                 <button type="button" class="btn btn-sm btn-info" ng-click="f1Year()">1 year</button>
                 <button type="button" class="btn btn-sm btn-info" ng-click="f2Year()">2 year</button>
                 <h5>time range: {{loadingPeriod}} days</h5>
-
+                <h5>value SUM for range: {{sumValue4Period}}</h5>
             </div>
         </div>
 
@@ -270,6 +285,7 @@
                 <div><input style="margin: 5px" type="radio" ng-model="model.selectedUnit" value="uEnergy" ng-change='unitChanged(model.selectedUnit)'>kWh</div>
                 <div><input style="margin: 5px" type="radio" ng-model="model.selectedUnit" value="uMass" ng-change='unitChanged(model.selectedUnit)'>kg</div>
                 <div><input style="margin: 5px" type="radio" ng-model="model.selectedUnit" value="uVolume" ng-change='unitChanged(model.selectedUnit)'>m3</div>
+                <div><input style="margin: 5px" type="radio" ng-model="model.selectedUnit" value="uSurface" ng-change='unitChanged(model.selectedUnit)'>m2 (33cm)</div>
             </form>
         </div>
 

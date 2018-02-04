@@ -32,6 +32,7 @@ FROM monitor_db.monitor_data
 LEFT JOIN monitor_db.user_params ON monitor_db.monitor_data.user_id = monitor_db.user_params.id
 LEFT JOIN monitor_db.device_params ON monitor_db.monitor_data.device_id = monitor_db.device_params.id
 LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monitor_db.sensor_params.id
+WHERE timestamp > 1514984789 
 ORDER BY monitor_data.timestamp;
 
 
@@ -54,7 +55,7 @@ LEFT JOIN monitor_db.sensor_params ON monitor_db.monitor_data.sensor_id = monito
       LIMIT 55;
 
 
-# C. get schematic Screen Sensor Data
+# C. get Basement Screen Sensor Data
 SELECT 
 	monitor_data.sensor_id,
 	FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, 
