@@ -102,6 +102,12 @@ app.get('/house', function (req, res) {
     });
 });
 
+//PAGE - testing results
+app.get('/testing', function (req, res) {
+    console.log("loading page -> Testing");
+    res.render('./pages/testing');
+});
+
 //PAGE - monitoring single sensor
 app.get('/sensortest', function (req, res) {
     console.log("loading page -> Sensor Test");

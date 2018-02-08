@@ -31,8 +31,9 @@
     liveApp.controller("livectrl", function livectrl($scope, $http) {
 
         $scope.mDataList = [];
-        $scope.mRowCount = 0;               //number of rows in monitor_data table
-        $scope.mMeasurementCount = 0;       //every 1 minute
+        $scope.mRowCount = 0;                   //number of rows in monitor_data table
+        $scope.mMeasurementCount = 0;           //every 1 minute
+        $scope.mMeasurementPeriod = 0;     //total measurement days
 
         $scope.getDataCount = function () {
             //console.log("getDataCount!");
@@ -43,6 +44,7 @@
                 console.log("getData - LOADED!");
                 $scope.mRowCount = response.data.row_cnt;
                 $scope.mMeasurementCount = response.data.measurement_cnt
+                $scope.mMeasurementPeriod = Math.floor($scope.mMeasurementCount / 60 / 24);  //days
 
                 $scope.getData();  //initial data load
 
@@ -88,6 +90,7 @@
 
                             <h4>measurement count: {{mMeasurementCount}}</h4>
                             <h4>row count: {{mRowCount}}</h4>
+                            <h4>measurement period: {{mMeasurementPeriod}} days</h4>
 
                             <table class="table table-striped">
                                 <tr>
