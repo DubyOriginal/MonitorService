@@ -27,6 +27,29 @@ class MonitorApi {
         console.log("MonitorApi initialized");
     }
 
+    getDataCount(callback){
+        console.log("MonitorApi: getDataCount");
+
+        let dbHelper = new DBHelper();
+        //const sql = "SELECT COUNT(*) as data_cnt FROM monitor_db.monitor_data;";
+        const sql = "SELECT COUNT(*) as measurement_cnt, (SELECT COUNT(*) as row_cnt FROM monitor_db.monitor_data) as row_cnt FROM monitor_db.monitor_data WHERE sensor_id = 104;"
+        dbHelper.query(sql, [], function (result, error) {
+
+            console.log("MonitorApi: getDataCount -> " + JSON.stringify(result));
+            if (!error && result) {
+                let data_count = result[0];
+                if (callback) {
+                    callback(data_count);
+                } else {
+                    console.log("MonitorApi: getDataCount - callback is NULL!");
+                }
+            } else {
+                console.log("MonitorApi: getDataCount - SOME ERROR!");
+            }
+        });
+
+    }
+
     getAllSensorsData(callback) {
         console.log("MonitorApi: getAllSensorsData");
 

@@ -138,6 +138,23 @@ app.use('/test', function (req, res, next) {
     console.log("server: /test");
 });
 
+// get data count
+app.get('/getdatacount', function (req, res) {
+    console.log("server: GET /getdatacount");
+    monitorApi.getDataCount((result) => {
+        if (res != null) {
+            if (result != null) {
+                res.set('Content-Type', 'application/json')
+                res.send(result);
+            } else {
+                res.send(null);
+            }
+        } else {
+            console.log("/getdatacount res in NULL");
+        }
+    });
+});
+
 // get values from DB
 app.get('/getallsensorsdata', function (req, res) {
     console.log("server: GET /getallsensorsdata");

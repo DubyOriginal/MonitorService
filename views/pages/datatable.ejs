@@ -31,6 +31,26 @@
     liveApp.controller("livectrl", function livectrl($scope, $http) {
 
         $scope.mDataList = [];
+        $scope.mRowCount = 0;               //number of rows in monitor_data table
+        $scope.mMeasurementCount = 0;       //every 1 minute
+
+        $scope.getDataCount = function () {
+            //console.log("getDataCount!");
+            $http({
+                method: 'GET',
+                url: 'getdatacount'
+            }).then(function (response) {
+                console.log("getData - LOADED!");
+                $scope.mRowCount = response.data.row_cnt;
+                $scope.mMeasurementCount = response.data.measurement_cnt
+
+                $scope.getData();  //initial data load
+
+            }, function (error) {
+                console.log("getallsensorsdata ERROR: " + error);
+            });
+        };
+
 
         $scope.getData = function () {
             console.log("getData!");
@@ -44,7 +64,8 @@
                 console.log("getallsensorsdata ERROR: " + error);
             });
         };
-        $scope.getData();  //initial data load
+
+        $scope.getDataCount();  //input point
 
     });
 
@@ -64,6 +85,10 @@
                     <div class="panel panel-primary">
                         <div class="panel-heading">Latest</div>
                         <div class="panel-body">
+
+                            <h4>measurement count: {{mMeasurementCount}}</h4>
+                            <h4>row count: {{mRowCount}}</h4>
+
                             <table class="table table-striped">
                                 <tr>
                                     <th>ID</th>
