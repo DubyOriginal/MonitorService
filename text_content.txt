@@ -6,21 +6,31 @@
 
 MONITORING
 --------------------------------------------------------------------------
-Jednostavno pračenje sustava centralnog grijanja sa ugrađenim alarmnim sustavom dojave na mobilni uređaj u 
+Jednostavno pračenje sustava centralnog grijanja sa ugrađenim alarmnim sustavom koji vrši dojavu na mobilni uređaj u
 slučaju kvarova ili prekoračenja temperatura. Sustav je povezan na ukupno 13 senzora od kojih je 11 temperaturnih 
 senzora postavljenih na kritična mjesta. Dva senzora su povezana na pumpe pa se time može pratiti njihov rad.
-Sustav je složen tako da elektronika svaku jednu minutu izvrši očitanja sa senzora i rezultate šalje na server gdje se oni spremeju u bazu.
+Sustav je postavljen tako da elektronika svaku jednu minutu izvrši očitanja sa senzora i rezultate šalje na server gdje se oni spremeju u bazu.
 
 
 
 SYSTEM
 --------------------------------------------------------------------------
-Sustav se u suštini sastoji od dva dijela: ELEKRTRONIKE i PROGRAMA koji zajedno čine pametan sustav za automatsko upravljanje.
+Sustav se u suštini sastoji od dva dijela: ELEKRTRONIKE i PROGRAMA koji zajedno čine autonomni sustav za automatsko upravljanje.
+Sustav je povezan na internet pa se nadzor može vršiti od bilo gdje, a da bi se to omogućilo sam postavio vlastiti
+server koji je dostupan 24 sata dnevno. Za server je upotrebljen Raspberry Pi 3 na koji je postavljen api-servis i web aplikacija.
 
-Sustav je povezan na internet pa se nadzor može vršiti od bilo gdje.
 
+ELEKTRONIKA:
+ESP28266 (NodeMCU - arduino based)
+Uređaj koji vrši učitanja sa senzora i upravlja radom releja na koje su vezane pumpe. Ima ugrađeni WiFi pa se može povezati na kućnu wifi mrežu.
+RELEJ 3.3V 5A
+Služi za uključivanje i isključivanje pumpe.
+DS1820
+one-wire digitalni senzor temperature koji radi u rasponu od -55 do 125°C. Senzoru se pristupa kroz njeguvo internu adresu.
+230V detector
+Senzor kojim se provjerava prisutnost napona na pumpi.
 
-
+SOFTWARE:
 
 
 
@@ -42,28 +52,20 @@ pračenje potrošnje energenata kroz cijelu godinu.
 
 MONITORING
 --------------------------------------------------------------------------
-Easy tracking of central heating system with built - in alarm system on mobile device
+Easy monitoring of the central heating system with built-in alarm system that sends the alarm to the mobile device in
 failure or over temperature. The system is connected to a total of 13 sensors of which 11 are temperature
 sensors placed in critical locations. Two sensors are connected to the pumps so they can monitor their operation.
-The system is so complex that every minute of the electronics performs readings from the sensor and the results are sent to the server where they are stored in the base.
+The system is set so that every minute of the electronics performs readings from the sensor and the results are sent to the server where they are stored in the base.
 
 
 SYSTEM
 --------------------------------------------------------------------------
-The system consists essentially of two parts: ELECTRONICS and SOFTWARE, which together form a smart automatic control system.
-The system is connected to the Internet so surveillance can be done anywhere.
 
-ELEKTRONIKA:
-ESP28266 (NodeMCU - arduino based)
-Uređaj koji vrši učitanja sa senzora i upravlja radom releja na koje su vezane pumpe. Ima ugrađeni WiFi pa se može povezati na kućnu wifi mrežu.
-RELEJ 3.3V 5A
-Služi za uključivanje i isključivanje pumpe.
-DS1820
-one-wire digitalni senzor temperature koji radi u rasponu od -55 do 125°C. Senzoru se pristupa kroz njeguvo internu adresu.
-230V detector
-Senzor kojim se provjerava prisutnost napona na pumpi.
+The system consists essentially of two parts: ELECTRONICS and PROGRAMS, which together form an autonomous system for automatic control.
+The system is connected to the Internet so surveillance can be done anywhere, so that it can be set up by your own
+a server that is available 24 hours a day. Raspberry Pi 3 was used for the server, where api-service and web applications were set up.
 
-SOFTWARE:
+
 
 
 
