@@ -108,6 +108,12 @@ app.get('/testing', function (req, res) {
     res.render('./pages/testing');
 });
 
+//PAGE - testing results
+app.get('/physics', function (req, res) {
+    console.log("loading page -> Physics");
+    res.render('./pages/physics');
+});
+
 //PAGE - monitoring single sensor
 app.get('/sensortest', function (req, res) {
     console.log("loading page -> Sensor Test");

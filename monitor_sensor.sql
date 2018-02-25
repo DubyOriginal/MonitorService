@@ -5,7 +5,9 @@ SELECT * FROM monitor_db.sensor_params;
 SELECT * FROM monitor_db.screen_sensor;
 SELECT * FROM monitor_db.fcm_user;
 
-SELECT COUNT(*) FROM monitor_db.monitor_data;								#DATA CNT
+SELECT COUNT(*) as row_cnt FROM monitor_db.monitor_data;					#ROW CNT
+
+SELECT COUNT(*) as measurement_cnt, (SELECT COUNT(*) as row_cnt FROM monitor_db.monitor_data) as row_cnt FROM monitor_db.monitor_data WHERE sensor_id = 104;
 
 SELECT MAX(timestamp) FROM monitor_data where sensor_id like '%100%';		#LATEST TIMESTAMP   1513366709
 SELECT MIN(timestamp) FROM monitor_data where sensor_id like '%100%';		#OLDEST TIMESTAMP.  1510607021
@@ -13,7 +15,7 @@ SELECT MIN(timestamp) FROM monitor_data where sensor_id like '%100%';		#OLDEST T
 SELECT CONVERT_TZ(NOW(), @@session.time_zone, '+01:00');
 SELECT UNIX_TIMESTAMP();
 
-#A. getAllSensorsData
+#A. getAllSensorsDatauser_partner
 SELECT 
 	monitor_data.id, 
 	FROM_UNIXTIME(timestamp, '%d.%m.%Y. - %H:%i:%s') as rtimestamp, 
