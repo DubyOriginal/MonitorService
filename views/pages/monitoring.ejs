@@ -49,6 +49,7 @@
         $scope.activeFromDate = 0;
         $scope.activeToDate = 0;
         $scope.ckpEnergy = 0;
+        $scope.minTemp = 255;       //initial value
 
         $scope.setLatestTS = function (latestTS) {
             console.log("setLatestTS -> " + latestTS);
@@ -156,6 +157,7 @@
         };
 
         $scope.refreshChart = function () {
+            $scope.minTemp = 255;
             if ($scope.needToReloadData) {
                 console.log("refreshGraph: needToReloadData");
                 $scope.reloadData();
@@ -378,17 +380,16 @@
 
             if (mSensorData[i].sensor_id == "110") {
                 var sVal110 = parseFloat(mSensorData[i].sensor_value);
-                if (sVal110 < 0) {
-                    sVal110 = 0;
+
+                if (sVal110 < extScope.minTemp){
+                    extScope.minTemp = sVal110;
                 }
                 hasValVANI = true;
                 sValVANI = sVal110;
             }
 
             //----------------------------------------------------------
-            // PUMP STATUS
-
-
+            // PUMP STATUS - CKP
             if (mSensorData[i].sensor_id == "200") {
                 let tmpVal1 = mSensorData[i].sensor_value;
                 if (tmpVal1 == "0") {
@@ -403,6 +404,7 @@
                 pumpStatus_CKP = mSensorData[i].sensor_value;
             }
 
+            // PUMP STATUS - RAD
             if (mSensorData[i].sensor_id == "201") {
                 let tmpVal2 = mSensorData[i].sensor_value;
                 if (tmpVal2 == "0") {
@@ -573,6 +575,16 @@
         if (extScope.cbPump_CKP) graphColorArr.push(colorPump_CKP);
         if (extScope.cbPump_RAD) graphColorArr.push(colorPump_RAD);
 
+        //negative temperature + make smart graph range
+        var graphMin = 0;
+        if (extScope.minTemp < 0 && extScope.minTemp >= -10){
+            graphMin = -10;
+        }else if (extScope.minTemp < -10 && extScope.minTemp >= -20){
+            graphMin = -20;
+        }else if (extScope.minTemp < -20 && extScope.minTemp >= -30){
+            graphMin = -30;
+        }
+        console.log("minTemp -> " + extScope.minTemp + ", graphMin -> "  + graphMin);
 
         //---------------------------------------------------------
         var chartOptions = {
@@ -616,9 +628,9 @@
                     fontSize: 18,
                     bold: true
                 },
-                minValue: -20,
+                minValue: graphMin,
                 viewWindow: {
-                    min: 0
+                    min: graphMin
                 },
                 gridlines: {
                     count: 8,
@@ -789,8 +801,7 @@
                 </div>
                 <div style="color: #1b4c4e"><input type="checkbox" ng-model="cbPUFF_4" ng-init="cbPUFF_4=false"> PUFF_04
                 </div>
-                <div style="color: #911eb4"><input type="checkbox" ng-model="cbPUFF_AVERAGE"
-                                                   ng-init="cbPUFF_AVERAGE=true"> PUFF_AVERAGE
+                <div style="color: #911eb4"><input type="checkbox" ng-model="cbPUFF_AVERAGE" ng-init="cbPUFF_AVERAGE=true"> PUFF_AVRG
                 </div>
             </div>
 
