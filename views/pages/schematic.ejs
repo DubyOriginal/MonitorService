@@ -29,6 +29,7 @@
         $scope.mPowerRAD = 0;
         $scope.pumpStatus_CKP = "x";
         $scope.pumpStatus_RAD = "x";
+        $scope.status = "";
 
         $scope.getSchematicList = function () {
             console.log("getSchematicList!");
@@ -38,15 +39,22 @@
             }).then(function (response) {
                 console.log("getSchematicList - data loaded. Cnt -> " + response.data.length);
                 $scope.mSchematicList = response.data;
+                $scope.prepareResponseStatus(response);
                 $scope.preparePumpStatus();
                 $scope.calculateCapacity();
                 $scope.calculatePower();
-                console.log(">>>>>  mSchematicList: " + JSON.stringify($scope.mSchematicList));
+                //console.log(">>>>>  mSchematicList: " + JSON.stringify($scope.mSchematicList));
             }, function (error) {
                 console.log("getSchematicList ERROR: " + error);
             });
         };
         $scope.getSchematicList();   //call initially
+
+        $scope.prepareResponseStatus = function (response) {
+            $scope.status = {}
+            $scope.status.count = response.data.length;
+            $scope.status.measured = response.data[0].rtimestamp;
+        }
 
         $scope.preparePumpStatus = function () {
             if (isEmptyObject($scope.mSchematicList[11]) || isEmptyObject($scope.mSchematicList[12])) {
@@ -198,6 +206,7 @@
 
 <div class="main_container" style="display: flex">
     <div class="center">
+        <h5>STATUS: {{status}}</h5>
         <div class="col-md-12">
             <!-- ******* CONTAINER BOX *********************** -->
             <div class="my_container">

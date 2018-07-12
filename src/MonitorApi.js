@@ -187,11 +187,11 @@ class MonitorApi {
           WHERE sensor_id IN(" + sID_CKP_POL + "," + sID_CKP_POV + "," + sID_pumpStatus_CKP + ") AND \
           ((timestamp >= ?) AND (timestamp < ?)) \
           ORDER BY monitor_data.timestamp DESC;";
-        //console.log("MonitorApi: getSensorDataWithRange -> sql: \n" + sql);
+        //console.log("MonitorApi: getConsumptionDataWithRange -> sql: \n" + sql);
         dbHelper.query(sql, [fromUxTS, toUxTS], function (consumptionData, error) {
             if (!error && consumptionData) {
                 console.log("MonitorApi: getConsumptionDataWithRange DATA LOADED - cnt: " + consumptionData.length);
-                //basicUtils.printJOSNRows(result);
+                //basicUtils.printJOSNRows(consumptionData);
                 if (callback) {
                     callback(consumptionData);
                 } else {
@@ -207,6 +207,7 @@ class MonitorApi {
         console.log("MonitorApi: getCalculatedConsumptionDataForRange / " + daysCount);
 
         let physicsCalc = new PhysicsCalc();
+        let basicUtils = new BasicUtils();
 
         const fNow = new Date();
         //const fNow = new Date("January 17, 2018 11:30:22");
@@ -235,7 +236,18 @@ class MonitorApi {
         this.getConsumptionDataWithRange(fromUxTS, toUxTS, consumptionData => {
             if (consumptionData != null) {
                 let cdCnt = consumptionData.length;
-                console.log("MonitorApi: getCalculatedConsumptionDataForRange - consumptionData: \n   0:  " + JSON.stringify(consumptionData[0]));
+
+                console.log("MonitorApi: getCalculatedConsumptionDataForRange");
+                //{"timestamp":1520031528,"sensor_id":200,"sensor_value":"0"}
+                //{"timestamp":1520031528,"sensor_id":107,"sensor_value":"45.19"}
+                //{"timestamp":1520031527,"sensor_id":105,"sensor_value":"46.37"}
+                basicUtils.printJOSNRows(consumptionData);
+
+                console.log("MonitorApi: getCalculatedConsumptionDataForRange - consumptionData: " +
+                    "\n   0:  " + JSON.stringify(consumptionData[0]) +
+                    "\n   1:  " + JSON.stringify(consumptionData[1]) +
+                    "\n   2:  " + JSON.stringify(consumptionData[2])
+                );
 
                 for (var i = 0; i < cdCnt-1; i += 3) {
                     var row = {ts: 0, ckp_pol:0, ckp_pov:0, pow:0};
@@ -244,8 +256,11 @@ class MonitorApi {
                     let pumpStatus_CKP = consumptionData[i+2].sensor_value;
                     row.ckp_pol = valCKP_POL;
                     row.ckp_pov = valCKP_POV;
-                    if (pumpStatus_CKP == "0"){     //calculatePower only if PUMP in ON!
+                    if (pumpStatus_CKP == "0"){     //calculatePower only if PUMP in ON,  0 -> ON !!!
                         row.pow = physicsCalc.calculatePower(valCKP_POL, valCKP_POV);
+                        //row.ts = consumptionData[i].timestamp;
+                        //parsedData.push(row);
+                        console.log("MonitorApi:  calculatePower  ######");
                     }
                     row.ts = consumptionData[i].timestamp;
                     parsedData.push(row);
@@ -254,6 +269,10 @@ class MonitorApi {
                 console.log("MonitorApi:  parsedData.cnt -> " + parsedData.length);
                 console.log("MonitorApi: getConsumptionDataWithRange.parsedData -> ");
                 console.log("MonitorApi:  " + JSON.stringify(parsedData[0]));
+                console.log("MonitorApi:  " + JSON.stringify(parsedData[1]));
+                console.log("MonitorApi:  " + JSON.stringify(parsedData[2]));
+                console.log("MonitorApi:  " + JSON.stringify(parsedData[3]));
+                console.log("MonitorApi:  " + JSON.stringify(parsedData[4]));
 
                 var rowArr = new Array(daysCount);    //range 7 days
 
@@ -332,6 +351,9 @@ class MonitorApi {
                 }
             } else {
                 console.log("MonitorApi: getAllSensorParams - SOME ERROR!");
+                if (callback) {
+                    callback(null);
+                }
             }
         });
     };
