@@ -209,7 +209,7 @@ app.get('/getsensordatawithrange/:fromuxdate/:touxdate', function (req, res) {
     let touxdate = req.params.touxdate;
     console.log("server: GET /getsensordatawithrange/  tsRange[" + fromuxdate + " - " + touxdate + "]");
 
-    res.set('Content-Type', 'application/json')
+    res.set('Content-Type', 'application/json');
     monitorApi.getSensorDataWithRange(0, fromuxdate, touxdate, result => {
         if (res != null) {
             if (result != null) {
@@ -372,6 +372,23 @@ app.get('/savescreensensor/:screen_id/:sensor_id', function (req, res) {
             }
         } else {
             console.log("/savescreensensor res in NULL");
+        }
+    });
+});
+
+// get values from DB
+app.get('/getpilogsize', function (req, res) {
+    console.log("server: GET /getpilogsize");
+    monitorApi.getPiLogSize((result) => {
+        if (res != null) {
+            if (result != null) {
+                res.set('Content-Type', 'application/json')
+                res.send(result);
+            } else {
+                res.send(null);
+            }
+        } else {
+            console.log("/getpilogsize res in NULL");
         }
     });
 });

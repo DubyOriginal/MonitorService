@@ -104,12 +104,13 @@
         $scope.setInitiaDate();
 
         $scope.updateTimeRange = function () {
-            console.log("updateTimeRange");
+            // console.log("updateTimeRange");
             if (($scope.activeFromDate != $scope.fromDate) || ($scope.activeToDate != $scope.toDate)) {
                 $scope.needToReloadData = true;
             } else {
                 $scope.needToReloadData = false;
             }
+            console.log("updateTimeRange: needToReloadData -> ", $scope.needToReloadData);
         };
 
         $scope.f1Hour = function () {

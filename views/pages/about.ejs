@@ -5,7 +5,31 @@
 <head>
     <title>About</title>
     <% include ../partials/head %>
+    <script src="angular/angular.js"></script>
 </head>
+
+
+<script type="text/javascript">
+    var liveApp = angular.module("liveApp", []);
+    liveApp.controller("livectrl", function livectrl($scope, $http) {
+
+        $scope.piFolderList = {};
+        $scope.getPiFolderList = function () {
+            console.log("getData!");
+            $http({
+                method: 'GET',
+                url: 'getpilogsize'
+            }).then(function (response) {
+                console.log('getpilogsize -> ', response.data)
+                $scope.piFolderList = response.data;
+            }, function (error) {
+                console.log("getpilogsize ERROR: " + error);
+            });
+        };
+        $scope.getPiFolderList();  //initial data load
+    });
+</script>
+
 <body>
 
 <header>
@@ -14,10 +38,14 @@
 
 
 <div class="main_container">
-    <div class="row">
-        <div class="center">
-            <div class="col-md-12">
-                <h1>ABOUT</h1>
+    <div ng-app="liveApp" ng-controller="livectrl">
+        <div class="row">
+            <div class="center">
+                <div class="col-md-12">
+                    <h1>ABOUT</h1>
+                    <button type="button" class="btn btn-sm btn-info" ng-click="getPiFolderList()">get Pi Folder List</button>
+                    <p> {{ piFolderList }} </p>
+                </div>
             </div>
         </div>
     </div>

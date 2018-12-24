@@ -13,6 +13,7 @@ const BasicUtils = require('./BasicUtils');
 const PhysicsCalc = require('./PhysicsCalc');
 var Config = require('../config/Config.js'), config = new Config();
 
+const fs = require("fs");
 const moment = require('moment');
 const APP_SESSION_TIMEOUT_CHECK = 1000 * 60 * 60 // One hour time
 
@@ -614,6 +615,10 @@ class MonitorApi {
 
         var sql = "INSERT INTO fcm_user (id, msisdn, token, platform, last_modified) VALUES (?, ?, ?, ?, ?) " +
             "ON DUPLICATE KEY UPDATE id = values(id), msisdn = values(msisdn), token = values(token), platform = values(platform), last_modified = values(last_modified);";
+
+        console.log("MonitorApi: updatePushToken.sql -> " + sql);
+        console.log("MonitorApi: updatePushToken.data -> {id: " + id + ", msisdn: " + msisdn + ", token: " + token + ", platform: " + platform + ", last_modified: " + last_modified + "}");
+
         dbHelper.query(sql, [id, msisdn, token, platform, last_modified], function (result, error) {
             if (callback) {
                 if (result) {
@@ -776,6 +781,33 @@ class MonitorApi {
                 callback(result);
             }
         }
+    }
+
+    getPiLogSize(callback) {
+        console.log("MonitorApi: getPiLogSize");
+
+        let testFolder = "/etc/.pm2/";
+        let result = this.getFilesizeInBytes(testFolder);
+
+        /*if (callback) {
+            callback(result);
+        }else {
+            console.log("getPiLogSize - callback is NULL");
+        }*/
+
+    }
+
+    getFilesizeInBytes(testFolder) {
+
+        /*
+        var stats = fs.statSync(filename);
+        var fileSizeInBytes = stats["size"];
+        return fileSizeInBytes
+        */
+
+        fs.readdirSync(testFolder).forEach(file => {
+            console.log(file);
+        })
     }
 }
 
