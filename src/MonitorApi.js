@@ -786,14 +786,15 @@ class MonitorApi {
     getPiLogSize(callback) {
         console.log("MonitorApi: getPiLogSize");
 
-        let testFolder = "/etc/.pm2/";
+        // let testFolder = "/etc/.pm2/";              // on server (RaspberryPi 3)
+        let testFolder = "/Users/dvrbancic/Desktop/MONITOR/";              // on localhost
         let result = this.getFilesizeInBytes(testFolder);
 
-        /*if (callback) {
+        if (callback) {
             callback(result);
         }else {
             console.log("getPiLogSize - callback is NULL");
-        }*/
+        }
 
     }
 
