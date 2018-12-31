@@ -44,7 +44,10 @@
                 <div class="col-md-12">
                     <h1>ABOUT</h1>
                     <button type="button" class="btn btn-sm btn-info" ng-click="getPiFolderList()">get Pi Folder List</button>
-                    <p> {{ piFolderList }} </p>
+                    <ul>
+                        <li ng-repeat="file in piFolderList"> {{ file }} </li>
+                    </ul>
+
                 </div>
             </div>
         </div>

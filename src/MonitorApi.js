@@ -187,7 +187,7 @@ class MonitorApi {
           FROM monitor_db.monitor_data \
           WHERE sensor_id IN(" + sID_CKP_POL + "," + sID_CKP_POV + "," + sID_pumpStatus_CKP + ") AND \
           ((timestamp >= ?) AND (timestamp < ?)) \
-          ORDER BY monitor_data.timestamp DESC;";
+          ORDER BY monitor_data.timestamp DESC, monitor_data.sensor_id DESC;";
         //console.log("MonitorApi: getConsumptionDataWithRange -> sql: \n" + sql);
         dbHelper.query(sql, [fromUxTS, toUxTS], function (consumptionData, error) {
             if (!error && consumptionData) {
@@ -223,7 +223,7 @@ class MonitorApi {
             tempDate.setMilliseconds(0);
             let unixTS = tempDate.getTime()/1000;
             dateRangeArr.push(unixTS);
-            console.log("MonitorApi: tempDate[" + i + "]  -> " + tempDate + "  unixTS -> " + unixTS);
+            // console.log("MonitorApi: tempDate[" + i + "]  -> " + tempDate + "  unixTS -> " + unixTS);
         }
 
         console.log("MonitorApi:  dateRangeArr.cnt -> " + dateRangeArr.length);
@@ -236,74 +236,112 @@ class MonitorApi {
         var parsedData = [];
         this.getConsumptionDataWithRange(fromUxTS, toUxTS, consumptionData => {
             if (consumptionData != null) {
-                let cdCnt = consumptionData.length;
+                let cdCnt = consumptionData.length-3;
+                console.log("MonitorApi: consumptionData.length -> ", cdCnt);
 
-                console.log("MonitorApi: getCalculatedConsumptionDataForRange");
+
                 //{"timestamp":1520031528,"sensor_id":200,"sensor_value":"0"}
                 //{"timestamp":1520031528,"sensor_id":107,"sensor_value":"45.19"}
                 //{"timestamp":1520031527,"sensor_id":105,"sensor_value":"46.37"}
-                basicUtils.printJOSNRows(consumptionData);
+                console.log("MonitorApi: getCalculatedConsumptionDataForRange");
+                basicUtils.printJOSNRowsWithPrefixText("MonitorApi", consumptionData, 6);
 
-                console.log("MonitorApi: getCalculatedConsumptionDataForRange - consumptionData: " +
-                    "\n   0:  " + JSON.stringify(consumptionData[0]) +
-                    "\n   1:  " + JSON.stringify(consumptionData[1]) +
-                    "\n   2:  " + JSON.stringify(consumptionData[2])
-                );
 
-                for (var i = 0; i < cdCnt-1; i += 3) {
-                    var row = {ts: 0, ckp_pol:0, ckp_pov:0, pow:0};
-                    let valCKP_POL = consumptionData[i].sensor_value;
-                    let valCKP_POV = consumptionData[i+1].sensor_value;
-                    let pumpStatus_CKP = consumptionData[i+2].sensor_value;
-                    row.ckp_pol = valCKP_POL;
-                    row.ckp_pov = valCKP_POV;
-                    if (pumpStatus_CKP == "0"){     //calculatePower only if PUMP in ON,  0 -> ON !!!
-                        row.pow = physicsCalc.calculatePower(valCKP_POL, valCKP_POV);
-                        //row.ts = consumptionData[i].timestamp;
-                        //parsedData.push(row);
-                        console.log("MonitorApi:  calculatePower  ######");
+
+                // get sensor array list index
+                // ----------------------------------------------
+                let idx0 = consumptionData[0].sensor_id;      // pumpStatus_CKP
+                let idx1 = consumptionData[1].sensor_id;      // valCKP_POV
+                let idx2 = consumptionData[2].sensor_id;      // valCKP_POL
+
+                // get index of: pumpStatus_CKP
+                if (idx0 === 200) {idx0 = 0;}
+                else if (idx1 === 200) {idx0 = 1}
+                else (idx0 = 2);
+
+                // get index of: valCKP_POV
+                if (idx0 === 107) {idx1 = 0;}
+                else if (idx1 === 107) {idx1 = 1}
+                else (idx1 = 2);
+
+                // get index of: valCKP_POL
+                if (idx0 === 105) {idx2 = 0;}
+                else if (idx1 === 105) {idx2 = 1}
+                else (idx2 = 2);
+                // ---------------------------------------------
+
+                let cntProgress = 0;
+                //try {
+                    for (var i = 0; i < cdCnt-1; i += 3) {
+                        cntProgress = i;
+                        var row = {ts: 0, ckp_pol:0, ckp_pov:0, pow:0};
+                        let pumpStatus_CKP = 0;
+                        let valCKP_POV = 0;
+                        let valCKP_POL = 0;
+                        try {
+                            pumpStatus_CKP = consumptionData[i+idx0].sensor_value;      // sID: 200
+                            valCKP_POV = consumptionData[i+idx1].sensor_value;          // sID: 107
+                            valCKP_POL = consumptionData[i+idx2].sensor_value;          // sID: 105
+                        } catch (error) {
+                            console.log("MonitorApi: ERROR in sensor list ORDER at cntProgress -> " + cntProgress + "!!!");
+                            console.log("MonitorApi: ERROR -> ", error);
+                        }
+
+                        // console.log(i + ': {pumpStatus_CKP: ' + pumpStatus_CKP + ", valCKP_POV: " + valCKP_POV + ", valCKP_POL: " + valCKP_POL + "}");
+                        row.ckp_pol = valCKP_POL;
+                        row.ckp_pov = valCKP_POV;
+                        if (pumpStatus_CKP === "0"){     //calculatePower only if PUMP in ON,  0 -> ON !!!
+                            let calcPower = physicsCalc.calculatePower(valCKP_POL, valCKP_POV);
+                            row.pow = (calcPower > 0) ? calcPower : 0;
+                            row.ts = consumptionData[i].timestamp;
+                            parsedData.push(row);
+                            // console.log("MonitorApi:  calculatePower  ######");
+                        }else {
+                            row.ts = consumptionData[i].timestamp;
+                            parsedData.push(row);
+                        }
+
                     }
-                    row.ts = consumptionData[i].timestamp;
-                    parsedData.push(row);
-                }
+                //} catch (error) {
+                //    console.log("MonitorApi: ERROR at cntProgress -> " + cntProgress);
+                //    console.log("MonitorApi: ERROR -> " + JSON.stringify(error));
+                //}
 
-                console.log("MonitorApi:  parsedData.cnt -> " + parsedData.length);
-                console.log("MonitorApi: getConsumptionDataWithRange.parsedData -> ");
-                console.log("MonitorApi:  " + JSON.stringify(parsedData[0]));
-                console.log("MonitorApi:  " + JSON.stringify(parsedData[1]));
-                console.log("MonitorApi:  " + JSON.stringify(parsedData[2]));
-                console.log("MonitorApi:  " + JSON.stringify(parsedData[3]));
-                console.log("MonitorApi:  " + JSON.stringify(parsedData[4]));
 
-                var rowArr = new Array(daysCount);    //range 7 days
+                //console.log("MonitorApi: parsedData.cnt -> " + parsedData.length);
+                //console.log("MonitorApi: getConsumptionDataWithRange.parsedData -> ");
+                // basicUtils.printJOSNRowsWithPrefixText("MonitorApi", parsedData, 3);
+
+                var powerByDayArr = new Array(daysCount);    //range 7 days
 
                 //dateRangeArr
                 for (var j = 0; j < daysCount; j += 1) {
                     var rangeFrom = dateRangeArr[j];
                     var rangeTo = dateRangeArr[j + 1];
 
-                    rowArr[j] = [];
+                    powerByDayArr[j] = [];
                     for (var i = 0; i < parsedData.length-1; i += 1) {
                         let tmpTS = parsedData[i].ts;
                         let tmpPow = parsedData[i].pow;
                         if ((tmpTS > rangeFrom) && (tmpTS < rangeTo)){
                             var obj = {ts:tmpTS, pow:tmpPow};
-                            rowArr[j].push(obj);
+                            powerByDayArr[j].push(obj);
                         }
                     }
                 }
 
-                console.log("MonitorApi:  rowArr.cnt -> " + rowArr.length);
-                console.log("MonitorApi: -----------------------------------------------");
-                //console.log("MonitorApi:  FINAL ARR: " + JSON.stringify(rowArr));
+                console.log("MonitorApi:  powerByDayArr[" + powerByDayArr.length + "]  -> ");
+                //console.log("MonitorApi:  FINAL ARR: " + JSON.stringify(powerByDayArr));
+                // basicUtils.printJOSNRowsWithPrefixText("MonitorApi", powerByDayArr, 0);
 
-                //console.log("MonitorApi:  rowArr[0] -> " + JSON.stringify(rowArr[0]));
+                //console.log("MonitorApi:  powerByDayArr[0] -> " + JSON.stringify(powerByDayArr[0]));
                 //console.log("MonitorApi: ----");
 
 
+                console.log("MonitorApi: -----------------------------------------------");
                 let result = [];
                 for (var i = 0; i < daysCount; i += 1) {
-                    var energyJx = physicsCalc.calculateEnergy(rowArr[i]);
+                    var energyJx = physicsCalc.calculateEnergy(powerByDayArr[i]);
                     var energykWhx = physicsCalc.convertJ2Wh(energyJx);
                     var massx = physicsCalc.convertJ2Mass(energyJx);
 
@@ -311,7 +349,7 @@ class MonitorApi {
 
                     var finalTS = dateRangeArr[i];
                     result.push({"ts":finalTS, "value":energyJx});
-                    console.log("MonitorApi:  energyFWhx[" + i + "] -> " + energyFWhx + "Wh,  mass -> " + massx + "kg,  ts -> " + finalTS);
+                    console.log("MonitorApi: \tday[" + i + "] ->  energyJx: " + energyJx + ",  energyFWhx: " + energyFWhx + "Wh,  mass: " + massx + "kg,  ts: " + finalTS);
                 }
 
                 /*
@@ -464,7 +502,7 @@ class MonitorApi {
         dbHelper.query(sql, [], function (result, error) {
             if (!error && result) {
                 console.log("MonitorApi: getSchematicSensorData:");
-                basicUtils.printJOSNRows(result);
+                basicUtils.printJOSNRows(result, 0);
                 if (callback) {
                     callback(result);
                 }
@@ -786,8 +824,8 @@ class MonitorApi {
     getPiLogSize(callback) {
         console.log("MonitorApi: getPiLogSize");
 
-        // let testFolder = "/etc/.pm2/";              // on server (RaspberryPi 3)
-        let testFolder = "/Users/dvrbancic/Desktop/MONITOR/";              // on localhost
+        let testFolder = "/etc/.pm2/";              // on server (RaspberryPi 3)
+        // let testFolder = "/Users/dvrbancic/Desktop/MONITOR/";              // on localhost
         let result = this.getFilesizeInBytes(testFolder);
 
         if (callback) {
@@ -806,9 +844,11 @@ class MonitorApi {
         return fileSizeInBytes
         */
 
-        fs.readdirSync(testFolder).forEach(file => {
-            console.log(file);
-        })
+        return fs.readdirSync(testFolder);
+
+        //fs.readdirSync(testFolder).forEach(file => {
+        //   console.log(file);
+        //})
     }
 }
 

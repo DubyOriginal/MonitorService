@@ -230,9 +230,12 @@
     google.load('visualization', '1', {packages: ['controls', 'charteditor']});
 
     function loadSensorData(fromuxdate, touxdate) {
+
         $.ajax({
             type: 'GET',
             url: '/getsensordatawithrange/' + fromuxdate + '/' + touxdate,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
             success: function (result) {
                 console.log("result.length -> " + result.length);
                 //console.log("mSensorData -> " + JSON.stringify(result));
@@ -242,6 +245,21 @@
                 google.setOnLoadCallback(drawMonitoringChart());
             }
         });
+
+        // TODO - remove AJAX
+        /*
+        console.log("loadSensorData [fromuxdate: " + fromuxdate + " - touxdate: " + touxdate + "]");
+        $http({
+            method: 'GET',
+            url: '/getsensordatawithrange/' + fromuxdate + '/' + touxdate,
+        }).then(function (response) {
+            console.log("result.length -> " + result.length);
+            mSensorData = result;
+            angular.element(document.getElementById('moduleHolder')).scope().stopSpin();
+            google.setOnLoadCallback(drawMonitoringChart());
+        }, function (error) {
+            console.log("loadSensorData.ERROR: " + error);
+        });*/
     };
 
 

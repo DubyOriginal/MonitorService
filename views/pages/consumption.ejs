@@ -134,9 +134,11 @@
         $.ajax({
             type: 'GET',
             url: '/getconsumptionforrange/' + loadingPeriod,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
             success: function (result) {
                 console.log("result.length -> " + result.length);
-                //console.log("mSensorData -> " + JSON.stringify(result));
+                // console.log("mSensorData -> " + JSON.stringify(result));
                 mConsumptionArr = result;
                 //extScope.needToReloadData = false;
                 angular.element(document.getElementById('moduleHolder')).scope().stopSpin();
@@ -144,6 +146,25 @@
                 google.charts.setOnLoadCallback(drawConsumptionChart);
             }
         });
+
+        // TODO - remove AJAX
+
+        /*
+            console.log("loadConsumptionForRange.loadingPeriod -> " + loadingPeriod);
+            $http({
+                method: 'GET',
+                url: '/getconsumptionforrange/' + loadingPeriod,
+            }).then(function (response) {
+                console.log("loadConsumptionForRange - LOADED (result.length -> " + result.length + ")");
+                mConsumptionArr = result;
+                angular.element(document.getElementById('moduleHolder')).scope().stopSpin();
+                google.charts.setOnLoadCallback(drawConsumptionChart);
+            }, function (error) {
+                console.log("loadConsumptionForRange.ERROR: " + error);
+            });
+        */
+
+
     };
 
     function convertJ2Wh(inEnergy){

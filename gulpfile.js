@@ -24,7 +24,6 @@ function deployLive(server_user, server_ip) {
     } catch (e) {
         console.log("err: Unable to stop MonitorApp OR already stopped!");
     }
-    ;
 
     console.log("transfer source....");
     exec('scp package.json %s@%s:./MonitorService/', server_user, server_ip);
