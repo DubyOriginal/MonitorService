@@ -19,6 +19,7 @@
 //var config = require('config.json')('./config/live.json');
 //var config = require('config.json')('./config/develop.json');
 var Config = require('./config/Config.js'), config = new Config();
+const Const = require('./const.js');
 
 //process.env['NODE_ENV'] = 'live';
 var enviroment = process.env.NODE_ENV;
@@ -33,7 +34,7 @@ class MonitorApp {
 
 var logStartingInfo = function () {
   console.log("------------------------------------------------------------");
-  console.log("starting MonitorService - %s (v%s)...", enviroment, config.service.version);
+  console.log("starting MonitorService - %s (v%s)...", enviroment, Const.APP_VERSION);
   //
 
 
