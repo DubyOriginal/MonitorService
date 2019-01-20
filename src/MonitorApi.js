@@ -12,6 +12,7 @@ const FCMHelper = require('./FCMHelper');
 const BasicUtils = require('./BasicUtils');
 const PhysicsCalc = require('./PhysicsCalc');
 var Config = require('../config/Config.js'), config = new Config();
+const Const = require('../const');
 
 const fs = require("fs");
 const moment = require('moment');
@@ -587,11 +588,12 @@ class MonitorApi {
     /*{
      "user_id":"DY001",
      "device_id":"123456",
-     "sensors":[{"sensor_id":"11 33 55 77","sensor_type":"temp","sensor_value":"22.22"},{"sensor_id":"11 33 55 77","sensor_type":"hum","sensor_value":"60"}]
+     "sensors":[{"sensor_id":"100","sensor_value":"-127.00"},{"sensor_id":"101","sensor_value":"-127.00"},{"sensor_id":"102","sensor_value":"-127.00"}]
      }
      */
     storeDeviceData(user_id, device_id, sensors) {
-        //console.log("MonitorApi: storeDeviceData");
+        var timestamp = moment().unix();
+        console.log("MonitorApi: storeDeviceData { timestamp: " + timestamp + ', sensorsCnt: ' + sensors.length + '}');
 
         let dbHelper = new DBHelper();
         //let fcmHelper = new FCMHelper();
@@ -615,7 +617,7 @@ class MonitorApi {
                 if (sensor_value <= -127) {
                     sensor_value = "";
                 }
-                var timestamp = moment().unix();
+                //var timestamp = moment().unix();
                 //console.log("MonitorApi: storeDeviceData TS -> " + new Date(timestamp).toLocaleDateString());
                 //console.log("MonitorApi: storeDeviceData[" + i + "] -> sensor_id: " + sensor_id + ", sensor_value: " + sensor_value);
 
@@ -776,7 +778,7 @@ class MonitorApi {
                         sensor_alarm_min: "",
                         sensor_alarm_max: ""
                     }
-                }
+                };
 
                 if (sensorParams != null) {
                     //console.log("MonitorApi: getParamsForSensorID -> result: " + JSON.stringify(sensorParams));
@@ -814,9 +816,17 @@ class MonitorApi {
             });
         } else {
             if (callback) {
-                console.log("testSensorAlarm -> invalid sensor value!");
-                result.status = "ERROR";
+                // console.log("testSensorAlarm -> invalid sensor value!");
+                const sensorName = Const.getNameForSensorID(sensor_id);
+                console.log("testSensorAlarm -> INVALID VALUE -> {sID: " + sensor_id + ", sName: " + sensorName + "}");
+
+                const result = {
+                    status: "ERROR",
+                    msgData: {}
+                };
                 callback(result);
+
+
             }
         }
     }
