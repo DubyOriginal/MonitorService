@@ -8,7 +8,7 @@
 //var db = require('mysql');
 
 const DBHelper = require('./DBHelper');
-const FCMHelper = require('./FCMHelper');
+// const FCMHelper = require('./FCMHelper');
 const BasicUtils = require('./BasicUtils');
 const PhysicsCalc = require('./PhysicsCalc');
 var Config = require('../config/Config.js'), config = new Config();
@@ -16,9 +16,9 @@ const Const = require('../const');
 
 const fs = require("fs");
 const moment = require('moment');
-const APP_SESSION_TIMEOUT_CHECK = 1000 * 60 * 60 // One hour time
+const APP_SESSION_TIMEOUT_CHECK = 1000 * 60 * 60; // One hour time
 
-let fcmHelper = new FCMHelper();
+//let fcmHelper = new FCMHelper();
 
 const ERR_CODE_DB_GET_TOKEN_FOR_ORIGIN = 'ERR_CODE_DB_GET_TOKEN_FOR_ORIGIN'
 const ERR_CODE_NO_TOKEN_FOR_ORIGIN = 'ERR_CODE_NO_TOKEN_FOR_ORIGIN';
@@ -33,6 +33,9 @@ class MonitorApi {
         console.log("MonitorApi: getDataCount");
 
         let dbHelper = new DBHelper();
+
+
+
         //const sql = "SELECT COUNT(*) as data_cnt FROM monitor_db.monitor_data;";
         const sql = "SELECT COUNT(*) as measurement_cnt, (SELECT COUNT(*) as row_cnt FROM monitor_db.monitor_data) as row_cnt FROM monitor_db.monitor_data WHERE sensor_id = 104;"
         dbHelper.query(sql, [], function (result, error) {
@@ -707,7 +710,7 @@ class MonitorApi {
         this.getUserToken(user_id, (error, mobToken) => {
             if (!error) {
                 if (mobToken && mobToken.length > 0) {
-                    fcmHelper.pushMessage(mobToken, msgTitle, msgDescription, requestAction);
+                    //fcmHelper.pushMessage(mobToken, msgTitle, msgDescription, requestAction);
                 } else {
                     console.log("MonitorApi: Invalid mobToken for userID: " + user_id + ", token: " + mobToken);
                 }

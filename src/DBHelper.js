@@ -36,7 +36,7 @@ class DBHelper {
 
         dbPool.getConnection((error, connection) => {
             if (error) {
-                console.log(error)
+                console.log('DBHElper - ERR324D', JSON.stringify(error));
                 if (callback) callback(null, error)
             } else {
                 connection.query(sql, params, (error, result) => {

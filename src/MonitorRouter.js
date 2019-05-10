@@ -43,6 +43,8 @@ app.use(bodyParser.json());
 // view engine setup
 app.set('view engine', 'ejs');
 
+
+
 //**********************************************************************************************************************
 // FRONT ROUTES - PAGE
 //**********************************************************************************************************************
@@ -398,12 +400,11 @@ app.get('/getpilogsize', function (req, res) {
 //**********************************************************************************************************************
 // Store values to DB -> addValues(user_id, device_id, sensor_type, sensor_value){
 app.post('/storedevicedata', function (req, res) {
-    /*{
-     "sensors":[{"sensor_id":"101","sensor_value":"11.33"},{"sensor_id":"102","sensor_type":"hum","sensor_value":"22.33"}],
-     "status":{"REL_CKP":"1","REL_RAD":"0"},  //not used yet
-     "user_id":"1001",
-     "device_id":"123456"}
-     */
+    // {
+    // "sensors":[{"sensor_id":"101","sensor_value":"11.33"},{"sensor_id":"102","sensor_type":"hum","sensor_value":"22.33"}],
+    //  "status":{"REL_CKP":"1","REL_RAD":"0"},  //not used yet
+    //  "user_id":"1001",
+    //  "device_id":"123456"}
     const data = req.body;
     const user_id = data.user_id;
     const device_id = data.device_id;
@@ -476,4 +477,3 @@ app.listen(APP_PORT, function (err) {
         console.warn("app.on.error -> " + err)
     }
 });
-
